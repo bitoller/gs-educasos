@@ -52,24 +52,60 @@ disaster-awareness/
 
 ## Running the Application
 
-### Method 1: Using Maven with Embedded Tomcat
+### Backend (Java Web Application)
 
-1. Open a terminal in the project root directory
-2. Run the following command:
-   ```bash
+#### Prerequisites
+- **Java JDK 11+** installed
+- **Maven** installed and in your PATH
+- **Oracle Database** running and accessible (update credentials in your `ConnectionFactory` if needed)
+- **Tomcat 7+** (if not using Maven's embedded Tomcat)
+
+#### Running with Maven Embedded Tomcat
+1. **Open a terminal** in your project root (`C:/Users/bi_to/Desktop/disaster-awareness`).
+2. **Build and run the backend:**
+   ```sh
    mvn clean tomcat7:run
    ```
-3. Access the application at: http://localhost:8080/disaster-awareness
+   - This will start the backend at:  
+     [http://localhost:8080/disaster-awareness](http://localhost:8080/disaster-awareness)
 
-### Method 2: Deploying to Standalone Tomcat
+3. **If you want to deploy to a standalone Tomcat:**
+   - Build the WAR file:
+     ```sh
+     mvn clean package
+     ```
+   - Copy the generated `target/disaster-awareness.war` to your Tomcat's `webapps` folder and start Tomcat.
 
-1. Build the WAR file:
-   ```bash
-   mvn clean package
+### Frontend (React Application)
+
+#### Prerequisites
+- **Node.js** and **npm** installed
+
+#### Running the Frontend
+1. **Open a new terminal** in the frontend directory:
+   ```sh
+   cd frontend
    ```
-2. Copy the generated WAR file from `target/disaster-awareness.war` to your Tomcat's `webapps` directory
-3. Start Tomcat
-4. Access the application at: http://localhost:8080/disaster-awareness
+2. **Install dependencies** (if you haven't already):
+   ```sh
+   npm install
+   ```
+3. **Start the React app:**
+   ```sh
+   npm run dev
+   ```
+   - This will start the frontend at:  
+     [http://localhost:5173](http://localhost:5173) (or another port, check the terminal output)
+
+### How it Works
+- The **frontend** (React) will make API requests to the **backend** (Java/Tomcat) at `http://localhost:8080/disaster-awareness/api`.
+- Make sure both servers are running at the same time.
+- If you get CORS errors, ensure your backend is configured to allow requests from the frontend's origin.
+
+### Troubleshooting
+- If you get errors about missing dependencies, run `npm install` in the frontend folder.
+- If you get a port conflict, stop any other servers using the same port or change the port in your config.
+- If you get a 404 or 500 from the backend, check your database connection and Tomcat logs.
 
 ## API Endpoints
 
