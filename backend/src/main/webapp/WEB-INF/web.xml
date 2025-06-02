@@ -7,42 +7,6 @@
 
     <display-name>Disaster Awareness Platform</display-name>
 
-    <!-- Security Role Definition -->
-    <security-role>
-        <role-name>user</role-name>
-    </security-role>
-
-    <!-- Configuração de segurança -->
-    <security-constraint>
-        <web-resource-collection>
-            <web-resource-name>Protected Area</web-resource-name>
-            <url-pattern>/api/content/*</url-pattern>
-            <url-pattern>/api/kit/*</url-pattern>
-            <http-method>GET</http-method>
-            <http-method>POST</http-method>
-            <http-method>PUT</http-method>
-            <http-method>DELETE</http-method>
-        </web-resource-collection>
-        <auth-constraint>
-            <role-name>user</role-name>
-        </auth-constraint>
-    </security-constraint>
-
-    <!-- Configuração de login -->
-    <login-config>
-        <auth-method>FORM</auth-method>
-        <realm-name>Disaster Awareness Platform</realm-name>
-        <form-login-config>
-            <form-login-page>/login.jsp</form-login-page>
-            <form-error-page>/error.jsp</form-error-page>
-        </form-login-config>
-    </login-config>
-
-    <!-- Configuração de sessão -->
-    <session-config>
-        <session-timeout>30</session-timeout>
-    </session-config>
-
     <!-- Configuração de caracteres -->
     <filter>
         <filter-name>characterEncodingFilter</filter-name>
@@ -95,14 +59,9 @@
         <url-pattern>/*</url-pattern>
     </filter-mapping>
 
-    <!-- Páginas de erro -->
-    <error-page>
-        <error-code>404</error-code>
-        <location>/error.jsp</location>
-    </error-page>
-    <error-page>
-        <error-code>500</error-code>
-        <location>/error.jsp</location>
-    </error-page>
+    <!-- Welcome File List -->
+    <welcome-file-list>
+        <welcome-file>index.html</welcome-file>
+    </welcome-file-list>
 
 </web-app> 

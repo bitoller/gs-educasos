@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Disaster Awareness API</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .endpoint {
+            background-color: #f5f5f5;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .method {
+            font-weight: bold;
+            color: #0066cc;
+        }
+    </style>
+</head>
+<body>
+    <h1>Disaster Awareness API</h1>
+    <p>Welcome to the Disaster Awareness API. Here are the available endpoints:</p>
+
+    <div class="endpoint">
+        <h2>Authentication</h2>
+        <p><span class="method">POST</span> /api/login - User login</p>
+        <p><span class="method">POST</span> /api/register - User registration</p>
+    </div>
+
+    <div class="endpoint">
+        <h2>Kits</h2>
+        <p><span class="method">GET</span> /api/kit - Get all kits</p>
+        <p><span class="method">POST</span> /api/kit - Create new kit</p>
+        <p><span class="method">GET</span> /api/kit/{id} - Get kit by ID</p>
+        <p><span class="method">PUT</span> /api/kit/{id} - Update kit</p>
+        <p><span class="method">DELETE</span> /api/kit/{id} - Delete kit</p>
+    </div>
+
+    <div class="endpoint">
+        <h2>Content</h2>
+        <p><span class="method">GET</span> /api/content - Get all content</p>
+        <p><span class="method">POST</span> /api/content - Create new content</p>
+    </div>
+
+    <p>To test the API, you can use tools like Postman or curl. For example:</p>
+    <pre>
+curl -X POST http://localhost:8080/disaster-awareness/api/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"test@example.com","password":"password123"}'
+    </pre>
+</body>
+</html> 
