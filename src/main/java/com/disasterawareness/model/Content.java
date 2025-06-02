@@ -17,7 +17,6 @@ public class Content {
         this.videoUrl = videoUrl;
     }
 
-    // Getters and Setters
     public Long getContentId() {
         return contentId;
     }
@@ -57,4 +56,4 @@ public class Content {
     public void setVideoUrl(String videoUrl) {
         this.videoUrl = videoUrl;
     }
-} 
+}

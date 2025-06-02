@@ -15,7 +15,6 @@ public class User {
         this.passwordHash = passwordHash;
     }
 
-    // Getters and Setters
     public Long getUserId() {
         return userId;
     }
@@ -47,4 +46,4 @@ public class User {
     public void setPasswordHash(String passwordHash) {
         this.passwordHash = passwordHash;
     }
-} 
+}

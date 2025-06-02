@@ -13,8 +13,8 @@ public class Kit {
     public Kit() {
     }
 
-    public Kit(String houseType, int residents, boolean hasChildren, boolean hasElderly, 
-              boolean hasPets, String region, String recommendedItems) {
+    public Kit(String houseType, int residents, boolean hasChildren, boolean hasElderly,
+            boolean hasPets, String region, String recommendedItems) {
         this.houseType = houseType;
         this.residents = residents;
         this.hasChildren = hasChildren;
@@ -24,7 +24,6 @@ public class Kit {
         this.recommendedItems = recommendedItems;
     }
 
-    // Getters and Setters
     public Long getKitId() {
         return kitId;
     }
@@ -88,4 +87,4 @@ public class Kit {
     public void setRecommendedItems(String recommendedItems) {
         this.recommendedItems = recommendedItems;
     }
-} 
+}
