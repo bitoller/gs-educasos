@@ -8,8 +8,8 @@ import java.util.concurrent.TimeUnit;
 
 public class ConnectionFactory {
     private static final String URL = "jdbc:oracle:thin:@oracle.fiap.com.br:1521:orcl";
-    private static final String USER = "rm552726";
-    private static final String PASSWORD = "120289";
+    private static final String USER = "rm553314";
+    private static final String PASSWORD = "171195";
 
     static {
         try {
