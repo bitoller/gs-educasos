@@ -72,9 +72,8 @@ public class KitServlet extends HttpServlet {
         response.setCharacterEncoding("UTF-8");
 
         try {
-            // Read JSON request body
             JsonObject jsonRequest = gson.fromJson(request.getReader(), JsonObject.class);
-            
+
             String houseType = jsonRequest.get("houseType").getAsString();
             int numResidents = jsonRequest.get("numResidents").getAsInt();
             boolean hasChildren = jsonRequest.get("hasChildren").getAsBoolean();
@@ -112,10 +111,9 @@ public class KitServlet extends HttpServlet {
             }
 
             Long kitId = Long.parseLong(pathInfo.substring(1));
-            
-            // Read JSON request body
+
             JsonObject jsonRequest = gson.fromJson(request.getReader(), JsonObject.class);
-            
+
             String houseType = jsonRequest.get("houseType").getAsString();
             int numResidents = jsonRequest.get("numResidents").getAsInt();
             boolean hasChildren = jsonRequest.get("hasChildren").getAsBoolean();

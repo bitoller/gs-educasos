@@ -68,9 +68,8 @@ public class ContentServlet extends HttpServlet {
         response.setCharacterEncoding("UTF-8");
 
         try {
-            // Read JSON request body
             JsonObject jsonRequest = gson.fromJson(request.getReader(), JsonObject.class);
-            
+
             String disasterType = jsonRequest.get("disasterType").getAsString();
             String title = jsonRequest.get("title").getAsString();
             String description = jsonRequest.get("description").getAsString();
@@ -106,10 +105,9 @@ public class ContentServlet extends HttpServlet {
             }
 
             Long contentId = Long.parseLong(pathInfo.substring(1));
-            
-            // Read JSON request body
+
             JsonObject jsonRequest = gson.fromJson(request.getReader(), JsonObject.class);
-            
+
             String disasterType = jsonRequest.get("disasterType").getAsString();
             String title = jsonRequest.get("title").getAsString();
             String description = jsonRequest.get("description").getAsString();
@@ -125,7 +123,8 @@ public class ContentServlet extends HttpServlet {
             Content updatedContent = contentService.updateContent(content);
 
             response.setStatus(HttpServletResponse.SC_OK);
-            response.getWriter().write(gson.toJson(new SuccessResponse("Conteúdo atualizado com sucesso.", updatedContent)));
+            response.getWriter()
+                    .write(gson.toJson(new SuccessResponse("Conteúdo atualizado com sucesso.", updatedContent)));
 
         } catch (NumberFormatException e) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);

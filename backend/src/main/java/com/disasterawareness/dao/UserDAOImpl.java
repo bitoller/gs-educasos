@@ -17,7 +17,7 @@ public class UserDAOImpl implements UserDAO {
         String sql = "INSERT INTO users (name, email, password) VALUES (?, ?, ?)";
 
         try (Connection conn = ConnectionFactory.getConnection();
-                PreparedStatement stmt = conn.prepareStatement(sql, new String[]{"user_id"})) {
+                PreparedStatement stmt = conn.prepareStatement(sql, new String[] { "user_id" })) {
 
             stmt.setString(1, user.getName());
             stmt.setString(2, user.getEmail());

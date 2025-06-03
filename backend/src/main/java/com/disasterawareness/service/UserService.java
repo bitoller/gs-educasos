@@ -22,7 +22,6 @@ public class UserService {
             throw new IllegalArgumentException("Email já está em uso.");
         }
 
-        // Criar hash da senha (em produção, usar BCrypt ou similar)
         String passwordHash = generatePasswordHash(password);
 
         User user = new User(name, email, passwordHash);
@@ -35,7 +34,6 @@ public class UserService {
             throw new IllegalArgumentException("Email não encontrado.");
         }
 
-        // Verificar senha (em produção, usar BCrypt ou similar)
         if (!verifyPassword(password, user.getPasswordHash())) {
             throw new IllegalArgumentException("Senha incorreta.");
         }
@@ -80,7 +78,8 @@ public class UserService {
             StringBuilder hexString = new StringBuilder();
             for (byte b : hash) {
                 String hex = Integer.toHexString(0xff & b);
-                if (hex.length() == 1) hexString.append('0');
+                if (hex.length() == 1)
+                    hexString.append('0');
                 hexString.append(hex);
             }
             return hexString.toString();

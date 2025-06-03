@@ -32,9 +32,8 @@ public class LoginServlet extends HttpServlet {
         response.setCharacterEncoding("UTF-8");
 
         try {
-            // Read JSON request body
             JsonObject jsonRequest = gson.fromJson(request.getReader(), JsonObject.class);
-            
+
             String email = jsonRequest.get("email").getAsString();
             String password = jsonRequest.get("password").getAsString();
 
@@ -46,7 +45,6 @@ public class LoginServlet extends HttpServlet {
 
             User user = userService.login(email, password);
 
-            // Criar sessão
             HttpSession session = request.getSession();
             session.setAttribute("userId", user.getUserId());
             session.setAttribute("userName", user.getName());

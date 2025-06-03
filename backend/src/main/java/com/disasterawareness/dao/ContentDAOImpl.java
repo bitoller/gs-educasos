@@ -19,7 +19,7 @@ public class ContentDAOImpl implements ContentDAO {
         String sql = "INSERT INTO content (disaster_type, title, description, video_url) VALUES (?, ?, ?, ?)";
 
         try (Connection conn = ConnectionFactory.getConnection();
-                PreparedStatement stmt = conn.prepareStatement(sql, new String[]{"content_id"})) {
+                PreparedStatement stmt = conn.prepareStatement(sql, new String[] { "content_id" })) {
 
             stmt.setString(1, content.getDisasterType());
             stmt.setString(2, content.getTitle());
@@ -34,19 +34,18 @@ public class ContentDAOImpl implements ContentDAO {
 
             try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
                 if (generatedKeys.next()) {
-                    // Oracle-specific retrieval of generated ID
                     Object idObject = generatedKeys.getObject(1);
                     if (idObject instanceof NUMBER) {
                         NUMBER oracleNumber = (NUMBER) idObject;
                         content.setContentId(oracleNumber.longValue());
                     } else {
-                        // Fallback or error handling if the type is not oracle.sql.NUMBER
-                        System.err.println("Unexpected type for generated content ID: " + idObject.getClass().getName());
-                        // Try getting as BigDecimal as a fallback, which sometimes works
+                        System.err
+                                .println("Unexpected type for generated content ID: " + idObject.getClass().getName());
                         if (idObject instanceof java.math.BigDecimal) {
-                             content.setContentId(((java.math.BigDecimal) idObject).longValue());
+                            content.setContentId(((java.math.BigDecimal) idObject).longValue());
                         } else {
-                             throw new SQLException("Unexpected type for generated key: " + idObject.getClass().getName());
+                            throw new SQLException(
+                                    "Unexpected type for generated key: " + idObject.getClass().getName());
                         }
                     }
                     return content;

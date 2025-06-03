@@ -19,7 +19,7 @@ public class KitDAOImpl implements KitDAO {
                 "VALUES (?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = ConnectionFactory.getConnection();
-                PreparedStatement stmt = conn.prepareStatement(sql, new String[]{"kit_id"})) {
+                PreparedStatement stmt = conn.prepareStatement(sql, new String[] { "kit_id" })) {
 
             stmt.setString(1, kit.getHouseType());
             stmt.setInt(2, kit.getResidents());
@@ -37,7 +37,6 @@ public class KitDAOImpl implements KitDAO {
 
             try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
                 if (generatedKeys.next()) {
-                    // Retrieve as BigDecimal and convert to Long
                     java.math.BigDecimal id = generatedKeys.getBigDecimal(1);
                     kit.setKitId(id.longValue());
                     return kit;
