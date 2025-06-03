@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.disasterawareness.model.Content;
 import com.disasterawareness.service.ContentService;
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 
 @WebServlet("/api/content/*")
 public class ContentServlet extends HttpServlet {
@@ -67,10 +68,13 @@ public class ContentServlet extends HttpServlet {
         response.setCharacterEncoding("UTF-8");
 
         try {
-            String disasterType = request.getParameter("disasterType");
-            String title = request.getParameter("title");
-            String description = request.getParameter("description");
-            String videoUrl = request.getParameter("videoUrl");
+            // Read JSON request body
+            JsonObject jsonRequest = gson.fromJson(request.getReader(), JsonObject.class);
+            
+            String disasterType = jsonRequest.get("disasterType").getAsString();
+            String title = jsonRequest.get("title").getAsString();
+            String description = jsonRequest.get("description").getAsString();
+            String videoUrl = jsonRequest.get("videoUrl").getAsString();
 
             Content content = contentService.createContent(disasterType, title, description, videoUrl);
 
@@ -102,10 +106,14 @@ public class ContentServlet extends HttpServlet {
             }
 
             Long contentId = Long.parseLong(pathInfo.substring(1));
-            String disasterType = request.getParameter("disasterType");
-            String title = request.getParameter("title");
-            String description = request.getParameter("description");
-            String videoUrl = request.getParameter("videoUrl");
+            
+            // Read JSON request body
+            JsonObject jsonRequest = gson.fromJson(request.getReader(), JsonObject.class);
+            
+            String disasterType = jsonRequest.get("disasterType").getAsString();
+            String title = jsonRequest.get("title").getAsString();
+            String description = jsonRequest.get("description").getAsString();
+            String videoUrl = jsonRequest.get("videoUrl").getAsString();
 
             Content content = new Content();
             content.setContentId(contentId);
@@ -117,8 +125,7 @@ public class ContentServlet extends HttpServlet {
             Content updatedContent = contentService.updateContent(content);
 
             response.setStatus(HttpServletResponse.SC_OK);
-            response.getWriter()
-                    .write(gson.toJson(new SuccessResponse("Conteúdo atualizado com sucesso.", updatedContent)));
+            response.getWriter().write(gson.toJson(new SuccessResponse("Conteúdo atualizado com sucesso.", updatedContent)));
 
         } catch (NumberFormatException e) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);

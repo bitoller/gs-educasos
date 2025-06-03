@@ -13,6 +13,7 @@ import javax.servlet.http.HttpSession;
 import com.disasterawareness.model.User;
 import com.disasterawareness.service.UserService;
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 
 @WebServlet("/api/login")
 public class LoginServlet extends HttpServlet {
@@ -31,8 +32,11 @@ public class LoginServlet extends HttpServlet {
         response.setCharacterEncoding("UTF-8");
 
         try {
-            String email = request.getParameter("email");
-            String password = request.getParameter("password");
+            // Read JSON request body
+            JsonObject jsonRequest = gson.fromJson(request.getReader(), JsonObject.class);
+            
+            String email = jsonRequest.get("email").getAsString();
+            String password = jsonRequest.get("password").getAsString();
 
             if (email == null || password == null) {
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);

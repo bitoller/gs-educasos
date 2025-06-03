@@ -4,7 +4,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,12 +14,12 @@ public class KitDAOImpl implements KitDAO {
 
     @Override
     public Kit create(Kit kit) throws SQLException {
-        String sql = "INSERT INTO Kits (house_type, residents, has_children, has_elderly, has_pets, region, recommended_items) "
+        String sql = "INSERT INTO kits (house_type, num_residents, has_children, has_elderly, has_pets, region, recommended_items) "
                 +
                 "VALUES (?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = ConnectionFactory.getConnection();
-                PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+                PreparedStatement stmt = conn.prepareStatement(sql, new String[]{"kit_id"})) {
 
             stmt.setString(1, kit.getHouseType());
             stmt.setInt(2, kit.getResidents());
@@ -38,7 +37,9 @@ public class KitDAOImpl implements KitDAO {
 
             try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
                 if (generatedKeys.next()) {
-                    kit.setKitId(generatedKeys.getLong(1));
+                    // Retrieve as BigDecimal and convert to Long
+                    java.math.BigDecimal id = generatedKeys.getBigDecimal(1);
+                    kit.setKitId(id.longValue());
                     return kit;
                 } else {
                     throw new SQLException("Falha ao criar kit, nenhum ID obtido.");
@@ -49,7 +50,7 @@ public class KitDAOImpl implements KitDAO {
 
     @Override
     public Kit findById(Long kitId) throws SQLException {
-        String sql = "SELECT * FROM Kits WHERE kit_id = ?";
+        String sql = "SELECT * FROM kits WHERE kit_id = ?";
 
         try (Connection conn = ConnectionFactory.getConnection();
                 PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -67,7 +68,7 @@ public class KitDAOImpl implements KitDAO {
 
     @Override
     public List<Kit> findByHouseType(String houseType) throws SQLException {
-        String sql = "SELECT * FROM Kits WHERE house_type = ?";
+        String sql = "SELECT * FROM kits WHERE house_type = ?";
         List<Kit> kits = new ArrayList<>();
 
         try (Connection conn = ConnectionFactory.getConnection();
@@ -86,7 +87,7 @@ public class KitDAOImpl implements KitDAO {
 
     @Override
     public List<Kit> findByRegion(String region) throws SQLException {
-        String sql = "SELECT * FROM Kits WHERE region = ?";
+        String sql = "SELECT * FROM kits WHERE region = ?";
         List<Kit> kits = new ArrayList<>();
 
         try (Connection conn = ConnectionFactory.getConnection();
@@ -105,7 +106,7 @@ public class KitDAOImpl implements KitDAO {
 
     @Override
     public List<Kit> findAll() throws SQLException {
-        String sql = "SELECT * FROM Kits";
+        String sql = "SELECT * FROM kits";
         List<Kit> kits = new ArrayList<>();
 
         try (Connection conn = ConnectionFactory.getConnection();
@@ -121,7 +122,7 @@ public class KitDAOImpl implements KitDAO {
 
     @Override
     public Kit update(Kit kit) throws SQLException {
-        String sql = "UPDATE Kits SET house_type = ?, residents = ?, has_children = ?, " +
+        String sql = "UPDATE kits SET house_type = ?, num_residents = ?, has_children = ?, " +
                 "has_elderly = ?, has_pets = ?, region = ?, recommended_items = ? WHERE kit_id = ?";
 
         try (Connection conn = ConnectionFactory.getConnection();
@@ -148,7 +149,7 @@ public class KitDAOImpl implements KitDAO {
 
     @Override
     public boolean delete(Long kitId) throws SQLException {
-        String sql = "DELETE FROM Kits WHERE kit_id = ?";
+        String sql = "DELETE FROM kits WHERE kit_id = ?";
 
         try (Connection conn = ConnectionFactory.getConnection();
                 PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -164,7 +165,7 @@ public class KitDAOImpl implements KitDAO {
         Kit kit = new Kit();
         kit.setKitId(rs.getLong("kit_id"));
         kit.setHouseType(rs.getString("house_type"));
-        kit.setResidents(rs.getInt("residents"));
+        kit.setResidents(rs.getInt("num_residents"));
         kit.setHasChildren(rs.getBoolean("has_children"));
         kit.setHasElderly(rs.getBoolean("has_elderly"));
         kit.setHasPets(rs.getBoolean("has_pets"));

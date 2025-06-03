@@ -4,21 +4,22 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.disasterawareness.model.Content;
 import com.disasterawareness.utils.ConnectionFactory;
 
+import oracle.sql.NUMBER;
+
 public class ContentDAOImpl implements ContentDAO {
 
     @Override
     public Content create(Content content) throws SQLException {
-        String sql = "INSERT INTO Contents (disaster_type, title, description, video_url) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO content (disaster_type, title, description, video_url) VALUES (?, ?, ?, ?)";
 
         try (Connection conn = ConnectionFactory.getConnection();
-                PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+                PreparedStatement stmt = conn.prepareStatement(sql, new String[]{"content_id"})) {
 
             stmt.setString(1, content.getDisasterType());
             stmt.setString(2, content.getTitle());
@@ -33,7 +34,21 @@ public class ContentDAOImpl implements ContentDAO {
 
             try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
                 if (generatedKeys.next()) {
-                    content.setContentId(generatedKeys.getLong(1));
+                    // Oracle-specific retrieval of generated ID
+                    Object idObject = generatedKeys.getObject(1);
+                    if (idObject instanceof NUMBER) {
+                        NUMBER oracleNumber = (NUMBER) idObject;
+                        content.setContentId(oracleNumber.longValue());
+                    } else {
+                        // Fallback or error handling if the type is not oracle.sql.NUMBER
+                        System.err.println("Unexpected type for generated content ID: " + idObject.getClass().getName());
+                        // Try getting as BigDecimal as a fallback, which sometimes works
+                        if (idObject instanceof java.math.BigDecimal) {
+                             content.setContentId(((java.math.BigDecimal) idObject).longValue());
+                        } else {
+                             throw new SQLException("Unexpected type for generated key: " + idObject.getClass().getName());
+                        }
+                    }
                     return content;
                 } else {
                     throw new SQLException("Falha ao criar conteúdo, nenhum ID obtido.");
@@ -44,7 +59,7 @@ public class ContentDAOImpl implements ContentDAO {
 
     @Override
     public Content findById(Long contentId) throws SQLException {
-        String sql = "SELECT * FROM Contents WHERE content_id = ?";
+        String sql = "SELECT * FROM content WHERE content_id = ?";
 
         try (Connection conn = ConnectionFactory.getConnection();
                 PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -62,7 +77,7 @@ public class ContentDAOImpl implements ContentDAO {
 
     @Override
     public List<Content> findByDisasterType(String disasterType) throws SQLException {
-        String sql = "SELECT * FROM Contents WHERE disaster_type = ?";
+        String sql = "SELECT * FROM content WHERE disaster_type = ?";
         List<Content> contents = new ArrayList<>();
 
         try (Connection conn = ConnectionFactory.getConnection();
@@ -81,7 +96,7 @@ public class ContentDAOImpl implements ContentDAO {
 
     @Override
     public List<Content> findAll() throws SQLException {
-        String sql = "SELECT * FROM Contents";
+        String sql = "SELECT * FROM content";
         List<Content> contents = new ArrayList<>();
 
         try (Connection conn = ConnectionFactory.getConnection();
@@ -97,7 +112,7 @@ public class ContentDAOImpl implements ContentDAO {
 
     @Override
     public Content update(Content content) throws SQLException {
-        String sql = "UPDATE Contents SET disaster_type = ?, title = ?, description = ?, video_url = ? WHERE content_id = ?";
+        String sql = "UPDATE content SET disaster_type = ?, title = ?, description = ?, video_url = ? WHERE content_id = ?";
 
         try (Connection conn = ConnectionFactory.getConnection();
                 PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -120,7 +135,7 @@ public class ContentDAOImpl implements ContentDAO {
 
     @Override
     public boolean delete(Long contentId) throws SQLException {
-        String sql = "DELETE FROM Contents WHERE content_id = ?";
+        String sql = "DELETE FROM content WHERE content_id = ?";
 
         try (Connection conn = ConnectionFactory.getConnection();
                 PreparedStatement stmt = conn.prepareStatement(sql)) {

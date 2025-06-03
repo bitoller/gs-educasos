@@ -1,9 +1,12 @@
 package com.disasterawareness.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public class User {
     private Long userId;
     private String name;
     private String email;
+    @JsonIgnore
     private String passwordHash;
 
     public User() {

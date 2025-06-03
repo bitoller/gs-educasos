@@ -4,7 +4,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,10 +14,10 @@ public class UserDAOImpl implements UserDAO {
 
     @Override
     public User create(User user) throws SQLException {
-        String sql = "INSERT INTO Users (name, email, password_hash) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO users (name, email, password) VALUES (?, ?, ?)";
 
         try (Connection conn = ConnectionFactory.getConnection();
-                PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+                PreparedStatement stmt = conn.prepareStatement(sql, new String[]{"user_id"})) {
 
             stmt.setString(1, user.getName());
             stmt.setString(2, user.getEmail());
@@ -43,7 +42,7 @@ public class UserDAOImpl implements UserDAO {
 
     @Override
     public User findByEmail(String email) throws SQLException {
-        String sql = "SELECT * FROM Users WHERE email = ?";
+        String sql = "SELECT * FROM users WHERE email = ?";
 
         try (Connection conn = ConnectionFactory.getConnection();
                 PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -61,7 +60,7 @@ public class UserDAOImpl implements UserDAO {
 
     @Override
     public User findById(Long userId) throws SQLException {
-        String sql = "SELECT * FROM Users WHERE user_id = ?";
+        String sql = "SELECT * FROM users WHERE user_id = ?";
 
         try (Connection conn = ConnectionFactory.getConnection();
                 PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -79,7 +78,7 @@ public class UserDAOImpl implements UserDAO {
 
     @Override
     public List<User> findAll() throws SQLException {
-        String sql = "SELECT * FROM Users";
+        String sql = "SELECT * FROM users";
         List<User> users = new ArrayList<>();
 
         try (Connection conn = ConnectionFactory.getConnection();
@@ -95,7 +94,7 @@ public class UserDAOImpl implements UserDAO {
 
     @Override
     public User update(User user) throws SQLException {
-        String sql = "UPDATE Users SET name = ?, email = ?, password_hash = ? WHERE user_id = ?";
+        String sql = "UPDATE users SET name = ?, email = ?, password = ? WHERE user_id = ?";
 
         try (Connection conn = ConnectionFactory.getConnection();
                 PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -117,7 +116,7 @@ public class UserDAOImpl implements UserDAO {
 
     @Override
     public boolean delete(Long userId) throws SQLException {
-        String sql = "DELETE FROM Users WHERE user_id = ?";
+        String sql = "DELETE FROM users WHERE user_id = ?";
 
         try (Connection conn = ConnectionFactory.getConnection();
                 PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -134,7 +133,7 @@ public class UserDAOImpl implements UserDAO {
         user.setUserId(rs.getLong("user_id"));
         user.setName(rs.getString("name"));
         user.setEmail(rs.getString("email"));
-        user.setPasswordHash(rs.getString("password_hash"));
+        user.setPasswordHash(rs.getString("password"));
         return user;
     }
 }

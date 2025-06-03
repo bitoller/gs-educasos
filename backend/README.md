@@ -1,6 +1,6 @@
-# Disaster Awareness Platform
+# Disaster Awareness Platform - Backend
 
-A web application for managing disaster awareness content and emergency kits.
+A Java web application backend for managing disaster awareness content and emergency kits.
 
 ## Prerequisites
 
@@ -11,153 +11,121 @@ A web application for managing disaster awareness content and emergency kits.
 ## Project Structure
 
 ```
-disaster-awareness/
+disaster-awareness/backend/
 ├── src/
 │   ├── main/
 │   │   ├── java/
 │   │   │   └── com/
 │   │   │       └── disasterawareness/
-│   │   │           ├── controller/    # Servlet controllers
-│   │   │           ├── dao/          # Data Access Objects
+│   │   │           ├── controller/    # Servlet controllers (@WebServlet annotations define endpoints)
+│   │   │           ├── dao/          # Data Access Objects (Database interaction)
 │   │   │           ├── model/        # Entity classes
 │   │   │           ├── service/      # Business logic
-│   │   │           └── utils/        # Utility classes
+│   │   │           └── utils/        # Utility classes (like ConnectionFactory)
 │   │   ├── resources/
-│   │   │   ├── db/                  # Database scripts
+│   │   │   ├── db/                  # Database scripts (init.sql)
 │   │   │   └── logging.properties   # Logging configuration
 │   │   └── webapp/
 │   │       ├── WEB-INF/
-│   │       │   └── web.xml          # Web application configuration
-│   │       ├── index.jsp            # Landing page
-│   │       └── login.jsp            # Login page
-└── pom.xml                          # Maven configuration
+│   │       │   └── web.xml          # Web application configuration (Filters, etc.)
+│   │       └── index.jsp            # Simple index page
+└── pom.xml                          # Maven configuration (Dependencies, build, Tomcat plugin)
 ```
 
 ## Setup Instructions
 
 1. **Database Setup**
-   - Install Oracle Database
-   - Create a new database user
-   - Execute the database initialization script:
-     ```sql
-     @src/main/resources/db/init.sql
-     ```
+   - Install Oracle Database.
+   - Create a new database user.
+   - Execute the database initialization script located at `src/main/resources/db/init.sql`.
 
 2. **Configuration**
-   - The application uses the following default configuration:
+   - Update the database connection details in `src/main/java/com/disasterawareness/utils/ConnectionFactory.java` to match your Oracle database setup.
+   - The application uses the following default configuration (can be adjusted in `pom.xml` for the embedded Tomcat):
      - Port: 8080
-     - Context Path: /disaster-awareness
-     - Database: Oracle
+     - Context Path: `/disaster-awareness`
      - Character Encoding: UTF-8
 
-## Running the Application
-
-### Backend (Java Web Application)
+## Running the Backend
 
 #### Prerequisites
-- **Java JDK 11+** installed
-- **Maven** installed and in your PATH
-- **Oracle Database** running and accessible (update credentials in your `ConnectionFactory` if needed)
-- **Tomcat 7+** (if not using Maven's embedded Tomcat)
+- **Java JDK 11+** installed.
+- **Maven** installed and in your PATH.
+- **Oracle Database** running and accessible with the schema set up.
 
 #### Running with Maven Embedded Tomcat
-1. **Open a terminal** in your project root (`C:/Users/bi_to/Desktop/disaster-awareness`).
-2. **Build and run the backend:**
-   ```sh
-   mvn clean tomcat7:run
-   ```
-   - This will start the backend at:  
-     [http://localhost:8080/disaster-awareness](http://localhost:8080/disaster-awareness)
+1.  **Open a terminal** in the backend project root (`C:/Users/bi_to/Desktop/disaster-awareness/backend`).
+2.  **Build and run the backend:**
+    ```sh
+    mvn clean tomcat7:run
+    ```
+    - This will start the backend at: [http://localhost:8080/disaster-awareness](http://localhost:8080/disaster-awareness)
 
-3. **If you want to deploy to a standalone Tomcat:**
-   - Build the WAR file:
-     ```sh
-     mvn clean package
-     ```
-   - Copy the generated `target/disaster-awareness.war` to your Tomcat's `webapps` folder and start Tomcat.
-
-### Frontend (React Application)
-
-#### Prerequisites
-- **Node.js** and **npm** installed
-
-#### Running the Frontend
-1. **Open a new terminal** in the frontend directory:
-   ```sh
-   cd frontend
-   ```
-2. **Install dependencies** (if you haven't already):
-   ```sh
-   npm install
-   ```
-3. **Start the React app:**
-   ```sh
-   npm run dev
-   ```
-   - This will start the frontend at:  
-     [http://localhost:5173](http://localhost:5173) (or another port, check the terminal output)
-
-### How it Works
-- The **frontend** (React) will make API requests to the **backend** (Java/Tomcat) at `http://localhost:8080/disaster-awareness/api`.
-- Make sure both servers are running at the same time.
-- If you get CORS errors, ensure your backend is configured to allow requests from the frontend's origin.
-
-### Troubleshooting
-- If you get errors about missing dependencies, run `npm install` in the frontend folder.
-- If you get a port conflict, stop any other servers using the same port or change the port in your config.
-- If you get a 404 or 500 from the backend, check your database connection and Tomcat logs.
+#### Deploying to a Standalone Tomcat
+1.  **Open a terminal** in the backend project root.
+2.  **Build the WAR file:**
+    ```sh
+    mvn clean package
+    ```
+3.  Copy the generated `target/disaster-awareness.war` to your standalone Tomcat's `webapps` folder and start Tomcat.
 
 ## API Endpoints
 
-### User Management
-- `POST /api/register` - Register a new user
-- `POST /api/login` - User login
+The backend provides the following REST API endpoints.
 
-### Content Management
-- `GET /api/content` - List all content
-- `GET /api/content/{id}` - Get specific content
-- `POST /api/content` - Create new content
-- `PUT /api/content/{id}` - Update content
-- `DELETE /api/content/{id}` - Delete content
+**Note:** To test these endpoints using a tool like Insomnia, you must first start the backend API by following the "Running the Backend" instructions.
+
+### Authentication
+-   `POST /api/register`: Register a new user.
+    -   Request Body: JSON object with `name`, `email`, and `password`.
+-   `POST /api/login`: Authenticate a user and establish a session.
+    -   Request Body: JSON object with `email` and `password`.
 
 ### Kit Management
-- `GET /api/kit` - List all kits
-- `GET /api/kit/{id}` - Get specific kit
-- `POST /api/kit` - Create new kit
-- `PUT /api/kit/{id}` - Update kit
-- `DELETE /api/kit/{id}` - Delete kit
+-   `GET /api/kit`: Retrieve all emergency kits.
+-   `POST /api/kit`: Create a new emergency kit.
+    -   Request Body: JSON object with `houseType`, `numResidents`, `hasChildren`, `hasElderly`, `hasPets`, and `region`.
+-   `GET /api/kit/{id}`: Retrieve a specific emergency kit by its ID.
+    -   `{id}`: The ID of the kit (path parameter).
+-   `PUT /api/kit/{id}`: Update an existing emergency kit.
+    -   `{id}`: The ID of the kit (path parameter).
+    -   Request Body: JSON object with updated `houseType`, `numResidents`, `hasChildren`, `hasElderly`, `hasPets`, and `region`.
+-   `DELETE /api/kit/{id}`: Delete an emergency kit by its ID.
+    -   `{id}`: The ID of the kit (path parameter).
+-   `GET /api/kit/house/{houseType}`: Retrieve kits filtered by house type.
+    -   `{houseType}`: The type of house (e.g., APARTMENT, HOUSE, CONDO) (path parameter).
+-   `GET /api/kit/region/{region}`: Retrieve kits filtered by region.
+    -   `{region}`: The region (e.g., SOUTHEAST, NORTHEAST, MIDWEST, SOUTHWEST, WEST) (path parameter).
+
+### Content Management
+-   `GET /api/content`: Retrieve all disaster awareness content.
+-   `POST /api/content`: Create new disaster awareness content.
+    -   Request Body: JSON object with `disasterType`, `title`, `description`, and `videoUrl`.
+-   `GET /api/content/{id}`: Retrieve a specific content item by its ID.
+    -   `{id}`: The ID of the content item (path parameter).
+-   `PUT /api/content/{id}`: Update an existing content item.
+    -   `{id}`: The ID of the content item (path parameter).
+    -   Request Body: JSON object with updated `disasterType`, `title`, `description`, and `videoUrl`.
+-   `DELETE /api/content/{id}`: Delete a content item by its ID.
+    -   `{id}`: The ID of the content item (path parameter).
+-   `GET /api/content/disaster/{disasterType}`: Retrieve content filtered by disaster type.
+    -   `{disasterType}`: The type of disaster (path parameter).
 
 ## Security
 
-The application uses form-based authentication with the following security constraints:
-- Protected URLs: `/api/content/*` and `/api/kit/*`
-- Required Role: `user`
-- Login Page: `/login.jsp`
-- Error Page: `/error.jsp`
+The application uses form-based authentication configured in `src/main/webapp/WEB-INF/web.xml`.
+-   Protected URLs: `/api/content/*` and `/api/kit/*` require authentication.
 
 ## Troubleshooting
 
-1. **Port Already in Use**
-   - Check if another application is using port 8080
-   - Change the port in `pom.xml` if needed
-
-2. **Database Connection Issues**
-   - Verify database credentials
-   - Check if Oracle Database is running
-   - Ensure the database user has proper permissions
-
-3. **404 Errors**
-   - Verify the context path in the URL
-   - Check if the application is properly deployed
-   - Ensure all required files are in the correct locations
+-   **Database Connection Issues:** Verify database credentials and ensure the Oracle Database is running and accessible.
+-   **500 Errors after Database Insert:** If you encounter a 500 error after confirming a database entry was created (especially for INSERT operations), it is likely an issue with retrieving the automatically generated ID. Check the server logs for `ClassCastException` related to `oracle.sql.ROWID` or similar types. The `ContentDAOImpl` and `KitDAOImpl` contain Oracle-specific handling for this.
+-   **404 Errors:** Verify the context path (`/disaster-awareness`) in your request URLs and ensure the application is properly deployed and running in Tomcat.
+-   **Port Already in Use:** If port 8080 is in use, you can change the port in the `pom.xml` for the `tomcat7-maven-plugin` configuration.
 
 ## Contributing
 
-1. Fork the repository
-2. Create a feature branch
-3. Commit your changes
-4. Push to the branch
-5. Create a Pull Request
+(Assuming standard contributing guidelines)
 
 ## License
 

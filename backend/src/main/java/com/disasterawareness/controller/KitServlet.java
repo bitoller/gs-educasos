@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.disasterawareness.model.Kit;
 import com.disasterawareness.service.KitService;
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 
 @WebServlet("/api/kit/*")
 public class KitServlet extends HttpServlet {
@@ -71,21 +72,21 @@ public class KitServlet extends HttpServlet {
         response.setCharacterEncoding("UTF-8");
 
         try {
-            String houseType = request.getParameter("houseType");
-            int numResidents = Integer.parseInt(request.getParameter("numResidents"));
-            boolean hasChildren = Boolean.parseBoolean(request.getParameter("hasChildren"));
-            boolean hasElderly = Boolean.parseBoolean(request.getParameter("hasElderly"));
-            boolean hasPets = Boolean.parseBoolean(request.getParameter("hasPets"));
-            String region = request.getParameter("region");
+            // Read JSON request body
+            JsonObject jsonRequest = gson.fromJson(request.getReader(), JsonObject.class);
+            
+            String houseType = jsonRequest.get("houseType").getAsString();
+            int numResidents = jsonRequest.get("numResidents").getAsInt();
+            boolean hasChildren = jsonRequest.get("hasChildren").getAsBoolean();
+            boolean hasElderly = jsonRequest.get("hasElderly").getAsBoolean();
+            boolean hasPets = jsonRequest.get("hasPets").getAsBoolean();
+            String region = jsonRequest.get("region").getAsString();
 
             Kit kit = kitService.createKit(houseType, numResidents, hasChildren, hasElderly, hasPets, region);
 
             response.setStatus(HttpServletResponse.SC_CREATED);
             response.getWriter().write(gson.toJson(new SuccessResponse("Kit criado com sucesso.", kit)));
 
-        } catch (NumberFormatException e) {
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.getWriter().write(gson.toJson(new ErrorResponse("Parâmetros inválidos.")));
         } catch (IllegalArgumentException e) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             response.getWriter().write(gson.toJson(new ErrorResponse(e.getMessage())));
@@ -111,12 +112,16 @@ public class KitServlet extends HttpServlet {
             }
 
             Long kitId = Long.parseLong(pathInfo.substring(1));
-            String houseType = request.getParameter("houseType");
-            int numResidents = Integer.parseInt(request.getParameter("numResidents"));
-            boolean hasChildren = Boolean.parseBoolean(request.getParameter("hasChildren"));
-            boolean hasElderly = Boolean.parseBoolean(request.getParameter("hasElderly"));
-            boolean hasPets = Boolean.parseBoolean(request.getParameter("hasPets"));
-            String region = request.getParameter("region");
+            
+            // Read JSON request body
+            JsonObject jsonRequest = gson.fromJson(request.getReader(), JsonObject.class);
+            
+            String houseType = jsonRequest.get("houseType").getAsString();
+            int numResidents = jsonRequest.get("numResidents").getAsInt();
+            boolean hasChildren = jsonRequest.get("hasChildren").getAsBoolean();
+            boolean hasElderly = jsonRequest.get("hasElderly").getAsBoolean();
+            boolean hasPets = jsonRequest.get("hasPets").getAsBoolean();
+            String region = jsonRequest.get("region").getAsString();
 
             Kit kit = new Kit();
             kit.setKitId(kitId);
@@ -134,7 +139,7 @@ public class KitServlet extends HttpServlet {
 
         } catch (NumberFormatException e) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.getWriter().write(gson.toJson(new ErrorResponse("Parâmetros inválidos.")));
+            response.getWriter().write(gson.toJson(new ErrorResponse("ID inválido.")));
         } catch (IllegalArgumentException e) {
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
             response.getWriter().write(gson.toJson(new ErrorResponse(e.getMessage())));

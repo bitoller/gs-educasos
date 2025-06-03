@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.disasterawareness.model.User;
 import com.disasterawareness.service.UserService;
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 
 @WebServlet("/api/register")
 public class RegisterServlet extends HttpServlet {
@@ -30,9 +31,12 @@ public class RegisterServlet extends HttpServlet {
         response.setCharacterEncoding("UTF-8");
 
         try {
-            String name = request.getParameter("name");
-            String email = request.getParameter("email");
-            String password = request.getParameter("password");
+            // Read JSON request body
+            JsonObject jsonRequest = gson.fromJson(request.getReader(), JsonObject.class);
+            
+            String name = jsonRequest.get("name").getAsString();
+            String email = jsonRequest.get("email").getAsString();
+            String password = jsonRequest.get("password").getAsString();
 
             if (name == null || email == null || password == null) {
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -42,15 +46,22 @@ public class RegisterServlet extends HttpServlet {
 
             User user = userService.registerUser(name, email, password);
 
+            // Create a response user object without the password hash
+            User responseUser = new User();
+            responseUser.setUserId(user.getUserId());
+            responseUser.setName(user.getName());
+            responseUser.setEmail(user.getEmail());
+
             response.setStatus(HttpServletResponse.SC_CREATED);
-            response.getWriter().write(gson.toJson(new SuccessResponse("Usuário registrado com sucesso.", user)));
+            response.getWriter().write(gson.toJson(responseUser)); // Return only the User object
 
         } catch (IllegalArgumentException e) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             response.getWriter().write(gson.toJson(new ErrorResponse(e.getMessage())));
         } catch (SQLException e) {
+            e.printStackTrace(); // Log the error
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            response.getWriter().write(gson.toJson(new ErrorResponse("Erro ao registrar usuário.")));
+            response.getWriter().write(gson.toJson(new ErrorResponse("Erro ao registrar usuário: " + e.getMessage())));
         }
     }
 

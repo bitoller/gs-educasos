@@ -20,24 +20,37 @@ paths:
       operationId: login
       tags:
         - Authentication
-      parameters:
-        - name: email
-          in: query
-          required: true
-          schema:
-            type: string
-        - name: password
-          in: query
-          required: true
-          schema:
-            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  format: email
+                  description: User's email address
+                password:
+                  type: string
+                  format: password
+                  description: User's password
       responses:
         '200':
           description: Login successful
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/LoginSuccessResponse'
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Login realizado com sucesso
+                  user:
+                    $ref: '#/components/schemas/User'
         '400':
           description: Invalid input
           content:
@@ -137,44 +150,51 @@ paths:
       operationId: createKit
       tags:
         - Kits
-      parameters:
-        - name: houseType
-          in: query
-          required: true
-          schema:
-            type: string
-        - name: numResidents
-          in: query
-          required: true
-          schema:
-            type: integer
-        - name: hasChildren
-          in: query
-          required: true
-          schema:
-            type: boolean
-        - name: hasElderly
-          in: query
-          required: true
-          schema:
-            type: boolean
-        - name: hasPets
-          in: query
-          required: true
-          schema:
-            type: boolean
-        - name: region
-          in: query
-          required: true
-          schema:
-            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - houseType
+                - numResidents
+                - hasChildren
+                - hasElderly
+                - hasPets
+                - region
+              properties:
+                houseType:
+                  type: string
+                  description: Type of house (APARTMENT, HOUSE, CONDO)
+                numResidents:
+                  type: integer
+                  description: Number of residents
+                hasChildren:
+                  type: boolean
+                  description: Whether there are children in the household
+                hasElderly:
+                  type: boolean
+                  description: Whether there are elderly people in the household
+                hasPets:
+                  type: boolean
+                  description: Whether there are pets in the household
+                region:
+                  type: string
+                  description: Region of the household
       responses:
         '201':
           description: Kit created successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/KitSuccessResponse'
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Kit criado com sucesso
+                  kit:
+                    $ref: '#/components/schemas/Kit'
         '400':
           description: Invalid input
           content:

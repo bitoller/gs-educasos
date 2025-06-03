@@ -18,6 +18,7 @@ public class KitService {
             boolean hasElderly, boolean hasPets, String region) throws SQLException {
         Kit kit = new Kit(houseType, residents, hasChildren, hasElderly, hasPets, region, "");
         validateKit(kit);
+        kit.setRecommendedItems(generateRecommendedItems(kit));
         return kitDAO.create(kit);
     }
 
@@ -48,6 +49,7 @@ public class KitService {
         }
 
         validateKit(kit);
+        kit.setRecommendedItems(generateRecommendedItems(kit));
         return kitDAO.update(kit);
     }
 
