@@ -128,12 +128,51 @@ public class UserDAOImpl implements UserDAO {
         }
     }
 
+    @Override
+    public User updateScore(Long userId, Integer score) throws SQLException {
+        String sql = "UPDATE users SET score = ? WHERE user_id = ?";
+
+        try (Connection conn = ConnectionFactory.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, score);
+            stmt.setLong(2, userId);
+
+            int affectedRows = stmt.executeUpdate();
+
+            if (affectedRows == 0) {
+                throw new SQLException("Falha ao atualizar pontuação, nenhuma linha afetada.");
+            }
+
+            return findById(userId);
+        }
+    }
+
+    @Override
+    public List<User> getLeaderboard() throws SQLException {
+        String sql = "SELECT * FROM users ORDER BY score DESC";
+        List<User> users = new ArrayList<>();
+
+        try (Connection conn = ConnectionFactory.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql);
+                ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                users.add(mapResultSetToUser(rs));
+            }
+        }
+        return users;
+    }
+
     private User mapResultSetToUser(ResultSet rs) throws SQLException {
         User user = new User();
         user.setUserId(rs.getLong("user_id"));
         user.setName(rs.getString("name"));
         user.setEmail(rs.getString("email"));
         user.setPasswordHash(rs.getString("password"));
+        user.setScore(rs.getInt("score"));
+        int isAdminInt = rs.getInt("is_admin");
+        user.setIsAdmin(isAdminInt == 1);
         return user;
     }
 }

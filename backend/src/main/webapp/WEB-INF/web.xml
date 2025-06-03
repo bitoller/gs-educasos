@@ -7,7 +7,6 @@
 
     <display-name>Disaster Awareness Platform</display-name>
 
-    <!-- Configuração de caracteres -->
     <filter>
         <filter-name>characterEncodingFilter</filter-name>
         <filter-class>org.apache.catalina.filters.SetCharacterEncodingFilter</filter-class>
@@ -25,7 +24,6 @@
         <url-pattern>/*</url-pattern>
     </filter-mapping>
 
-    <!-- Configuração de CORS -->
     <filter>
         <filter-name>CORSFilter</filter-name>
         <filter-class>org.apache.catalina.filters.CorsFilter</filter-class>
@@ -59,7 +57,58 @@
         <url-pattern>/*</url-pattern>
     </filter-mapping>
 
-    <!-- Welcome File List -->
+    <filter>
+        <filter-name>JwtAuthFilter</filter-name>
+        <filter-class>com.disasterawareness.filter.JwtAuthFilter</filter-class>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>JwtAuthFilter</filter-name>
+        <url-pattern>/api/kit/*</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>JwtAuthFilter</filter-name>
+        <url-pattern>/api/kit</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>JwtAuthFilter</filter-name>
+        <url-pattern>/api/kit/house/*</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>JwtAuthFilter</filter-name>
+        <url-pattern>/api/kit/region/*</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>JwtAuthFilter</filter-name>
+        <url-pattern>/api/content/*</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>JwtAuthFilter</filter-name>
+        <url-pattern>/api/content</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>JwtAuthFilter</filter-name>
+        <url-pattern>/api/content/disaster/*</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>JwtAuthFilter</filter-name>
+        <url-pattern>/api/admin/*</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>JwtAuthFilter</filter-name>
+        <url-pattern>/api/quizzes/submit</url-pattern>
+    </filter-mapping>
+
+    <filter>
+        <filter-name>AdminAuthFilter</filter-name>
+        <filter-class>com.disasterawareness.filter.AdminAuthFilter</filter-class>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>AdminAuthFilter</filter-name>
+        <url-pattern>/api/admin/*</url-pattern>
+    </filter-mapping>
+
     <welcome-file-list>
         <welcome-file>index.html</welcome-file>
     </welcome-file-list>

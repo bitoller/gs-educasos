@@ -8,6 +8,8 @@ public class User {
     private String email;
     @JsonIgnore
     private String passwordHash;
+    private Integer score;
+    private Boolean isAdmin;
 
     public User() {
     }
@@ -16,6 +18,8 @@ public class User {
         this.name = name;
         this.email = email;
         this.passwordHash = passwordHash;
+        this.score = 0;
+        this.isAdmin = false;
     }
 
     public Long getUserId() {
@@ -48,5 +52,21 @@ public class User {
 
     public void setPasswordHash(String passwordHash) {
         this.passwordHash = passwordHash;
+    }
+
+    public Integer getScore() {
+        return score;
+    }
+
+    public void setScore(Integer score) {
+        this.score = score;
+    }
+
+    public Boolean getIsAdmin() {
+        return isAdmin;
+    }
+
+    public void setIsAdmin(Boolean isAdmin) {
+        this.isAdmin = isAdmin;
     }
 }

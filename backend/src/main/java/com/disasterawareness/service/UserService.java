@@ -31,11 +31,11 @@ public class UserService {
     public User login(String email, String password) throws SQLException {
         User user = userDAO.findByEmail(email);
         if (user == null) {
-            throw new IllegalArgumentException("Email não encontrado.");
+            throw new IllegalArgumentException("Email ou senha incorretos.");
         }
 
         if (!verifyPassword(password, user.getPasswordHash())) {
-            throw new IllegalArgumentException("Senha incorreta.");
+            throw new IllegalArgumentException("Email ou senha incorretos.");
         }
 
         return user;
@@ -69,6 +69,19 @@ public class UserService {
         }
 
         return userDAO.delete(userId);
+    }
+
+    public User updateUserScore(Long userId, Integer score) throws SQLException {
+        User user = userDAO.findById(userId);
+        if (user == null) {
+            throw new IllegalArgumentException("Usuário não encontrado.");
+        }
+
+        return userDAO.updateScore(userId, score);
+    }
+
+    public List<User> getLeaderboard() throws SQLException {
+        return userDAO.getLeaderboard();
     }
 
     private String generatePasswordHash(String password) {

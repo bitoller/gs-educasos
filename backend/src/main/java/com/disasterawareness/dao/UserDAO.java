@@ -17,4 +17,8 @@ public interface UserDAO {
     User update(User user) throws SQLException;
 
     boolean delete(Long userId) throws SQLException;
+
+    User updateScore(Long userId, Integer score) throws SQLException;
+
+    List<User> getLeaderboard() throws SQLException;
 }

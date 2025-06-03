@@ -21,21 +21,21 @@ paths:
       tags:
         - Authentication
       requestBody:
-        required: true
+          required: true
         content:
           application/json:
-            schema:
+          schema:
               type: object
               required:
                 - email
                 - password
               properties:
                 email:
-                  type: string
+            type: string
                   format: email
                   description: User's email address
                 password:
-                  type: string
+            type: string
                   format: password
                   description: User's password
       responses:
@@ -151,10 +151,10 @@ paths:
       tags:
         - Kits
       requestBody:
-        required: true
+          required: true
         content:
           application/json:
-            schema:
+          schema:
               type: object
               required:
                 - houseType
@@ -165,22 +165,22 @@ paths:
                 - region
               properties:
                 houseType:
-                  type: string
+            type: string
                   description: Type of house (APARTMENT, HOUSE, CONDO)
                 numResidents:
-                  type: integer
+            type: integer
                   description: Number of residents
                 hasChildren:
-                  type: boolean
+            type: boolean
                   description: Whether there are children in the household
                 hasElderly:
-                  type: boolean
+            type: boolean
                   description: Whether there are elderly people in the household
                 hasPets:
-                  type: boolean
+            type: boolean
                   description: Whether there are pets in the household
                 region:
-                  type: string
+            type: string
                   description: Region of the household
       responses:
         '201':

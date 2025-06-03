@@ -1,0 +1,698 @@
+type: collection.insomnia.rest/5.0
+name: Disaster Awareness
+meta:
+  id: wrk_9df9ed2a9c6e4961b4cf80ec0ae83665
+  created: 1738244025370
+  modified: 1748981816811
+collection:
+  - url: http://localhost:8080/disaster-awareness/api/register
+    name: register user
+    meta:
+      id: req_a93a890bf41646258ada171d3c4cd2d7
+      created: 1738244034300
+      modified: 1748978542548
+      isPrivate: false
+      sortKey: -1738244034300
+    method: POST
+    body:
+      mimeType: application/json
+      text: |-
+        {
+            "name": "admin",
+            "email": "admin@mail.com",
+            "password": "password123"
+        }
+    headers:
+      - name: Content-Type
+        value: application/json
+      - name: User-Agent
+        value: insomnia/8.6.1
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+  - url: http://localhost:8080/disaster-awareness/api/login
+    name: login
+    meta:
+      id: req_a3383c35494049b7ac62ac6c6c85eeb4
+      created: 1748907646617
+      modified: 1748979370516
+      isPrivate: false
+      sortKey: -1740909937379.25
+    method: POST
+    body:
+      mimeType: application/json
+      text: |-
+        {
+            "email": "admin@mail.com",
+            "password": "password123"
+        }
+    headers:
+      - name: Content-Type
+        value: application/json
+      - name: User-Agent
+        value: insomnia/10.3.1
+        id: pair_09cfd1eff25c43f8b29b5e5d22e362db
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+  - url: http://localhost:8080/disaster-awareness/api/kit
+    name: get kits
+    meta:
+      id: req_334c473957ea4033b2daaed81070470f
+      created: 1748907859261
+      modified: 1748980437847
+      isPrivate: false
+      sortKey: -1742576126803.7812
+    method: GET
+    body:
+      mimeType: application/json
+    headers:
+      - name: Content-Type
+        value: application/json
+      - name: User-Agent
+        value: insomnia/10.3.1
+        id: pair_09cfd1eff25c43f8b29b5e5d22e362db
+    authentication:
+      type: bearer
+      prefix: Bearer
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+  - url: http://localhost:8080/disaster-awareness/api/kit
+    name: create kit
+    meta:
+      id: req_1868a95a60254b57b0160558be51d5e9
+      created: 1748907888785
+      modified: 1748979112981
+      isPrivate: false
+      sortKey: -1742242888918.875
+    method: POST
+    body:
+      mimeType: application/json
+      text: |-
+        {
+            "houseType": "apartamento",
+            "numResidents": 1,
+            "hasChildren": false,
+            "hasElderly": false,
+            "hasPets": true,
+            "region": "sudeste"
+        }
+    headers:
+      - name: Content-Type
+        value: application/json
+      - name: User-Agent
+        value: insomnia/10.3.1
+        id: pair_09cfd1eff25c43f8b29b5e5d22e362db
+    authentication:
+      type: bearer
+      prefix: Bearer
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+  - url: http://localhost:8080/disaster-awareness/api/kit/2
+    name: get kit by id
+    meta:
+      id: req_40498ee56b5346249f8ba268776b06b1
+      created: 1748908432850
+      modified: 1748979142997
+      isPrivate: false
+      sortKey: -1742909364688.6875
+    method: GET
+    body:
+      mimeType: application/json
+    headers:
+      - name: Content-Type
+        value: application/json
+      - name: User-Agent
+        value: insomnia/10.3.1
+        id: pair_09cfd1eff25c43f8b29b5e5d22e362db
+    authentication:
+      type: bearer
+      prefix: Bearer
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+  - url: http://localhost:8080/disaster-awareness/api/kit/2
+    name: update kit
+    meta:
+      id: req_250e1371ca994279b2e87672474c293d
+      created: 1748908479321
+      modified: 1748979166302
+      isPrivate: false
+      sortKey: -1742909364788.6875
+    method: PUT
+    body:
+      mimeType: application/json
+      text: |-
+        {
+                "houseType": "casa",
+                "numResidents": 4,
+                "hasChildren": true,
+                "hasElderly": true,
+                "hasPets": true,
+                "region": "nordeste"
+            }
+    headers:
+      - name: Content-Type
+        value: application/json
+      - name: User-Agent
+        value: insomnia/10.3.1
+        id: pair_09cfd1eff25c43f8b29b5e5d22e362db
+    authentication:
+      type: bearer
+      prefix: Bearer
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+  - url: http://localhost:8080/disaster-awareness/api/kit/4
+    name: delete kit
+    meta:
+      id: req_10c09881ee4e45fe82426e3dbf5f5dc0
+      created: 1748908552454
+      modified: 1748979191927
+      isPrivate: false
+      sortKey: -1742909364888.6875
+    method: DELETE
+    body:
+      mimeType: application/json
+    headers:
+      - name: Content-Type
+        value: application/json
+      - name: User-Agent
+        value: insomnia/10.3.1
+        id: pair_09cfd1eff25c43f8b29b5e5d22e362db
+    authentication:
+      type: bearer
+      prefix: Bearer
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+  - url: http://localhost:8080/disaster-awareness/api/content
+    name: create content
+    meta:
+      id: req_a2284faad4b64d4fbedafc5a06ad0db9
+      created: 1748908946334
+      modified: 1748979201834
+      isPrivate: false
+      sortKey: -1742909364988.6875
+    method: POST
+    body:
+      mimeType: application/json
+      text: >2-
+          {
+                "disasterType": "tsunami",
+                "title": "Segurança em Caso de Terremoto",
+                "description": "O que fazer antes, durante e depois de um terremoto.",
+                "videoUrl": "https://example.com/terremoto-seguranca"
+            }
+    headers:
+      - name: Content-Type
+        value: application/json
+      - name: User-Agent
+        value: insomnia/10.3.1
+        id: pair_09cfd1eff25c43f8b29b5e5d22e362db
+    authentication:
+      type: bearer
+      prefix: Bearer
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+  - url: http://localhost:8080/disaster-awareness/api/content
+    name: get contents
+    meta:
+      id: req_a07e709ebefb4bf485cda52ff131a67c
+      created: 1748909445277
+      modified: 1748980448656
+      isPrivate: false
+      sortKey: -1742909365088.6875
+    method: GET
+    body:
+      mimeType: application/json
+    headers:
+      - name: Content-Type
+        value: application/json
+      - name: User-Agent
+        value: insomnia/10.3.1
+        id: pair_09cfd1eff25c43f8b29b5e5d22e362db
+    authentication:
+      type: bearer
+      prefix: Bearer
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+  - url: http://localhost:8080/disaster-awareness/api/content/5
+    name: delete content
+    meta:
+      id: req_e2d112420dd44371939d19fb15766605
+      created: 1748909469948
+      modified: 1748979262215
+      isPrivate: false
+      sortKey: -1742909365188.6875
+    method: DELETE
+    body:
+      mimeType: application/json
+    headers:
+      - name: Content-Type
+        value: application/json
+      - name: User-Agent
+        value: insomnia/10.3.1
+        id: pair_09cfd1eff25c43f8b29b5e5d22e362db
+    authentication:
+      type: bearer
+      prefix: Bearer
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+  - url: http://localhost:8080/disaster-awareness/api/content/2
+    name: get content by id
+    meta:
+      id: req_480475e3362740cc89ad998907cf8c4b
+      created: 1748909497280
+      modified: 1748979224057
+      isPrivate: false
+      sortKey: -1742909365138.6875
+    method: GET
+    body:
+      mimeType: application/json
+    headers:
+      - name: Content-Type
+        value: application/json
+      - name: User-Agent
+        value: insomnia/10.3.1
+        id: pair_09cfd1eff25c43f8b29b5e5d22e362db
+    authentication:
+      type: bearer
+      prefix: Bearer
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+  - url: http://localhost:8080/disaster-awareness/api/content/disaster/tsunami
+    name: get content by disaster type
+    meta:
+      id: req_ed123d141a784d99b910d68ee6ebb0c9
+      created: 1748909556097
+      modified: 1748979232393
+      isPrivate: false
+      sortKey: -1742909365163.6875
+    method: GET
+    body:
+      mimeType: application/json
+    headers:
+      - name: Content-Type
+        value: application/json
+      - name: User-Agent
+        value: insomnia/10.3.1
+        id: pair_09cfd1eff25c43f8b29b5e5d22e362db
+    authentication:
+      type: bearer
+      prefix: Bearer
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+  - url: http://localhost:8080/disaster-awareness/api/content/2
+    name: update content
+    meta:
+      id: req_71582816e54b4dd3b35f7ae163397599
+      created: 1748909602707
+      modified: 1748979240817
+      isPrivate: false
+      sortKey: -1742909365176.1875
+    method: PUT
+    body:
+      mimeType: application/json
+      text: >-
+        {
+                "disasterType": "TERREMOTO",
+                "title": "Guia Completo de Segurança em Terremotos",
+                "description": "Informações detalhadas sobre preparação e resposta a terremotos.",
+                "videoUrl": "https://example.com/terremoto-guia"
+            }
+    headers:
+      - name: Content-Type
+        value: application/json
+      - name: User-Agent
+        value: insomnia/10.3.1
+        id: pair_09cfd1eff25c43f8b29b5e5d22e362db
+    authentication:
+      type: bearer
+      prefix: Bearer
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+  - url: http://localhost:8080/disaster-awareness/api/leaderboard
+    name: get leaderboard
+    meta:
+      id: req_f8c2ac9b65a549dfbe201ea5b89d6001
+      created: 1748976238884
+      modified: 1748976250133
+      isPrivate: false
+      sortKey: -1742909365288.6875
+    method: GET
+    body:
+      mimeType: application/json
+    headers:
+      - name: Content-Type
+        value: application/json
+      - name: User-Agent
+        value: insomnia/10.3.1
+        id: pair_09cfd1eff25c43f8b29b5e5d22e362db
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+  - url: http://localhost:8080/disaster-awareness/api/admin/user/score
+    name: ADMIN update user score
+    meta:
+      id: req_3dfa5b667b5e49b2ae36e3482766fda3
+      created: 1748978997149
+      modified: 1748979414752
+      isPrivate: false
+      sortKey: -1742909365388.6875
+    method: PUT
+    body:
+      mimeType: application/json
+      text: |2-
+         {
+                    "userId": 12,
+                    "score": 250
+                }
+    headers:
+      - name: Content-Type
+        value: application/json
+      - name: User-Agent
+        value: insomnia/10.3.1
+        id: pair_09cfd1eff25c43f8b29b5e5d22e362db
+    authentication:
+      type: bearer
+      prefix: Bearer
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+  - url: http://localhost:8080/disaster-awareness/api/admin/users
+    name: ADMIN get users
+    meta:
+      id: req_f5401b5539274926b0df58f1d3f45621
+      created: 1748979450040
+      modified: 1748979553605
+      isPrivate: false
+      sortKey: -1742909365488.6875
+    method: GET
+    body:
+      mimeType: application/json
+    headers:
+      - name: Content-Type
+        value: application/json
+      - name: User-Agent
+        value: insomnia/10.3.1
+        id: pair_09cfd1eff25c43f8b29b5e5d22e362db
+    authentication:
+      type: bearer
+      prefix: Bearer
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+  - url: http://localhost:8080/disaster-awareness/api/admin/users/1
+    name: ADMIN get user by id
+    meta:
+      id: req_85092c8f51c944769a94c0eee5769e14
+      created: 1748979515135
+      modified: 1748979551366
+      isPrivate: false
+      sortKey: -1742909365588.6875
+    method: GET
+    body:
+      mimeType: application/json
+    headers:
+      - name: Content-Type
+        value: application/json
+      - name: User-Agent
+        value: insomnia/10.3.1
+        id: pair_09cfd1eff25c43f8b29b5e5d22e362db
+    authentication:
+      type: bearer
+      prefix: Bearer
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+  - url: http://localhost:8080/disaster-awareness/api/admin/users/1
+    name: ADMIN update user information
+    meta:
+      id: req_f74660dbd49146fb96c73747df618a90
+      created: 1748979597579
+      modified: 1748979761784
+      isPrivate: false
+      sortKey: -1742909365688.6875
+    method: PUT
+    body:
+      mimeType: application/json
+      text: |-
+        {
+                    "name": "Updated Name",
+                    "email": "newemail@example.com",
+                    "isAdmin": false
+                }
+    headers:
+      - name: Content-Type
+        value: application/json
+      - name: User-Agent
+        value: insomnia/10.3.1
+        id: pair_09cfd1eff25c43f8b29b5e5d22e362db
+    authentication:
+      type: bearer
+      prefix: Bearer
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+  - url: http://localhost:8080/disaster-awareness/api/admin/users/1
+    name: ADMIN delete user
+    meta:
+      id: req_75b7aa03c0f6410da3e2d581904dff82
+      created: 1748979715381
+      modified: 1748979758951
+      isPrivate: false
+      sortKey: -1742909365788.6875
+    method: DELETE
+    body:
+      mimeType: application/json
+    headers:
+      - name: Content-Type
+        value: application/json
+      - name: User-Agent
+        value: insomnia/10.3.1
+        id: pair_09cfd1eff25c43f8b29b5e5d22e362db
+    authentication:
+      type: bearer
+      prefix: Bearer
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+  - url: http://localhost:8080/disaster-awareness/api/quizzes
+    name: get quizzes
+    meta:
+      id: req_d88f1627fd5f47bf91fbe6cf393c2135
+      created: 1748980342786
+      modified: 1748980354659
+      isPrivate: false
+      sortKey: -1742909365338.6875
+    method: GET
+    body:
+      mimeType: application/json
+    headers:
+      - name: Content-Type
+        value: application/json
+      - name: User-Agent
+        value: insomnia/10.3.1
+        id: pair_09cfd1eff25c43f8b29b5e5d22e362db
+    authentication:
+      type: bearer
+      prefix: Bearer
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+  - url: http://localhost:8080/disaster-awareness/api/quizzes/1
+    name: get quizzes by id
+    meta:
+      id: req_b2d2f2e451814243ae3bb6ecdf03d75f
+      created: 1748980375135
+      modified: 1748980381788
+      isPrivate: false
+      sortKey: -1742909365363.6875
+    method: GET
+    body:
+      mimeType: application/json
+    headers:
+      - name: Content-Type
+        value: application/json
+      - name: User-Agent
+        value: insomnia/10.3.1
+        id: pair_09cfd1eff25c43f8b29b5e5d22e362db
+    authentication:
+      type: bearer
+      prefix: Bearer
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+  - url: http://localhost:8080/disaster-awareness/api/quizzes/submit
+    name: submit quiz answer
+    meta:
+      id: req_d845390772584b75b78097b7cc488966
+      created: 1748980419488
+      modified: 1748981785507
+      isPrivate: false
+      sortKey: -1742909365376.1875
+    method: POST
+    body:
+      mimeType: application/json
+      text: |-
+        {
+                    "quizId": 1,
+                    "submittedAnswers": {
+                        "1": 3,
+                        "2": 2
+                    }
+                }
+    headers:
+      - name: Content-Type
+        value: application/json
+      - name: User-Agent
+        value: insomnia/10.3.1
+        id: pair_09cfd1eff25c43f8b29b5e5d22e362db
+    authentication:
+      type: bearer
+      prefix: Bearer
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+cookieJar:
+  name: Default Jar
+  meta:
+    id: jar_d408cdecc7cd77510da0cd587e1e7e5251203fc7
+    created: 1738244025372
+    modified: 1748977537524
+  cookies:
+    - key: JSESSIONID
+      value: 087CAC998F649E472BC5548C365376A4
+      domain: localhost
+      path: /disaster-awareness/
+      httpOnly: true
+      hostOnly: true
+      creation: 2025-06-02T23:43:08.175Z
+      lastAccessed: 2025-06-03T19:05:37.524Z
+      id: dadf54ef-a9e7-49f9-aeab-9c18c41b0fd8
+environments:
+  name: Base Environment
+  meta:
+    id: env_d408cdecc7cd77510da0cd587e1e7e5251203fc7
+    created: 1738244025371
+    modified: 1738244025371
+    isPrivate: false
