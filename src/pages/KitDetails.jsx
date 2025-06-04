@@ -29,6 +29,37 @@ const BackButton = styled.button`
   }
 `;
 
+const EditButton = styled(motion.button)`
+  background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 20px;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: auto;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 242, 254, 0.3);
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 242, 254, 0.4);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+`;
+
+const ButtonsContainer = styled.div`
+  display: flex;
+  align-items: center;
+  margin-bottom: 2rem;
+`;
+
 const PageTitle = styled.h2`
   color: #fff;
   font-size: 2.5rem;
@@ -464,9 +495,19 @@ const KitDetails = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          <BackButton onClick={() => navigate('/emergency-kits')}>
-            ← Voltar para Kits
-          </BackButton>
+          <ButtonsContainer>
+            <BackButton onClick={() => navigate('/emergency-kits')}>
+              ← Voltar para Kits
+            </BackButton>
+            <EditButton
+              onClick={() => navigate(`/emergency-kits/${id}/edit`)}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <span>✏️</span>
+              Editar Kit
+            </EditButton>
+          </ButtonsContainer>
           
           <PageTitle>
             <span>📦</span>
