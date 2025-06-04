@@ -1,91 +1,268 @@
-import React from 'react';
-import { Container, Row, Col, Card, Button } from 'react-bootstrap';
+import React, { useState, useEffect } from 'react';
+import { Container, Row, Col, Card, Button, Table, Spinner } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faShieldAlt, faFirstAid, faInfoCircle, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
+import { 
+  faShieldAlt, 
+  faFirstAid, 
+  faInfoCircle, 
+  faExclamationTriangle,
+  faTrophy,
+  faMedal,
+  faStar,
+  faArrowRight,
+  faGlobe,
+  faUsers
+} from '@fortawesome/free-solid-svg-icons';
 import { Link } from 'react-router-dom';
+import { leaderboard } from '../services/api';
+import { motion } from 'framer-motion';
 
 const Home = () => {
+  const [leaders, setLeaders] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState({
+    users: '10K+',
+    lessons: '50+',
+    countries: '25+'
+  });
+
+  useEffect(() => {
+    loadLeaderboard();
+  }, []);
+
+  const loadLeaderboard = async () => {
+    try {
+      const response = await leaderboard.get();
+      setLeaders(response.data);
+    } catch (error) {
+      console.error('Erro ao carregar o ranking:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getMedalIcon = (position) => {
+    switch (position) {
+      case 0:
+        return <FontAwesomeIcon icon={faTrophy} className="text-warning" />;
+      case 1:
+        return <FontAwesomeIcon icon={faMedal} className="text-secondary" />;
+      case 2:
+        return <FontAwesomeIcon icon={faMedal} className="text-bronze" />;
+      default:
+        return <FontAwesomeIcon icon={faStar} className="text-info" />;
+    }
+  };
+
   return (
     <div className="home-page">
       {/* Hero Section */}
-      <div className="hero-section text-white text-center d-flex align-items-center">
+      <motion.div 
+        className="hero-section text-white text-center d-flex align-items-center"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 1 }}
+      >
         <Container>
-          <h1 className="display-3 fw-bold mb-4">Mantenha-se Seguro, Mantenha-se Preparado</h1>
-          <p className="lead mb-4">
+          <motion.h1 
+            className="display-3 fw-bold mb-4"
+            initial={{ y: -50 }}
+            animate={{ y: 0 }}
+            transition={{ delay: 0.2, duration: 0.8 }}
+          >
+            Mantenha-se Seguro, Mantenha-se Preparado
+          </motion.h1>
+          <motion.p 
+            className="lead mb-4"
+            initial={{ y: -30 }}
+            animate={{ y: 0 }}
+            transition={{ delay: 0.4, duration: 0.8 }}
+          >
             Informe-se sobre desastres naturais e aprenda como se preparar e proteger seus entes queridos.
-          </p>
-          <Button as={Link} to="/emergency-kits" variant="light" size="lg" className="me-3">
-            Monte seu Kit de Emergência
-          </Button>
-          <Button as={Link} to="/learn" variant="outline-light" size="lg">
-            Aprenda Sobre Desastres
-          </Button>
+          </motion.p>
+          <motion.div
+            initial={{ y: -20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.6, duration: 0.8 }}
+            className="d-flex justify-content-center gap-3 flex-wrap"
+          >
+            <Button as={Link} to="/emergency-kits" variant="primary" size="lg" className="px-4">
+              Monte seu Kit de Emergência <FontAwesomeIcon icon={faArrowRight} className="ms-2" />
+            </Button>
+            <Button as={Link} to="/learn" variant="outline-light" size="lg" className="px-4">
+              Aprenda Sobre Desastres <FontAwesomeIcon icon={faArrowRight} className="ms-2" />
+            </Button>
+          </motion.div>
+
+          {/* Stats Section */}
+          <motion.div
+            className="mt-5 pt-5"
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.8, duration: 0.8 }}
+          >
+            <Row className="justify-content-center">
+              <Col md={4} className="text-center mb-4 mb-md-0">
+                <div className="stat-item">
+                  <FontAwesomeIcon icon={faUsers} className="display-4 mb-3" />
+                  <h3 className="h2 mb-2">{stats.users}</h3>
+                  <p className="text-secondary mb-0">Usuários Ativos</p>
+                </div>
+              </Col>
+              <Col md={4} className="text-center mb-4 mb-md-0">
+                <div className="stat-item">
+                  <FontAwesomeIcon icon={faInfoCircle} className="display-4 mb-3" />
+                  <h3 className="h2 mb-2">{stats.lessons}</h3>
+                  <p className="text-secondary mb-0">Lições Disponíveis</p>
+                </div>
+              </Col>
+              <Col md={4} className="text-center">
+                <div className="stat-item">
+                  <FontAwesomeIcon icon={faGlobe} className="display-4 mb-3" />
+                  <h3 className="h2 mb-2">{stats.countries}</h3>
+                  <p className="text-secondary mb-0">Países Alcançados</p>
+                </div>
+              </Col>
+            </Row>
+          </motion.div>
         </Container>
-      </div>
+      </motion.div>
 
       {/* Features Section */}
       <Container className="py-5">
-        <h2 className="text-center mb-5">Por que Escolher Nossa Plataforma?</h2>
-        <Row className="g-4">
-          <Col md={3}>
-            <Card className="h-100 text-center feature-card">
-              <Card.Body>
-                <FontAwesomeIcon icon={faShieldAlt} size="3x" className="mb-3 text-primary" />
-                <Card.Title>Proteção</Card.Title>
-                <Card.Text>
-                  Aprenda como proteger você e sua família durante emergências.
-                </Card.Text>
-              </Card.Body>
-            </Card>
-          </Col>
-          <Col md={3}>
-            <Card className="h-100 text-center feature-card">
-              <Card.Body>
-                <FontAwesomeIcon icon={faFirstAid} size="3x" className="mb-3 text-danger" />
-                <Card.Title>Kits de Emergência</Card.Title>
-                <Card.Text>
-                  Receba recomendações personalizadas de kits de emergência baseadas nas suas necessidades.
-                </Card.Text>
-              </Card.Body>
-            </Card>
-          </Col>
-          <Col md={3}>
-            <Card className="h-100 text-center feature-card">
-              <Card.Body>
-                <FontAwesomeIcon icon={faInfoCircle} size="3x" className="mb-3 text-info" />
-                <Card.Title>Informação</Card.Title>
-                <Card.Text>
-                  Acesse informações completas sobre diversos tipos de desastres.
-                </Card.Text>
-              </Card.Body>
-            </Card>
-          </Col>
-          <Col md={3}>
-            <Card className="h-100 text-center feature-card">
-              <Card.Body>
-                <FontAwesomeIcon icon={faExclamationTriangle} size="3x" className="mb-3 text-warning" />
-                <Card.Title>Alertas</Card.Title>
-                <Card.Text>
-                  Mantenha-se atualizado com alertas em tempo real sobre possíveis desastres.
-                </Card.Text>
-              </Card.Body>
-            </Card>
-          </Col>
-        </Row>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          viewport={{ once: true }}
+        >
+          <h2 className="text-center mb-5">Por que Escolher Nossa Plataforma?</h2>
+          <Row className="g-4">
+            <Col md={3}>
+              <Card className="h-100 text-center feature-card">
+                <Card.Body>
+                  <FontAwesomeIcon icon={faShieldAlt} size="3x" className="mb-3 text-primary" />
+                  <Card.Title>Proteção</Card.Title>
+                  <Card.Text>
+                    Aprenda como proteger você e sua família durante emergências.
+                  </Card.Text>
+                </Card.Body>
+              </Card>
+            </Col>
+            <Col md={3}>
+              <Card className="h-100 text-center feature-card">
+                <Card.Body>
+                  <FontAwesomeIcon icon={faFirstAid} size="3x" className="mb-3 text-danger" />
+                  <Card.Title>Kits de Emergência</Card.Title>
+                  <Card.Text>
+                    Receba recomendações personalizadas de kits de emergência baseadas nas suas necessidades.
+                  </Card.Text>
+                </Card.Body>
+              </Card>
+            </Col>
+            <Col md={3}>
+              <Card className="h-100 text-center feature-card">
+                <Card.Body>
+                  <FontAwesomeIcon icon={faInfoCircle} size="3x" className="mb-3 text-info" />
+                  <Card.Title>Informação</Card.Title>
+                  <Card.Text>
+                    Acesse informações completas sobre diversos tipos de desastres.
+                  </Card.Text>
+                </Card.Body>
+              </Card>
+            </Col>
+            <Col md={3}>
+              <Card className="h-100 text-center feature-card">
+                <Card.Body>
+                  <FontAwesomeIcon icon={faExclamationTriangle} size="3x" className="mb-3 text-warning" />
+                  <Card.Title>Alertas</Card.Title>
+                  <Card.Text>
+                    Mantenha-se atualizado com alertas em tempo real sobre possíveis desastres.
+                  </Card.Text>
+                </Card.Body>
+              </Card>
+            </Col>
+          </Row>
+        </motion.div>
+      </Container>
+
+      {/* Leaderboard Section */}
+      <Container className="py-5">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          viewport={{ once: true }}
+          className="leaderboard-section"
+        >
+          <h2 className="text-center mb-5">
+            <FontAwesomeIcon icon={faTrophy} className="text-warning me-2" />
+            Ranking dos Usuários
+          </h2>
+          <Row className="justify-content-center">
+            <Col md={10}>
+              {loading ? (
+                <div className="text-center py-5">
+                  <Spinner animation="border" role="status" variant="primary">
+                    <span className="visually-hidden">Carregando...</span>
+                  </Spinner>
+                </div>
+              ) : (
+                <Table hover responsive className="leaderboard-table">
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>Usuário</th>
+                      <th>Pontuação</th>
+                      <th>Conquistas</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {leaders.map((user, index) => (
+                      <motion.tr
+                        key={user.userId}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: index * 0.1 }}
+                      >
+                        <td>{getMedalIcon(index)}</td>
+                        <td>{user.name}</td>
+                        <td>{user.score} pts</td>
+                        <td>{user.achievements || '-'}</td>
+                      </motion.tr>
+                    ))}
+                  </tbody>
+                </Table>
+              )}
+            </Col>
+          </Row>
+        </motion.div>
       </Container>
 
       {/* Call to Action Section */}
-      <div className="cta-section text-white text-center py-5">
+      <motion.div 
+        className="cta-section text-white text-center py-5"
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        transition={{ duration: 0.8 }}
+        viewport={{ once: true }}
+      >
         <Container>
           <h2 className="mb-4">Pronto para Começar?</h2>
           <p className="lead mb-4">
             Junte-se à nossa comunidade e tenha acesso a informações vitais que podem salvar vidas.
           </p>
-          <Button as={Link} to="/register" variant="light" size="lg">
-            Cadastre-se Agora
+          <Button 
+            as={Link} 
+            to="/register" 
+            variant="primary" 
+            size="lg"
+            className="px-4 py-3"
+          >
+            Cadastre-se Agora <FontAwesomeIcon icon={faArrowRight} className="ms-2" />
           </Button>
         </Container>
-      </div>
+      </motion.div>
     </div>
   );
 };

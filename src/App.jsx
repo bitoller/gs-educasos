@@ -15,6 +15,7 @@ import PrivateRoute from './components/PrivateRoute';
 import { AuthProvider } from './contexts/AuthContext';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './styles/Home.css';
+import './styles/Navbar.css';
 
 // Componente para proteger rotas administrativas
 const AdminRoute = ({ children }) => {
