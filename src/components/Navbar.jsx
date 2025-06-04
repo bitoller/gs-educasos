@@ -1,20 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Navbar, Nav, Container, Button, NavDropdown } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
 const NavigationBar = () => {
-  const { user, logout } = useAuth();
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(false);
+  const { user, logout, isAdmin } = useAuth();
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    const userRole = localStorage.getItem('userRole');
-    setIsLoggedIn(!!token);
-    setIsAdmin(userRole === 'admin');
-  }, []);
 
   const handleLogout = () => {
     logout();
@@ -32,14 +23,10 @@ const NavigationBar = () => {
           <Nav className="me-auto">
             <Nav.Link as={Link} to="/">Início</Nav.Link>
             <Nav.Link as={Link} to="/learn">Aprenda</Nav.Link>
+            <Nav.Link as={Link} to="/quizzes">Quizzes</Nav.Link>
             <Nav.Link as={Link} to="/emergency-kits">Kits de Emergência</Nav.Link>
             <Nav.Link as={Link} to="/about">Sobre</Nav.Link>
             <Nav.Link as={Link} to="/contact">Contato</Nav.Link>
-            {isAdmin && (
-              <Nav.Link as={Link} to="/admin">
-                Dashboard Admin
-              </Nav.Link>
-            )}
           </Nav>
           <Nav className="ms-auto">
             {user ? (
@@ -48,8 +35,8 @@ const NavigationBar = () => {
                 id="basic-nav-dropdown"
                 className="text-light"
               >
-                <NavDropdown.Item as={Link} to="/dashboard">
-                  Meu Dashboard
+                <NavDropdown.Item as={Link} to={isAdmin ? "/admin" : "/dashboard"}>
+                  {isAdmin ? "Dashboard Admin" : "Meu Dashboard"}
                 </NavDropdown.Item>
                 <NavDropdown.Item as={Link} to="/profile">
                   Meu Perfil

@@ -9,6 +9,8 @@ import EmergencyKitForm from './pages/EmergencyKitForm';
 import LearnDisasters from './pages/LearnDisasters';
 import UserDashboard from './pages/UserDashboard';
 import AdminDashboard from './pages/AdminDashboard';
+import Quiz from './pages/Quiz';
+import QuizList from './pages/QuizList';
 import PrivateRoute from './components/PrivateRoute';
 import { AuthProvider } from './contexts/AuthContext';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -17,7 +19,13 @@ import './styles/Home.css';
 // Componente para proteger rotas administrativas
 const AdminRoute = ({ children }) => {
   const isAdmin = localStorage.getItem('userRole') === 'admin';
-  return isAdmin ? children : <Navigate to="/" replace />;
+  return isAdmin ? children : <Navigate to="/dashboard" replace />;
+};
+
+// Componente para redirecionar admin para dashboard admin
+const DashboardRoute = ({ children }) => {
+  const isAdmin = localStorage.getItem('userRole') === 'admin';
+  return isAdmin ? <Navigate to="/admin" replace /> : children;
 };
 
 function App() {
@@ -31,11 +39,15 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/learn" element={<LearnDisasters />} />
+            <Route path="/quizzes" element={<QuizList />} />
+            <Route path="/quiz/:id" element={<Quiz />} />
             <Route 
               path="/dashboard" 
               element={
                 <PrivateRoute>
-                  <UserDashboard />
+                  <DashboardRoute>
+                    <UserDashboard />
+                  </DashboardRoute>
                 </PrivateRoute>
               } 
             />
