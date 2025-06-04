@@ -5,7 +5,8 @@ import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import EmergencyKits from './pages/EmergencyKits';
-import EmergencyKitForm from './pages/EmergencyKitForm';
+import CreateKit from './pages/CreateKit';
+import KitDetails from './pages/KitDetails';
 import LearnDisasters from './pages/LearnDisasters';
 import UserDashboard from './pages/UserDashboard';
 import AdminDashboard from './pages/AdminDashboard';
@@ -64,7 +65,15 @@ function App() {
               path="/emergency-kits/new" 
               element={
                 <PrivateRoute>
-                  <EmergencyKitForm />
+                  <CreateKit />
+                </PrivateRoute>
+              } 
+            />
+            <Route 
+              path="/emergency-kits/:id" 
+              element={
+                <PrivateRoute>
+                  <KitDetails />
                 </PrivateRoute>
               } 
             />
