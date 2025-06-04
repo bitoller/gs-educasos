@@ -107,12 +107,12 @@ These endpoints require **admin privileges** and a valid **JWT token** (`Authori
 
 ### Kit Management
 These endpoints require a valid **JWT token** (`Authorization: Bearer <token>` header):
--   `GET /api/kit`: Retrieve all emergency kits.
--   `POST /api/kit`: Create a new emergency kit.
+-   `GET /api/kit`: Retrieve all emergency kits. Each kit object now includes a `recommendedItems` field containing a JSON string of recommended items based on the kit's attributes.
+-   `POST /api/kit`: Create a new emergency kit. Recommended items will be automatically generated based on the provided attributes (`houseType`, `numResidents`, `hasChildren`, `hasElderly`, `hasPets`, `region`) and stored in the `recommendedItems` field.
     -   Request Body: JSON object with `houseType`, `numResidents`, `hasChildren`, `hasElderly`, `hasPets`, and `region`.
--   `GET /api/kit/{id}`: Retrieve a specific emergency kit by its ID.
+-   `GET /api/kit/{id}`: Retrieve a specific emergency kit by its ID. The kit object includes the `recommendedItems` field.
     -   `{id}`: The ID of the kit (path parameter).
--   `PUT /api/kit/{id}`: Update an existing emergency kit.
+-   `PUT /api/kit/{id}`: Update an existing emergency kit. The `recommendedItems` field will be regenerated based on the updated attributes.
     -   `{id}`: The ID of the kit (path parameter).
     -   Request Body: JSON object with updated `houseType`, `numResidents`, `hasChildren`, `hasElderly`, `hasPets`, and `region`.
 -   `DELETE /api/kit/{id}`: Delete an emergency kit by its ID.
@@ -125,17 +125,16 @@ These endpoints require a valid **JWT token** (`Authorization: Bearer <token>` h
 ### Content Management
 These endpoints require a valid **JWT token** (`Authorization: Bearer <token>` header):
 -   `GET /api/content`: Retrieve all disaster awareness content.
+    -   **Note:** This endpoint is now **publicly accessible** and does not require authentication.
 -   `POST /api/content`: Create new disaster awareness content.
-    -   Request Body: JSON object with `disasterType`, `title`, `description`, and `videoUrl`.
 -   `GET /api/content/{id}`: Retrieve a specific content item by its ID.
     -   `{id}`: The ID of the content item (path parameter).
+    -   **Note:** This endpoint is now **publicly accessible** and does not require authentication.
 -   `PUT /api/content/{id}`: Update an existing content item.
-    -   `{id}`: The ID of the content item (path parameter).
-    -   Request Body: JSON object with updated `disasterType`, `title`, `description`, and `videoUrl`.
 -   `DELETE /api/content/{id}`: Delete a content item by its ID.
-    -   `{id}`: The ID of the content item (path parameter).
 -   `GET /api/content/disaster/{disasterType}`: Retrieve content filtered by disaster type.
     -   `{disasterType}`: The type of disaster (path parameter).
+    -   **Note:** This endpoint is now **publicly accessible** and does not require authentication.
 
 ### Quiz Endpoints
 
