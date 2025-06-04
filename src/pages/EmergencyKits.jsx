@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Card, Button, Alert, Spinner } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { kits } from '../services/api';
 import UnauthorizedContent from '../components/UnauthorizedContent';
@@ -196,6 +196,7 @@ const EmergencyKits = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
   const { user } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (user) {
@@ -276,6 +277,8 @@ const EmergencyKits = () => {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.1 }}
+                  onClick={() => navigate(`/emergency-kits/${kit.kitId}`)}
+                  style={{ cursor: 'pointer' }}
                 >
                   <KitCardBody>
                     <KitTitle>
@@ -297,7 +300,10 @@ const EmergencyKits = () => {
                       </InfoItem>
                     </KitInfo>
                     <KitActions>
-                      <ActionButton variant="primary">
+                      <ActionButton 
+                        variant="primary"
+                        onClick={() => navigate(`/emergency-kits/${kit.kitId}`)}
+                      >
                         Ver Detalhes
                       </ActionButton>
                       <ActionButton variant="outline-danger">

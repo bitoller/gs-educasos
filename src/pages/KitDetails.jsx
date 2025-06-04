@@ -255,64 +255,118 @@ const KitDetails = () => {
                 <InfoItem>
                   <span>🏠</span>
                   <div>
-                    <strong>Tipo de Residência</strong>
+                    <strong>Tipo de Residência:</strong>
                     {kit.houseType}
                   </div>
                 </InfoItem>
                 <InfoItem>
                   <span>📍</span>
                   <div>
-                    <strong>Região</strong>
+                    <strong>Região:</strong>
                     {kit.region}
                   </div>
                 </InfoItem>
                 <InfoItem>
                   <span>👥</span>
                   <div>
-                    <strong>Moradores</strong>
-                    {kit.numResidents} pessoas
+                    <strong>Número de Moradores:</strong>
+                    {kit.numResidents}
                   </div>
                 </InfoItem>
                 <InfoItem>
-                  <span>⚡</span>
+                  <span>{kit.hasChildren ? '👶' : '❌'}</span>
                   <div>
-                    <strong>Última Atualização</strong>
-                    {new Date(kit.lastUpdated).toLocaleDateString()}
+                    <strong>Crianças:</strong>
+                    {kit.hasChildren ? 'Sim' : 'Não'}
+                  </div>
+                </InfoItem>
+                <InfoItem>
+                  <span>{kit.hasElderly ? '👴' : '❌'}</span>
+                  <div>
+                    <strong>Idosos:</strong>
+                    {kit.hasElderly ? 'Sim' : 'Não'}
+                  </div>
+                </InfoItem>
+                <InfoItem>
+                  <span>{kit.hasPets ? '🐾' : '❌'}</span>
+                  <div>
+                    <strong>Animais de Estimação:</strong>
+                    {kit.hasPets ? 'Sim' : 'Não'}
                   </div>
                 </InfoItem>
               </InfoGrid>
             </KitInfoBody>
           </KitInfo>
 
+          {kit.recommendedItems && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+            >
+              <SectionTitle>Itens Recomendados</SectionTitle>
+              <Card className="bg-transparent border-0">
+                <Card.Body>
+                  <pre style={{ 
+                    whiteSpace: 'pre-wrap', 
+                    color: 'white',
+                    background: 'rgba(255, 255, 255, 0.05)',
+                    padding: '1.5rem',
+                    borderRadius: '15px',
+                    border: '1px solid rgba(255, 255, 255, 0.1)',
+                    fontSize: '1rem',
+                    lineHeight: '1.6'
+                  }}>
+                    {kit.recommendedItems}
+                  </pre>
+                </Card.Body>
+              </Card>
+            </motion.div>
+          )}
+
           <SectionTitle>Itens do Kit</SectionTitle>
           <Row xs={1} md={2} lg={3} className="g-4">
-            {kit.items.map((item, index) => (
-              <Col key={item.itemId}>
-                <ItemCard
-                  as={motion.div}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.1 }}
+            {kit.items && kit.items.length > 0 ? (
+              kit.items.map((item, index) => (
+                <Col key={item.itemId}>
+                  <ItemCard
+                    as={motion.div}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                  >
+                    <ItemCardBody>
+                      <ItemTitle>
+                        <span>{getItemIcon(item.category)}</span>
+                        {item.name}
+                      </ItemTitle>
+                      <ItemDescription>
+                        {item.description}
+                      </ItemDescription>
+                      <ItemQuantity>
+                        Quantidade: {item.quantity} {item.unit}
+                      </ItemQuantity>
+                      <div>
+                        <strong>Validade:</strong>{' '}
+                        {item.expirationDate ? new Date(item.expirationDate).toLocaleDateString() : 'N/A'}
+                      </div>
+                    </ItemCardBody>
+                  </ItemCard>
+                </Col>
+              ))
+            ) : (
+              <Col>
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.5 }}
                 >
-                  <ItemCardBody>
-                    <ItemTitle>
-                      <span>{getItemIcon(item.category)}</span>
-                      {item.name}
-                    </ItemTitle>
-                    <ItemDescription>
-                      {item.description}
-                    </ItemDescription>
-                    <ItemQuantity>
-                      Quantidade: {item.quantity} {item.unit}
-                    </ItemQuantity>
-                    <div>
-                      <strong>Validade:</strong>{' '}
-                      {item.expirationDate ? new Date(item.expirationDate).toLocaleDateString() : 'N/A'}
-                    </div>
-                  </ItemCardBody>
-                </ItemCard>
+                  <StyledAlert variant="info">
+                    Este kit ainda não possui itens cadastrados.
+                  </StyledAlert>
+                </motion.div>
               </Col>
-            ))}
+            )}
           </Row>
         </motion.div>
       </Container>

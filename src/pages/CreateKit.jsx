@@ -222,6 +222,9 @@ const CreateKit = () => {
     houseType: '',
     region: '',
     numResidents: '',
+    hasChildren: false,
+    hasElderly: false,
+    hasPets: false,
     items: []
   });
 
@@ -286,7 +289,18 @@ const CreateKit = () => {
     try {
       setSubmitting(true);
       setError('');
-      const response = await kits.create(formData);
+      
+      // Prepare the data according to the backend's expected format
+      const kitData = {
+        houseType: formData.houseType,
+        numResidents: parseInt(formData.numResidents),
+        hasChildren: formData.hasChildren,
+        hasElderly: formData.hasElderly,
+        hasPets: formData.hasPets,
+        region: formData.region
+      };
+
+      const response = await kits.create(kitData);
       navigate(`/emergency-kits/${response.data.kitId}`);
     } catch (err) {
       console.error('Error creating kit:', err);
@@ -364,6 +378,45 @@ const CreateKit = () => {
                       onChange={handleInputChange}
                       min="1"
                       required
+                    />
+                  </Form.Group>
+
+                  <Form.Group className="mb-3">
+                    <Form.Check
+                      type="checkbox"
+                      name="hasChildren"
+                      checked={formData.hasChildren}
+                      onChange={(e) => setFormData(prev => ({
+                        ...prev,
+                        hasChildren: e.target.checked
+                      }))}
+                      label="Há crianças na residência?"
+                    />
+                  </Form.Group>
+
+                  <Form.Group className="mb-3">
+                    <Form.Check
+                      type="checkbox"
+                      name="hasElderly"
+                      checked={formData.hasElderly}
+                      onChange={(e) => setFormData(prev => ({
+                        ...prev,
+                        hasElderly: e.target.checked
+                      }))}
+                      label="Há idosos na residência?"
+                    />
+                  </Form.Group>
+
+                  <Form.Group className="mb-3">
+                    <Form.Check
+                      type="checkbox"
+                      name="hasPets"
+                      checked={formData.hasPets}
+                      onChange={(e) => setFormData(prev => ({
+                        ...prev,
+                        hasPets: e.target.checked
+                      }))}
+                      label="Há animais de estimação?"
                     />
                   </Form.Group>
                 </FormSection>
@@ -494,7 +547,7 @@ const CreateKit = () => {
 
                 <SubmitButton
                   type="submit"
-                  disabled={submitting || !formData.houseType || !formData.region || !formData.numResidents || formData.items.length === 0}
+                  disabled={submitting || !formData.houseType || !formData.region || !formData.numResidents}
                 >
                   {submitting ? 'Criando...' : 'Criar Kit de Emergência'}
                 </SubmitButton>
