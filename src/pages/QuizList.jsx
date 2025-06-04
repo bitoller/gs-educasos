@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Card, Badge, Button, Spinner, Alert } from 'react-bootstrap';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { quiz } from '../services/api';
 import { motion } from 'framer-motion';
 
@@ -9,6 +9,7 @@ const QuizList = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     loadQuizzes();
@@ -20,7 +21,22 @@ const QuizList = () => {
       setError('');
       const response = await quiz.getAll();
       console.log('Dados dos quizzes:', response.data);
-      setQuizzes(response.data);
+      
+      // Pegar o tipo da URL se existir
+      const params = new URLSearchParams(location.search);
+      const filterType = params.get('type');
+      
+      // Filtrar os quizzes se houver um tipo especificado
+      const filteredQuizzes = filterType
+        ? response.data.filter(q => q.disasterType === filterType)
+        : response.data;
+      
+      setQuizzes(filteredQuizzes);
+      
+      // Se não encontrou nenhum quiz do tipo, mostrar mensagem
+      if (filterType && filteredQuizzes.length === 0) {
+        setError(`Nenhum quiz encontrado para o tipo ${filterType}`);
+      }
     } catch (err) {
       setError('Erro ao carregar os quizzes. Por favor, tente novamente.');
       console.error('Error loading quizzes:', err);

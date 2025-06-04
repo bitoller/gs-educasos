@@ -1,104 +1,123 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Card, Button, ButtonGroup, Alert, Spinner } from 'react-bootstrap';
 import { content } from '../services/api';
-
-const DISASTER_TYPES = {
-  FLOOD: { 
-    name: 'Enchente', 
-    color: 'info',
-    icon: '🌊',
-    bgColor: 'linear-gradient(135deg, #48CAE4 0%, #0096C7 100%)'
-  },
-  LANDSLIDE: { 
-    name: 'Deslizamento', 
-    color: 'warning',
-    icon: '⛰️',
-    bgColor: 'linear-gradient(135deg, #B45309 0%, #92400E 100%)'
-  },
-  WILDFIRE: { 
-    name: 'Queimada', 
-    color: 'danger',
-    icon: '🔥',
-    bgColor: 'linear-gradient(135deg, #DC2626 0%, #991B1B 100%)'
-  },
-  DROUGHT: { 
-    name: 'Seca', 
-    color: 'warning',
-    icon: '☀️',
-    bgColor: 'linear-gradient(135deg, #FCD34D 0%, #F59E0B 100%)'
-  },
-  STORM: { 
-    name: 'Tempestade', 
-    color: 'primary',
-    icon: '⛈️',
-    bgColor: 'linear-gradient(135deg, #1E40AF 0%, #1E3A8A 100%)'
-  }
-};
+import { Link } from 'react-router-dom';
 
 const LearnDisasters = () => {
-  const [selectedType, setSelectedType] = useState('FLOOD');
   const [disasterContent, setDisasterContent] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [showTips, setShowTips] = useState(null);
+  const [uniqueTypes, setUniqueTypes] = useState([]);
+  const [selectedType, setSelectedType] = useState(null);
+  const isAuthenticated = localStorage.getItem('token');
 
   useEffect(() => {
-    loadContent();
-  }, [selectedType]);
+    loadAllContent();
+  }, []);
 
-  const loadContent = async () => {
+  const loadAllContent = async () => {
     try {
       setLoading(true);
       setError('');
-      console.log(`Fetching content for disaster type: ${selectedType}`);
-      const response = await content.getByDisasterType(selectedType);
+      const response = await content.getAll();
       console.log('Content received from backend:', response.data);
       
       if (!response.data || response.data.length === 0) {
-        setError(`Nenhuma informação encontrada para ${DISASTER_TYPES[selectedType].name}. Por favor, tente outro tipo de desastre.`);
+        setError('Nenhuma informação encontrada. Por favor, tente novamente mais tarde.');
         setDisasterContent([]);
       } else {
+        // Extrair tipos únicos de desastres do conteúdo
+        const types = [...new Set(response.data.map(item => item.disasterType))];
+        setUniqueTypes(types);
+        setSelectedType(types[0]); // Seleciona o primeiro tipo por padrão
         setDisasterContent(response.data);
       }
     } catch (err) {
       console.error('Error details:', {
         message: err.message,
         response: err.response?.data,
-        status: err.response?.status
+        status: err.response?.status,
+        url: err.config?.url
       });
-      setError(`Erro ao carregar informações sobre ${DISASTER_TYPES[selectedType].name}. Por favor, tente novamente mais tarde.`);
+      setError('Erro ao carregar informações. Por favor, tente novamente mais tarde.');
       setDisasterContent([]);
     } finally {
       setLoading(false);
     }
   };
 
-  const renderTipsSection = (tips, title, icon) => (
-    <div className="tips-section p-4 rounded shadow-sm mb-4" style={{ background: 'rgba(255, 255, 255, 0.95)' }}>
-      <h4 className="mb-3 d-flex align-items-center">
-        <span className="me-2">{icon}</span>
-        {title}
-      </h4>
-      <ul className="list-unstyled">
-        {tips.map((tip, index) => (
-          <li key={index} className="mb-3 d-flex align-items-start">
-            <span className="me-3 text-success">✓</span>
-            <span>{tip}</span>
-          </li>
-        ))}
-      </ul>
+  // Função para obter a cor do gradiente baseada no tipo de desastre
+  const getGradient = (type) => {
+    const gradients = {
+      ENCHENTE: 'linear-gradient(135deg, #48CAE4 0%, #0096C7 100%)',
+      TERREMOTO: 'linear-gradient(135deg, #B45309 0%, #92400E 100%)',
+      INCENDIO: 'linear-gradient(135deg, #DC2626 0%, #991B1B 100%)',
+      FURACAO: 'linear-gradient(135deg, #1E40AF 0%, #1E3A8A 100%)',
+      TORNADO: 'linear-gradient(135deg, #1E40AF 0%, #1E3A8A 100%)',
+      default: 'linear-gradient(135deg, #6B7280 0%, #4B5563 100%)'
+    };
+    return gradients[type] || gradients.default;
+  };
+
+  // Função para obter o ícone baseado no tipo de desastre
+  const getIcon = (type) => {
+    const icons = {
+      ENCHENTE: '🌊',
+      TERREMOTO: '🏚️',
+      INCENDIO: '🔥',
+      FURACAO: '🌪️',
+      TORNADO: '🌪️',
+      default: '⚠️'
+    };
+    return icons[type] || icons.default;
+  };
+
+  // Função para obter a variante do botão baseada no tipo de desastre
+  const getButtonVariant = (type) => {
+    const variants = {
+      ENCHENTE: 'info',
+      TERREMOTO: 'warning',
+      INCENDIO: 'danger',
+      FURACAO: 'primary',
+      TORNADO: 'info',
+      default: 'secondary'
+    };
+    return variants[type] || variants.default;
+  };
+
+  const renderAuthButtons = () => (
+    <div className="text-center mb-4">
+      <Alert variant="info" className="d-flex flex-column align-items-center">
+        <p className="mb-3">Para acessar os quizzes e testar seus conhecimentos, faça login ou cadastre-se:</p>
+        <div className="d-flex gap-3">
+          <Link to="/login">
+            <Button variant="primary">
+              Fazer Login
+            </Button>
+          </Link>
+          <Link to="/register">
+            <Button variant="outline-primary">
+              Cadastrar-se
+            </Button>
+          </Link>
+        </div>
+      </Alert>
     </div>
   );
 
   if (loading) {
     return (
       <Container className="mt-5 pt-5 text-center">
-        <Spinner animation="border" role="status" variant={DISASTER_TYPES[selectedType].color}>
+        <Spinner animation="border" role="status">
           <span className="visually-hidden">Carregando...</span>
         </Spinner>
       </Container>
     );
   }
+
+  const filteredContent = selectedType 
+    ? disasterContent.filter(item => item.disasterType === selectedType)
+    : disasterContent;
 
   return (
     <Container fluid className="mt-5 pt-4 px-4">
@@ -106,7 +125,7 @@ const LearnDisasters = () => {
         <Col md={10}>
           <div className="text-center">
             <h1 className="display-4 mb-4">
-              {DISASTER_TYPES[selectedType].icon} Aprenda Sobre {DISASTER_TYPES[selectedType].name}
+              {selectedType ? `${getIcon(selectedType)} Aprenda Sobre ${selectedType}` : 'Aprenda Sobre Desastres Naturais'}
             </h1>
             <p className="lead mb-5">
               Entenda os riscos e aprenda como se preparar para diferentes tipos de desastres naturais
@@ -115,29 +134,31 @@ const LearnDisasters = () => {
 
           <div className="text-center mb-5">
             <ButtonGroup className="flex-wrap">
-              {Object.entries(DISASTER_TYPES).map(([type, info]) => (
+              {uniqueTypes.map((type) => (
                 <Button
                   key={type}
-                  variant={selectedType === type ? info.color : `outline-${info.color}`}
+                  variant={selectedType === type ? getButtonVariant(type) : `outline-${getButtonVariant(type)}`}
                   onClick={() => setSelectedType(type)}
                   className="px-4 py-2 d-flex align-items-center"
                   style={{ minWidth: '160px' }}
                 >
-                  <span className="me-2">{info.icon}</span>
-                  {info.name}
+                  <span className="me-2">{getIcon(type)}</span>
+                  {type}
                 </Button>
               ))}
             </ButtonGroup>
           </div>
 
+          {!isAuthenticated && renderAuthButtons()}
+
           {error && <Alert variant="danger">{error}</Alert>}
 
-          {disasterContent.map((disaster, index) => (
+          {filteredContent.map((disaster, index) => (
             <Card 
               key={index} 
               className="mb-5 border-0 overflow-hidden"
               style={{
-                background: DISASTER_TYPES[selectedType].bgColor,
+                background: getGradient(disaster.disasterType),
                 boxShadow: '0 10px 30px rgba(0,0,0,0.1)'
               }}
             >
@@ -152,14 +173,6 @@ const LearnDisasters = () => {
                         className="rounded"
                       ></iframe>
                     </div>
-                    {disaster.imageUrl && (
-                      <img
-                        src={disaster.imageUrl}
-                        alt={disaster.title}
-                        className="img-fluid rounded shadow mb-4"
-                        style={{ width: '100%', objectFit: 'cover' }}
-                      />
-                    )}
                   </Col>
 
                   <Col lg={6} className="p-4" style={{ background: 'rgba(255, 255, 255, 0.9)' }}>
@@ -169,41 +182,26 @@ const LearnDisasters = () => {
                     </div>
 
                     <div className="d-grid gap-3 mb-4">
-                      <Button
-                        variant={`outline-${DISASTER_TYPES[selectedType].color}`}
-                        onClick={() => setShowTips(showTips === 'before' ? null : 'before')}
-                        className="d-flex align-items-center justify-content-center"
-                      >
-                        <span className="me-2">⚡</span>
-                        O que fazer antes
-                      </Button>
-                      <Button
-                        variant={`outline-${DISASTER_TYPES[selectedType].color}`}
-                        onClick={() => setShowTips(showTips === 'during' ? null : 'during')}
-                        className="d-flex align-items-center justify-content-center"
-                      >
-                        <span className="me-2">⚠️</span>
-                        O que fazer durante
-                      </Button>
-                      <Button
-                        variant={`outline-${DISASTER_TYPES[selectedType].color}`}
-                        onClick={() => setShowTips(showTips === 'after' ? null : 'after')}
-                        className="d-flex align-items-center justify-content-center"
-                      >
-                        <span className="me-2">🔄</span>
-                        O que fazer depois
-                      </Button>
+                      {isAuthenticated ? (
+                        <Button
+                          variant="primary"
+                          href={`/quizzes?type=${disaster.disasterType}`}
+                          className="d-flex align-items-center justify-content-center"
+                        >
+                          <span className="me-2">📝</span>
+                          Fazer Quiz sobre {disaster.disasterType}
+                        </Button>
+                      ) : (
+                        <Button
+                          variant="primary"
+                          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                          className="d-flex align-items-center justify-content-center"
+                        >
+                          <span className="me-2">📝</span>
+                          Faça login para acessar o Quiz
+                        </Button>
+                      )}
                     </div>
-
-                    {showTips === 'before' && disaster.beforeTips && (
-                      renderTipsSection(disaster.beforeTips, 'O que fazer antes', '⚡')
-                    )}
-                    {showTips === 'during' && disaster.duringTips && (
-                      renderTipsSection(disaster.duringTips, 'O que fazer durante', '⚠️')
-                    )}
-                    {showTips === 'after' && disaster.afterTips && (
-                      renderTipsSection(disaster.afterTips, 'O que fazer depois', '🔄')
-                    )}
                   </Col>
                 </Row>
               </Card.Body>

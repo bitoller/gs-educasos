@@ -49,7 +49,9 @@ api.interceptors.response.use(
     console.log('Received response:', {
       url: response.config.url,
       status: response.status,
-      data: response.data
+      data: response.data,
+      headers: response.headers,
+      contentType: response.headers['content-type']
     });
     
     // Store user role if it's a login response
@@ -63,12 +65,15 @@ api.interceptors.response.use(
     return response;
   },
   (error) => {
-    // Log error response
+    // Log error response with more details
     console.error('API Error:', {
       status: error.response?.status,
       data: error.response?.data,
       config: error.config,
-      message: error.message
+      message: error.message,
+      url: error.config?.url,
+      method: error.config?.method,
+      headers: error.response?.headers
     });
 
     // Só redireciona para o login em caso de erro 401 se NÃO for uma rota pública
