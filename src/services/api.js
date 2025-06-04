@@ -136,11 +136,108 @@ export const content = {
 
 // Kit API
 export const kits = {
-  getAll: () => api.get('/kit'),
-  getById: (id) => api.get(`/kit/${id}`),
+  getAll: async () => {
+    try {
+      const response = await api.get('/kit');
+      console.log('API Raw Response:', response);
+      
+      if (response.data) {
+        // Log dos dados brutos antes do processamento
+        console.log('Raw Kits Data:', response.data);
+        
+        // Processa os dados para garantir os tipos corretos
+        const processedKits = Array.isArray(response.data) ? response.data.map(kit => {
+          console.log('Processing kit:', kit.id, 'numResidents before:', kit.numResidents, 'type:', typeof kit.numResidents);
+          
+          const processedKit = {
+            ...kit,
+            numResidents: kit.numResidents ? Number(kit.numResidents) : 0,
+            hasChildren: Boolean(kit.hasChildren),
+            hasElderly: Boolean(kit.hasElderly),
+            hasPets: Boolean(kit.hasPets),
+            isCustom: Boolean(kit.isCustom)
+          };
+          
+          console.log('Kit after processing:', processedKit.id, 'numResidents after:', processedKit.numResidents, 'type:', typeof processedKit.numResidents);
+          return processedKit;
+        }) : [];
+        
+        console.log('Final processed kits:', processedKits);
+        return { ...response, data: processedKits };
+      }
+      
+      return response;
+    } catch (error) {
+      console.error('API Error getAll:', error.response || error);
+      throw error;
+    }
+  },
+  getById: async (id) => {
+    try {
+      const response = await api.get(`/kit/${id}`);
+      console.log('GetById Raw Response:', response);
+      
+      if (response.data) {
+        const kitData = response.data.kit || response.data;
+        console.log('Raw Kit Data:', kitData);
+        
+        // Processa os dados para garantir os tipos corretos
+        const processedKit = {
+          ...kitData,
+          numResidents: kitData.numResidents ? Number(kitData.numResidents) : 0,
+          hasChildren: Boolean(kitData.hasChildren),
+          hasElderly: Boolean(kitData.hasElderly),
+          hasPets: Boolean(kitData.hasPets),
+          isCustom: Boolean(kitData.isCustom)
+        };
+        
+        console.log('Processed Kit:', processedKit);
+        return { ...response, data: processedKit };
+      }
+      
+      return response;
+    } catch (error) {
+      console.error('API Error getById:', error.response || error);
+      throw error;
+    }
+  },
   getByHouseType: (type) => api.get(`/kit/house/${type}`),
   getByRegion: (region) => api.get(`/kit/region/${region}`),
-  create: (data) => api.post('/kit', data),
+  create: async (kitData) => {
+    try {
+      // Garante que numResidents seja enviado como número
+      const processedData = {
+        ...kitData,
+        numResidents: Number(kitData.numResidents || 0)
+      };
+      
+      console.log('Creating kit with data:', processedData);
+      const response = await api.post('/kit', processedData);
+      console.log('Create Response:', response);
+      
+      if (response.data) {
+        const data = response.data.kit || response.data;
+        console.log('Raw Created Kit Data:', data);
+        
+        const processedKit = {
+          ...data,
+          numResidents: data.numResidents ? Number(data.numResidents) : 0,
+          hasChildren: Boolean(data.hasChildren),
+          hasElderly: Boolean(data.hasElderly),
+          hasPets: Boolean(data.hasPets),
+          isCustom: Boolean(data.isCustom)
+        };
+        
+        console.log('Processed Created Kit:', processedKit);
+        return { ...response, data: processedKit };
+      }
+      
+      return response;
+    } catch (error) {
+      console.error('API Error create:', error.response || error);
+      throw error;
+    }
+  },
   update: (id, data) => api.put(`/kit/${id}`, data),
   delete: (id) => api.delete(`/kit/${id}`),
   addItem: (kitId, item) => api.post(`/kit/${kitId}/items`, item),
@@ -156,7 +253,7 @@ export const kits = {
   shareKit: (kitId, userId) => api.post(`/kit/${kitId}/share`, { userId }),
   getSharedKits: () => api.get('/kit/shared'),
   getKitHistory: (kitId) => api.get(`/kit/${kitId}/history`),
-  restoreKitVersion: (kitId, versionId) => api.post(`/kit/${kitId}/restore/${versionId}`),
+  restoreKitVersion: (kitId, versionId) => api.post(`/kit/${kitId}/restore/${versionId}`)
 };
 
 // Quiz API

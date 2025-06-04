@@ -1,10 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Card, Button, Alert, Spinner, Badge } from 'react-bootstrap';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { Container, Card, Row, Col, Alert } from 'react-bootstrap';
+import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import styled from 'styled-components';
 import { kits } from '../services/api';
-import { useAuth } from '../contexts/AuthContext';
 
 const PageContainer = styled.div`
   min-height: 100vh;
@@ -12,18 +11,14 @@ const PageContainer = styled.div`
   padding: 5rem 0 2rem;
 `;
 
-const PageHeader = styled.div`
-  margin-bottom: 3rem;
-  color: white;
-`;
-
-const BackButton = styled(Button)`
+const BackButton = styled.button`
   background: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.2);
   padding: 0.5rem 1rem;
   border-radius: 20px;
   color: white;
   margin-bottom: 1rem;
+  cursor: pointer;
   backdrop-filter: blur(5px);
   transition: all 0.3s ease;
 
@@ -38,7 +33,7 @@ const PageTitle = styled.h2`
   color: #fff;
   font-size: 2.5rem;
   font-weight: bold;
-  margin-bottom: 0.5rem;
+  margin-bottom: 2rem;
   background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -56,162 +51,369 @@ const KitInfo = styled(Card)`
   background: rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 15px;
+  border-radius: 20px;
   color: white;
   margin-bottom: 2rem;
 `;
 
 const KitInfoBody = styled(Card.Body)`
-  padding: 1.5rem;
+  padding: 2rem;
 `;
 
 const InfoGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 1.5rem;
 `;
 
 const InfoItem = styled.div`
   display: flex;
-  align-items: center;
-  gap: 0.8rem;
-  font-size: 1.1rem;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 15px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
 
   span {
-    font-size: 1.4rem;
+    font-size: 1.5rem;
   }
 
-  strong {
-    color: rgba(255, 255, 255, 0.7);
-    font-weight: normal;
-    margin-right: 0.5rem;
+  div {
+    strong {
+      display: block;
+      margin-bottom: 0.25rem;
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 0.9rem;
+    }
+    font-size: 1rem;
   }
 `;
 
 const SectionTitle = styled.h3`
   color: #fff;
   font-size: 1.8rem;
-  margin-bottom: 1.5rem;
+  margin: 2rem 0 1.5rem;
   font-weight: 600;
-`;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
 
-const ItemCard = styled(motion(Card))`
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 15px;
-  height: 100%;
-  transition: all 0.3s ease;
-  overflow: hidden;
-
-  &:hover {
-    transform: translateY(-5px);
-    border-color: rgba(255, 255, 255, 0.2);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  span {
+    font-size: 2rem;
   }
 `;
 
-const ItemCardBody = styled(Card.Body)`
-  padding: 1.5rem;
-  color: white;
+const ItemsList = styled.div`
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(5px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 15px;
+  overflow: hidden;
+  margin-top: 1.5rem;
 `;
 
-const ItemTitle = styled.h4`
-  font-size: 1.3rem;
-  margin-bottom: 1rem;
-  color: #fff;
+const ItemRow = styled(motion.div)`
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
 
-  span {
-    font-size: 1.5rem;
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.05);
+  }
+`;
+
+const ItemIcon = styled.span`
+  font-size: 1.5rem;
+  line-height: 1;
+  opacity: 0.9;
+  min-width: 2rem;
+  text-align: center;
+`;
+
+const ItemInfo = styled.div`
+  flex: 1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 2rem;
+  align-items: center;
+`;
+
+const ItemName = styled.h4`
+  font-size: 1.1rem;
+  margin: 0;
+  color: #fff;
+  font-weight: 600;
+  min-width: 200px;
+  flex: 1;
+`;
+
+const ItemCategory = styled.div`
+  display: inline-block;
+  padding: 0.2rem 0.8rem;
+  background: rgba(79, 172, 254, 0.1);
+  border: 1px solid rgba(79, 172, 254, 0.2);
+  border-radius: 20px;
+  font-size: 0.85rem;
+  color: #4facfe;
+  white-space: nowrap;
+`;
+
+const ItemDetails = styled.div`
+  display: flex;
+  gap: 1.5rem;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.9rem;
+  flex-wrap: wrap;
+
+  div {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    white-space: nowrap;
+
+    span {
+      font-size: 1rem;
+      opacity: 0.8;
+    }
   }
 `;
 
 const ItemDescription = styled.p`
-  color: rgba(255, 255, 255, 0.8);
-  font-size: 1rem;
-  margin-bottom: 1rem;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.9rem;
+  margin: 0.5rem 0 0;
+  line-height: 1.4;
+  width: 100%;
 `;
 
-const ItemQuantity = styled(Badge)`
-  background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
-  font-size: 1rem;
-  padding: 0.5rem 1rem;
-  border-radius: 20px;
-  margin-bottom: 1rem;
+const NoItemsMessage = styled.div`
+  text-align: center;
+  padding: 2rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 15px;
+  color: rgba(255, 255, 255, 0.7);
+  margin-top: 1rem;
+
+  p {
+    margin: 0;
+    font-size: 1.1rem;
+  }
 `;
 
 const StyledAlert = styled(Alert)`
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   color: white;
-  backdrop-filter: blur(10px);
-  border-radius: 15px;
-  margin-bottom: 2rem;
+  backdrop-filter: blur(5px);
 `;
 
-const LoadingContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 60vh;
-  color: white;
-`;
+const getItemIconByName = (name) => {
+  const normalizedName = name.toLowerCase().trim();
+  
+  // Água e Bebidas
+  if (normalizedName.includes('água') || normalizedName.includes('agua')) return '💧';
+  if (normalizedName.includes('garrafa')) return '🫗';
+  if (normalizedName.includes('suco')) return '🧃';
+  
+  // Alimentos
+  if (normalizedName.includes('comida') || normalizedName.includes('alimento')) return '🍱';
+  if (normalizedName.includes('biscoito') || normalizedName.includes('bolacha')) return '🍪';
+  if (normalizedName.includes('pão') || normalizedName.includes('pao')) return '🍞';
+  if (normalizedName.includes('fruta')) return '🍎';
+  if (normalizedName.includes('lata') || normalizedName.includes('enlatado')) return '🥫';
+  if (normalizedName.includes('cereal')) return '🥣';
+  
+  // Medicamentos e Primeiros Socorros
+  if (normalizedName.includes('remédio') || normalizedName.includes('remedio')) return '💊';
+  if (normalizedName.includes('band') || normalizedName.includes('curativo')) return '🩹';
+  if (normalizedName.includes('termômetro') || normalizedName.includes('termometro')) return '🌡️';
+  if (normalizedName.includes('kit') && normalizedName.includes('socorros')) return '🏥';
+  
+  // Higiene
+  if (normalizedName.includes('sabonete') || normalizedName.includes('sabão')) return '🧼';
+  if (normalizedName.includes('papel') && normalizedName.includes('higiênico')) return '🧻';
+  if (normalizedName.includes('escova') && normalizedName.includes('dente')) return '🪥';
+  if (normalizedName.includes('pasta') && normalizedName.includes('dente')) return '🪥';
+  if (normalizedName.includes('toalha')) return '🧴';
+  if (normalizedName.includes('shampoo')) return '🧴';
+  
+  // Roupas e Proteção
+  if (normalizedName.includes('roupa')) return '👕';
+  if (normalizedName.includes('casaco') || normalizedName.includes('blusa')) return '🧥';
+  if (normalizedName.includes('calça') || normalizedName.includes('calca')) return '👖';
+  if (normalizedName.includes('sapato') || normalizedName.includes('tênis')) return '👟';
+  if (normalizedName.includes('máscara') || normalizedName.includes('mascara')) return '😷';
+  if (normalizedName.includes('luva')) return '🧤';
+  if (normalizedName.includes('guarda') && normalizedName.includes('chuva')) return '☔';
+  
+  // Documentos e Comunicação
+  if (normalizedName.includes('documento')) return '📄';
+  if (normalizedName.includes('celular')) return '📱';
+  if (normalizedName.includes('rádio') || normalizedName.includes('radio')) return '📻';
+  if (normalizedName.includes('carregador')) return '🔌';
+  if (normalizedName.includes('bateria')) return '🔋';
+  if (normalizedName.includes('lanterna')) return '🔦';
+  
+  // Ferramentas e Equipamentos
+  if (normalizedName.includes('faca') || normalizedName.includes('canivete')) return '🔪';
+  if (normalizedName.includes('ferramenta')) return '🔧';
+  if (normalizedName.includes('corda')) return '➰';
+  if (normalizedName.includes('fósforo') || normalizedName.includes('fosforo')) return '🔥';
+  if (normalizedName.includes('isqueiro')) return '🔥';
+  if (normalizedName.includes('pilha')) return '🔋';
+  
+  // Itens de Sobrevivência
+  if (normalizedName.includes('mapa')) return '🗺️';
+  if (normalizedName.includes('bússola') || normalizedName.includes('bussola')) return '🧭';
+  if (normalizedName.includes('apito')) return '🎯';
+  if (normalizedName.includes('cobertor')) return '🛏️';
+  if (normalizedName.includes('saco') && normalizedName.includes('dormir')) return '🛏️';
+  
+  // Itens para Pets
+  if (normalizedName.includes('ração') || normalizedName.includes('racao')) return '🐾';
+  if (normalizedName.includes('pet') || normalizedName.includes('animal')) return '🐾';
+  
+  // Itens de Limpeza
+  if (normalizedName.includes('álcool') || normalizedName.includes('alcool')) return '🧴';
+  if (normalizedName.includes('desinfetante')) return '🧴';
+  if (normalizedName.includes('cloro')) return '🧴';
+  
+  // Outros
+  if (normalizedName.includes('dinheiro')) return '💵';
+  if (normalizedName.includes('caderno') || normalizedName.includes('bloco')) return '📓';
+  if (normalizedName.includes('caneta')) return '✏️';
+  if (normalizedName.includes('óculos') || normalizedName.includes('oculos')) return '👓';
+  
+  // Fallback para o ícone da categoria ou padrão
+  return null;
+};
 
-const getItemIcon = (category) => {
-  const icons = {
-    'AGUA': '💧',
-    'ALIMENTO': '🥫',
-    'MEDICAMENTO': '💊',
-    'HIGIENE': '🧼',
-    'DOCUMENTO': '📄',
-    'FERRAMENTA': '🔧',
-    'ROUPA': '👕',
-    'COMUNICACAO': '📱',
-    'PRIMEIROS_SOCORROS': '🏥',
-    default: '📦'
-  };
-  return icons[category] || icons.default;
+const getItemIcon = (category, name) => {
+  // Primeiro tenta encontrar um ícone específico pelo nome
+  const specificIcon = name ? getItemIconByName(name) : null;
+  if (specificIcon) return specificIcon;
+
+  // Se não encontrar, usa o ícone da categoria
+  switch (category) {
+    case 'AGUA':
+      return '💧';
+    case 'ALIMENTO':
+      return '🍽️';
+    case 'MEDICAMENTO':
+      return '💊';
+    case 'HIGIENE':
+      return '🧼';
+    case 'DOCUMENTO':
+      return '📄';
+    case 'FERRAMENTA':
+      return '🔧';
+    case 'ROUPA':
+      return '👕';
+    case 'COMUNICACAO':
+      return '📱';
+    case 'PRIMEIROS_SOCORROS':
+      return '🏥';
+    default:
+      return '📦';
+  }
 };
 
 const KitDetails = () => {
-  const [kit, setKit] = useState(null);
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(true);
   const { id } = useParams();
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const [kit, setKit] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (!user) {
-      navigate('/login');
-      return;
-    }
-    loadKit();
-  }, [id, user]);
+    const fetchKit = async () => {
+      try {
+        if (!id) {
+          throw new Error('ID do kit não fornecido');
+        }
 
-  const loadKit = async () => {
-    try {
-      setLoading(true);
-      setError('');
-      const response = await kits.getById(id);
-      setKit(response.data);
-    } catch (err) {
-      console.error('Error loading kit:', err);
-      setError('Erro ao carregar os detalhes do kit.');
-    } finally {
-      setLoading(false);
+        console.log('Fetching kit with ID:', id);
+        const response = await kits.getById(id);
+        
+        if (!response || !response.data) {
+          throw new Error('Kit não encontrado');
+        }
+        
+        // Garante que temos os dados corretos mesmo se estiverem aninhados
+        const kitData = response.data.kit || response.data;
+        console.log('Dados brutos do kit:', kitData);
+        
+        // Processa os dados para garantir os tipos corretos
+        const processedKit = {
+          ...kitData,
+          id: kitData.id || kitData.kitId || id,
+          numResidents: kitData.numResidents || kitData.residents || 0,
+          hasChildren: Boolean(kitData.hasChildren),
+          hasElderly: Boolean(kitData.hasElderly),
+          hasPets: Boolean(kitData.hasPets),
+          isCustom: Boolean(kitData.isCustom)
+        };
+
+        // Se recommendedItems for uma string, tenta fazer o parse
+        if (typeof processedKit.recommendedItems === 'string') {
+          try {
+            processedKit.recommendedItems = JSON.parse(processedKit.recommendedItems);
+          } catch (err) {
+            console.warn('Erro ao fazer parse dos itens recomendados:', err);
+            processedKit.recommendedItems = [];
+          }
+        } else if (!Array.isArray(processedKit.recommendedItems)) {
+          processedKit.recommendedItems = [];
+        }
+        
+        console.log('Dados do kit processados:', processedKit);
+        setKit(processedKit);
+      } catch (err) {
+        console.error('Error fetching kit:', err);
+        setError(err.message || 'Erro ao carregar o kit');
+        if (err.response?.status === 400) {
+          navigate('/emergency-kits');
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchKit();
+  }, [id, navigate]);
+
+  // Debug log para verificar os dados do kit após serem definidos
+  useEffect(() => {
+    if (kit) {
+      console.log('Estado atual do kit:', {
+        id: kit.id,
+        region: kit.region,
+        numResidents: kit.numResidents,
+        houseType: kit.houseType,
+        isCustom: kit.isCustom,
+        allData: kit
+      });
     }
-  };
+  }, [kit]);
 
   if (loading) {
     return (
       <PageContainer>
-        <LoadingContainer>
-          <Spinner animation="border" variant="info" size="lg" />
-        </LoadingContainer>
+        <Container>
+          <div className="text-center text-white">
+            <div className="spinner-border" role="status">
+              <span className="visually-hidden">Carregando...</span>
+            </div>
+          </div>
+        </Container>
       </PageContainer>
     );
   }
@@ -220,16 +422,39 @@ const KitDetails = () => {
     return (
       <PageContainer>
         <Container>
+          <StyledAlert variant="danger">
+            {error || 'Kit não encontrado'}
+          </StyledAlert>
           <BackButton onClick={() => navigate('/emergency-kits')}>
             ← Voltar para Kits
           </BackButton>
-          <StyledAlert variant="danger">
-            {error || 'Kit não encontrado.'}
-          </StyledAlert>
         </Container>
       </PageContainer>
     );
   }
+
+  // Função auxiliar para traduzir a região
+  const getRegionText = (region) => {
+    const regions = {
+      'SUDESTE': 'Sudeste',
+      'NORDESTE': 'Nordeste',
+      'CENTRO_OESTE': 'Centro-Oeste',
+      'SUL': 'Sul',
+      'NORTE': 'Norte'
+    };
+    return regions[region] || region;
+  };
+
+  // Função auxiliar para traduzir o tipo de residência
+  const getHouseTypeText = (type) => {
+    const types = {
+      'CASA': 'Casa',
+      'APARTAMENTO': 'Apartamento',
+      'SITIO': 'Sítio',
+      'OUTRO': 'Outro'
+    };
+    return types[type] || type;
+  };
 
   return (
     <PageContainer>
@@ -239,38 +464,44 @@ const KitDetails = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          <PageHeader>
-            <BackButton onClick={() => navigate('/emergency-kits')}>
-              ← Voltar para Kits
-            </BackButton>
-            <PageTitle>
-              <span>📦</span>
-              Kit de Emergência #{kit.kitId}
-            </PageTitle>
-          </PageHeader>
+          <BackButton onClick={() => navigate('/emergency-kits')}>
+            ← Voltar para Kits
+          </BackButton>
+          
+          <PageTitle>
+            <span>📦</span>
+            Kit de Emergência {kit.id ? `#${kit.id}` : ''}
+          </PageTitle>
 
           <KitInfo>
             <KitInfoBody>
               <InfoGrid>
                 <InfoItem>
+                  <span>🎯</span>
+                  <div>
+                    <strong>Tipo de Kit:</strong>
+                    {kit.isCustom ? 'Personalizado' : 'Automático'}
+                  </div>
+                </InfoItem>
+                <InfoItem>
                   <span>🏠</span>
                   <div>
                     <strong>Tipo de Residência:</strong>
-                    {kit.houseType}
+                    {getHouseTypeText(kit.houseType)}
                   </div>
                 </InfoItem>
                 <InfoItem>
                   <span>📍</span>
                   <div>
                     <strong>Região:</strong>
-                    {kit.region}
+                    {getRegionText(kit.region)}
                   </div>
                 </InfoItem>
                 <InfoItem>
                   <span>👥</span>
                   <div>
                     <strong>Número de Moradores:</strong>
-                    {kit.numResidents}
+                    {typeof kit.numResidents === 'number' ? kit.numResidents : 0}
                   </div>
                 </InfoItem>
                 <InfoItem>
@@ -294,80 +525,159 @@ const KitDetails = () => {
                     {kit.hasPets ? 'Sim' : 'Não'}
                   </div>
                 </InfoItem>
+                {kit.createdAt && (
+                  <InfoItem>
+                    <span>📅</span>
+                    <div>
+                      <strong>Criado em:</strong>
+                      {new Date(kit.createdAt).toLocaleDateString('pt-BR', {
+                        day: '2-digit',
+                        month: '2-digit',
+                        year: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                      })}
+                    </div>
+                  </InfoItem>
+                )}
+                {kit.updatedAt && kit.updatedAt !== kit.createdAt && (
+                  <InfoItem>
+                    <span>🔄</span>
+                    <div>
+                      <strong>Última Atualização:</strong>
+                      {new Date(kit.updatedAt).toLocaleDateString('pt-BR', {
+                        day: '2-digit',
+                        month: '2-digit',
+                        year: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                      })}
+                    </div>
+                  </InfoItem>
+                )}
               </InfoGrid>
             </KitInfoBody>
           </KitInfo>
 
-          {kit.recommendedItems && (
+          {kit.recommendedItems && Array.isArray(kit.recommendedItems) && kit.recommendedItems.length > 0 ? (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
             >
-              <SectionTitle>Itens Recomendados</SectionTitle>
-              <Card className="bg-transparent border-0">
-                <Card.Body>
-                  <pre style={{ 
-                    whiteSpace: 'pre-wrap', 
-                    color: 'white',
-                    background: 'rgba(255, 255, 255, 0.05)',
-                    padding: '1.5rem',
-                    borderRadius: '15px',
-                    border: '1px solid rgba(255, 255, 255, 0.1)',
-                    fontSize: '1rem',
-                    lineHeight: '1.6'
-                  }}>
-                    {kit.recommendedItems}
-                  </pre>
-                </Card.Body>
-              </Card>
-            </motion.div>
-          )}
-
-          <SectionTitle>Itens do Kit</SectionTitle>
-          <Row xs={1} md={2} lg={3} className="g-4">
-            {kit.items && kit.items.length > 0 ? (
-              kit.items.map((item, index) => (
-                <Col key={item.itemId}>
-                  <ItemCard
-                    as={motion.div}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
+              <SectionTitle>
+                <span>{kit.isCustom ? '📝' : '🤖'}</span>
+                {kit.isCustom ? 'Itens Personalizados' : 'Itens Recomendados pelo Sistema'}
+              </SectionTitle>
+              <ItemsList>
+                {kit.recommendedItems.map((item, index) => (
+                  <ItemRow
+                    key={index}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: index * 0.1 }}
                   >
-                    <ItemCardBody>
-                      <ItemTitle>
-                        <span>{getItemIcon(item.category)}</span>
-                        {item.name}
-                      </ItemTitle>
-                      <ItemDescription>
-                        {item.description}
-                      </ItemDescription>
-                      <ItemQuantity>
-                        Quantidade: {item.quantity} {item.unit}
-                      </ItemQuantity>
-                      <div>
-                        <strong>Validade:</strong>{' '}
-                        {item.expirationDate ? new Date(item.expirationDate).toLocaleDateString() : 'N/A'}
-                      </div>
-                    </ItemCardBody>
-                  </ItemCard>
-                </Col>
-              ))
-            ) : (
-              <Col>
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 0.5 }}
-                >
-                  <StyledAlert variant="info">
-                    Este kit ainda não possui itens cadastrados.
-                  </StyledAlert>
-                </motion.div>
-              </Col>
-            )}
-          </Row>
+                    <ItemIcon>{getItemIcon(item.category, item.name)}</ItemIcon>
+                    <ItemInfo>
+                      <ItemName>{item.name}</ItemName>
+                      {item.category && (
+                        <ItemCategory>
+                          {item.category === 'AGUA' && 'Água'}
+                          {item.category === 'ALIMENTO' && 'Alimento'}
+                          {item.category === 'MEDICAMENTO' && 'Medicamento'}
+                          {item.category === 'HIGIENE' && 'Higiene'}
+                          {item.category === 'DOCUMENTO' && 'Documento'}
+                          {item.category === 'FERRAMENTA' && 'Ferramenta'}
+                          {item.category === 'ROUPA' && 'Roupa'}
+                          {item.category === 'COMUNICACAO' && 'Comunicação'}
+                          {item.category === 'PRIMEIROS_SOCORROS' && 'Primeiros Socorros'}
+                        </ItemCategory>
+                      )}
+                      <ItemDetails>
+                        {item.quantity && item.unit && (
+                          <div>
+                            <span>📦</span>
+                            {item.quantity} {item.unit}
+                          </div>
+                        )}
+                        {item.expirationDate && (
+                          <div>
+                            <span>📅</span>
+                            {new Date(item.expirationDate).toLocaleDateString('pt-BR')}
+                          </div>
+                        )}
+                      </ItemDetails>
+                      {item.description && (
+                        <ItemDescription>
+                          {item.description.replace(/\\/g, '')}
+                        </ItemDescription>
+                      )}
+                    </ItemInfo>
+                  </ItemRow>
+                ))}
+              </ItemsList>
+            </motion.div>
+          ) : (
+            <NoItemsMessage>
+              <p>Nenhum item encontrado neste kit.</p>
+            </NoItemsMessage>
+          )}
+
+          {!kit.isCustom && kit.items && kit.items.length > 0 && (
+            <>
+              <SectionTitle>
+                <span>📦</span>
+                Itens Adicionados ao Kit
+              </SectionTitle>
+              <ItemsList>
+                {kit.items.map((item, index) => (
+                  <ItemRow
+                    key={item.id || index}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                  >
+                    <ItemIcon>{getItemIcon(item.category, item.name)}</ItemIcon>
+                    <ItemInfo>
+                      <ItemName>{item.name}</ItemName>
+                      {item.category && (
+                        <ItemCategory>
+                          {item.category === 'AGUA' && 'Água'}
+                          {item.category === 'ALIMENTO' && 'Alimento'}
+                          {item.category === 'MEDICAMENTO' && 'Medicamento'}
+                          {item.category === 'HIGIENE' && 'Higiene'}
+                          {item.category === 'DOCUMENTO' && 'Documento'}
+                          {item.category === 'FERRAMENTA' && 'Ferramenta'}
+                          {item.category === 'ROUPA' && 'Roupa'}
+                          {item.category === 'COMUNICACAO' && 'Comunicação'}
+                          {item.category === 'PRIMEIROS_SOCORROS' && 'Primeiros Socorros'}
+                        </ItemCategory>
+                      )}
+                      <ItemDetails>
+                        {item.quantity && item.unit && (
+                          <div>
+                            <span>📦</span>
+                            {item.quantity} {item.unit}
+                          </div>
+                        )}
+                        {item.expirationDate && (
+                          <div>
+                            <span>📅</span>
+                            {new Date(item.expirationDate).toLocaleDateString('pt-BR')}
+                          </div>
+                        )}
+                      </ItemDetails>
+                      {item.description && (
+                        <ItemDescription>
+                          {item.description}
+                        </ItemDescription>
+                      )}
+                    </ItemInfo>
+                  </ItemRow>
+                ))}
+              </ItemsList>
+            </>
+          )}
         </motion.div>
       </Container>
     </PageContainer>

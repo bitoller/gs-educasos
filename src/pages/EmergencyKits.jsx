@@ -6,6 +6,7 @@ import { kits } from '../services/api';
 import UnauthorizedContent from '../components/UnauthorizedContent';
 import { motion } from 'framer-motion';
 import styled from 'styled-components';
+import ReactDOM from 'react-dom/client';
 
 const PageContainer = styled.div`
   min-height: 100vh;
@@ -50,7 +51,7 @@ const CreateKitButton = styled(Button)`
   }
 `;
 
-const KitCard = styled(motion(Card))`
+const KitCard = styled(motion.div)`
   background: rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.1);
@@ -58,6 +59,8 @@ const KitCard = styled(motion(Card))`
   overflow: hidden;
   height: 100%;
   transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
 
   &:hover {
     transform: translateY(-5px);
@@ -69,16 +72,21 @@ const KitCard = styled(motion(Card))`
 const KitCardBody = styled(Card.Body)`
   padding: 1.5rem;
   color: white;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 `;
 
 const KitTitle = styled.h3`
   font-size: 1.4rem;
-  margin-bottom: 1.2rem;
+  margin-bottom: 1.5rem;
   color: #fff;
   font-weight: 600;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.75rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 
   span {
     font-size: 1.6rem;
@@ -88,19 +96,57 @@ const KitTitle = styled.h3`
 const KitInfo = styled.div`
   margin-bottom: 1.5rem;
   color: rgba(255, 255, 255, 0.9);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 `;
 
-const InfoItem = styled.div`
+const KitInfoItem = styled.div`
   display: flex;
-  align-items: center;
-  margin-bottom: 0.8rem;
-  gap: 0.5rem;
-  font-size: 1rem;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 8px;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.05);
+  }
 
   span {
-    opacity: 0.7;
+    font-size: 1.2rem;
+    opacity: 0.9;
+    margin-top: 2px;
+  }
+
+  div {
+    flex: 1;
+    
+    strong {
+      display: inline;
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 0.9rem;
+      margin-right: 0.5rem;
+    }
+  }
+`;
+
+const KitDate = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.9rem;
+  padding: 0.75rem;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 8px;
+  margin-bottom: 1rem;
+
+  span {
     font-size: 1.1rem;
-    margin-right: 0.3rem;
+    opacity: 0.8;
   }
 `;
 
@@ -108,17 +154,52 @@ const KitActions = styled.div`
   display: flex;
   gap: 1rem;
   margin-top: auto;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
 `;
 
-const ActionButton = styled(Button)`
+const ViewButton = styled(Button)`
   flex: 1;
+  background: rgba(79, 172, 254, 0.1);
+  border: 1px solid rgba(79, 172, 254, 0.3);
+  color: #4facfe;
   padding: 0.8rem;
   border-radius: 12px;
   font-weight: 500;
   transition: all 0.3s ease;
-  backdrop-filter: blur(5px);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-size: 0.9rem;
 
   &:hover {
+    background: rgba(79, 172, 254, 0.2);
+    border-color: rgba(79, 172, 254, 0.4);
+    color: #4facfe;
+    transform: translateY(-2px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+`;
+
+const DeleteButton = styled(Button)`
+  flex: 1;
+  background: rgba(255, 69, 58, 0.1);
+  border: 1px solid rgba(255, 69, 58, 0.3);
+  color: #ff453a;
+  padding: 0.8rem;
+  border-radius: 12px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-size: 0.9rem;
+
+  &:hover {
+    background: rgba(255, 69, 58, 0.2);
+    border-color: rgba(255, 69, 58, 0.4);
+    color: #ff453a;
     transform: translateY(-2px);
   }
 
@@ -169,6 +250,33 @@ const LoadingContainer = styled.div`
   color: white;
 `;
 
+const SuccessMessage = styled.div`
+  position: fixed;
+  top: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  padding: 1rem 2rem;
+  border-radius: 8px;
+  background-color: rgba(40, 167, 69, 0.95);
+  color: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  animation: slideDown 0.3s ease-out;
+  backdrop-filter: blur(5px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+
+  @keyframes slideDown {
+    from {
+      transform: translate(-50%, -20px);
+      opacity: 0;
+    }
+    to {
+      transform: translate(-50%, 0);
+      opacity: 1;
+    }
+  }
+`;
+
 const getKitIcon = (houseType) => {
   const icons = {
     'CASA': '🏠',
@@ -209,12 +317,61 @@ const EmergencyKits = () => {
   const loadKits = async () => {
     try {
       const response = await kits.getAll();
-      setUserKits(response.data);
+      console.log('Raw response from API:', response);
+      
+      const processedKits = Array.isArray(response.data) ? response.data.map(kit => {
+        console.log('Processing kit:', kit);
+        return {
+          ...kit,
+          id: kit.id || kit.kitId,
+          numResidents: kit.numResidents || kit.residents || 0,
+          houseType: kit.houseType || 'OUTRO',
+          region: kit.region || 'SUDESTE'
+        };
+      }) : [];
+      
+      console.log('Processed kits:', processedKits);
+      setUserKits(processedKits);
     } catch (err) {
       console.error('Error loading kits:', err);
       setError('Erro ao carregar os kits de emergência.');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDeleteKit = async (kitId) => {
+    try {
+      if (!window.confirm('Tem certeza que deseja excluir este kit?')) {
+        return;
+      }
+
+      console.log('Deleting kit:', kitId);
+      await kits.delete(kitId);
+      
+      setUserKits(prevKits => prevKits.filter(kit => kit.id !== kitId));
+      
+      const successMessageElement = document.createElement('div');
+      successMessageElement.id = 'success-message';
+      document.body.appendChild(successMessageElement);
+
+      const root = ReactDOM.createRoot(successMessageElement);
+      root.render(
+        <SuccessMessage>
+          Kit excluído com sucesso!
+        </SuccessMessage>
+      );
+
+      setTimeout(() => {
+        if (successMessageElement && document.body.contains(successMessageElement)) {
+          root.unmount();
+          document.body.removeChild(successMessageElement);
+        }
+      }, 3000);
+
+    } catch (err) {
+      console.error('Error deleting kit:', err);
+      setError('Erro ao excluir o kit. Por favor, tente novamente.');
     }
   };
 
@@ -249,7 +406,11 @@ const EmergencyKits = () => {
           </CreateKitButton>
         </PageHeader>
 
-        {error && <StyledAlert variant="danger">{error}</StyledAlert>}
+        {error && (
+          <StyledAlert variant="danger" onClose={() => setError('')} dismissible>
+            {error}
+          </StyledAlert>
+        )}
 
         {userKits.length === 0 ? (
           <motion.div
@@ -271,44 +432,77 @@ const EmergencyKits = () => {
         ) : (
           <Row xs={1} md={2} lg={3} className="g-4">
             {userKits.map((kit, index) => (
-              <Col key={kit.kitId}>
+              <Col key={kit.id || index}>
                 <KitCard
-                  as={motion.div}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.1 }}
-                  onClick={() => navigate(`/emergency-kits/${kit.kitId}`)}
+                  onClick={(e) => {
+                    if (e.target.closest('button')) {
+                      e.stopPropagation();
+                      return;
+                    }
+                    navigate(`/emergency-kits/${kit.id}`);
+                  }}
                   style={{ cursor: 'pointer' }}
                 >
                   <KitCardBody>
                     <KitTitle>
-                      <span>{getKitIcon(kit.houseType)}</span>
-                      Kit {kit.kitId}
+                      <span>📦</span>
+                      Kit de Emergência {kit.id ? `#${kit.id}` : ''}
                     </KitTitle>
                     <KitInfo>
-                      <InfoItem>
-                        <span>{getKitIcon(kit.houseType)}</span>
-                        <strong>Residência:</strong> {kit.houseType}
-                      </InfoItem>
-                      <InfoItem>
-                        <span>{getRegionIcon(kit.region)}</span>
-                        <strong>Região:</strong> {kit.region}
-                      </InfoItem>
-                      <InfoItem>
+                      <KitInfoItem>
+                        <span>🎯</span>
+                        <div>
+                          <strong>Tipo:</strong>
+                          {kit.isCustom ? 'Personalizado' : 'Automático'}
+                        </div>
+                      </KitInfoItem>
+                      <KitInfoItem>
+                        <span>🏠</span>
+                        <div>
+                          <strong>Residência:</strong>
+                          {kit.houseType === 'CASA' && 'Casa'}
+                          {kit.houseType === 'APARTAMENTO' && 'Apartamento'}
+                          {kit.houseType === 'SITIO' && 'Sítio'}
+                          {kit.houseType === 'OUTRO' && 'Outro'}
+                        </div>
+                      </KitInfoItem>
+                      <KitInfoItem>
                         <span>👥</span>
-                        <strong>Moradores:</strong> {kit.numResidents}
-                      </InfoItem>
+                        <div>
+                          <strong>Moradores:</strong>
+                          {(kit.numResidents || kit.residents) > 0 
+                            ? (kit.numResidents || kit.residents) 
+                            : '0'}
+                        </div>
+                      </KitInfoItem>
+                      <KitInfoItem>
+                        <span>📍</span>
+                        <div>
+                          <strong>Região:</strong>
+                          {kit.region === 'SUDESTE' && 'Sudeste'}
+                          {kit.region === 'NORDESTE' && 'Nordeste'}
+                          {kit.region === 'CENTRO_OESTE' && 'Centro-Oeste'}
+                          {kit.region === 'SUL' && 'Sul'}
+                          {kit.region === 'NORTE' && 'Norte'}
+                        </div>
+                      </KitInfoItem>
                     </KitInfo>
+                    {kit.createdAt && (
+                      <KitDate>
+                        <span>📅</span>
+                        Criado em: {new Date(kit.createdAt).toLocaleDateString('pt-BR')}
+                      </KitDate>
+                    )}
                     <KitActions>
-                      <ActionButton 
-                        variant="primary"
-                        onClick={() => navigate(`/emergency-kits/${kit.kitId}`)}
-                      >
+                      <ViewButton onClick={() => navigate(`/emergency-kits/${kit.id}`)}>
                         Ver Detalhes
-                      </ActionButton>
-                      <ActionButton variant="outline-danger">
+                      </ViewButton>
+                      <DeleteButton onClick={() => handleDeleteKit(kit.id)}>
                         Excluir
-                      </ActionButton>
+                      </DeleteButton>
                     </KitActions>
                   </KitCardBody>
                 </KitCard>

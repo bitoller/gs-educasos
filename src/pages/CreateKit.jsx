@@ -217,6 +217,7 @@ const CreateKit = () => {
   const { user } = useAuth();
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [isCustomKit, setIsCustomKit] = useState(false);
 
   const [formData, setFormData] = useState({
     houseType: '',
@@ -225,15 +226,16 @@ const CreateKit = () => {
     hasChildren: false,
     hasElderly: false,
     hasPets: false,
+    isCustom: false,
     items: []
   });
 
   const [newItem, setNewItem] = useState({
     name: '',
+    description: '',
     category: '',
     quantity: '',
     unit: '',
-    description: '',
     expirationDate: ''
   });
 
@@ -255,20 +257,26 @@ const CreateKit = () => {
 
   const addItem = (e) => {
     e.preventDefault();
-    if (!newItem.name || !newItem.category || !newItem.quantity || !newItem.unit) {
+    if (!newItem.name) {
       return;
     }
+
+    // Ensure we have at least a name for the item
+    const itemToAdd = {
+      id: Date.now(),
+      name: newItem.name.trim(),
+      description: newItem.description ? newItem.description.trim() : ''
+    };
+
     setFormData(prev => ({
       ...prev,
-      items: [...prev.items, { ...newItem, id: Date.now() }]
+      items: [...prev.items, itemToAdd]
     }));
+
+    // Reset the form
     setNewItem({
       name: '',
-      category: '',
-      quantity: '',
-      unit: '',
-      description: '',
-      expirationDate: ''
+      description: ''
     });
   };
 
@@ -290,21 +298,98 @@ const CreateKit = () => {
       setSubmitting(true);
       setError('');
       
-      // Prepare the data according to the backend's expected format
-      const kitData = {
-        houseType: formData.houseType,
-        numResidents: parseInt(formData.numResidents),
-        hasChildren: formData.hasChildren,
-        hasElderly: formData.hasElderly,
-        hasPets: formData.hasPets,
-        region: formData.region
-      };
+      let kitData;
+      
+      if (isCustomKit) {
+        // Prepare custom kit data
+        const recommendedItems = formData.items.map(item => ({
+          name: item.name,
+          description: item.description || ''
+        }));
 
+        kitData = {
+          houseType: formData.houseType,
+          numResidents: parseInt(formData.numResidents),
+          hasChildren: formData.hasChildren,
+          hasElderly: formData.hasElderly,
+          hasPets: formData.hasPets,
+          region: formData.region,
+          isCustom: true,
+          recommendedItems: JSON.stringify(recommendedItems)
+        };
+      } else {
+        // Prepare automatic kit data
+        kitData = {
+          houseType: formData.houseType,
+          numResidents: parseInt(formData.numResidents),
+          hasChildren: formData.hasChildren,
+          hasElderly: formData.hasElderly,
+          hasPets: formData.hasPets,
+          region: formData.region,
+          isCustom: false
+        };
+      }
+
+      console.log('Enviando dados do kit:', kitData);
+      
       const response = await kits.create(kitData);
-      navigate(`/emergency-kits/${response.data.kitId}`);
+      
+      console.log('Resposta da criação do kit:', response);
+      
+      if (!response || !response.data) {
+        throw new Error('Resposta inválida do servidor');
+      }
+
+      // Extrai os dados da resposta
+      const responseData = response.data;
+      console.log('Dados da resposta:', responseData);
+
+      // Tenta encontrar o ID do kit na resposta
+      let kitId = null;
+
+      if (typeof responseData === 'object') {
+        // Tenta diferentes possíveis localizações do ID
+        kitId = responseData.id || 
+               responseData.kitId || 
+               responseData.kit?.id || 
+               responseData.kit?.kitId;
+
+        // Se ainda não encontrou, procura em qualquer campo que contenha um ID
+        if (!kitId) {
+          for (const key in responseData) {
+            if (responseData[key] && typeof responseData[key] === 'object') {
+              const possibleId = responseData[key].id || responseData[key].kitId;
+              if (possibleId) {
+                kitId = possibleId;
+                break;
+              }
+            }
+          }
+        }
+      }
+
+      if (!kitId) {
+        console.error('Estrutura da resposta:', responseData);
+        throw new Error('Não foi possível encontrar o ID do kit na resposta do servidor. Verifique o console para mais detalhes.');
+      }
+      
+      navigate(`/emergency-kits/${kitId}`);
     } catch (err) {
       console.error('Error creating kit:', err);
-      setError('Erro ao criar o kit. Por favor, tente novamente.');
+      let errorMessage = 'Erro ao criar o kit. ';
+      
+      if (err.response) {
+        // Erro da API com resposta
+        errorMessage += err.response.data?.message || err.response.statusText || err.message;
+      } else if (err.request) {
+        // Erro de rede
+        errorMessage += 'Não foi possível conectar ao servidor. Verifique sua conexão.';
+      } else {
+        // Outros erros
+        errorMessage += err.message;
+      }
+      
+      setError(errorMessage);
       setSubmitting(false);
     }
   };
@@ -332,6 +417,32 @@ const CreateKit = () => {
           <FormCard>
             <FormCardBody>
               <StyledForm onSubmit={handleSubmit}>
+                <FormSection>
+                  <SectionTitle>
+                    <span>🎯</span>
+                    Tipo de Kit
+                  </SectionTitle>
+                  <Form.Group className="mb-4">
+                    <Form.Check
+                      type="radio"
+                      id="automatic-kit"
+                      name="kitType"
+                      label="Kit Automático (Recomendações baseadas no seu perfil)"
+                      checked={!isCustomKit}
+                      onChange={() => setIsCustomKit(false)}
+                      className="mb-2"
+                    />
+                    <Form.Check
+                      type="radio"
+                      id="custom-kit"
+                      name="kitType"
+                      label="Kit Personalizado (Você define os itens)"
+                      checked={isCustomKit}
+                      onChange={() => setIsCustomKit(true)}
+                    />
+                  </Form.Group>
+                </FormSection>
+
                 <FormSection>
                   <SectionTitle>
                     <span>🏠</span>
@@ -362,10 +473,11 @@ const CreateKit = () => {
                       required
                     >
                       <option value="">Selecione...</option>
-                      <option value="URBANA">Urbana</option>
-                      <option value="RURAL">Rural</option>
-                      <option value="COSTEIRA">Costeira</option>
-                      <option value="MONTANHOSA">Montanhosa</option>
+                      <option value="SUDESTE">Sudeste</option>
+                      <option value="NORDESTE">Nordeste</option>
+                      <option value="CENTRO_OESTE">Centro-Oeste</option>
+                      <option value="SUL">Sul</option>
+                      <option value="NORTE">Norte</option>
                     </Form.Select>
                   </Form.Group>
 
@@ -421,133 +533,82 @@ const CreateKit = () => {
                   </Form.Group>
                 </FormSection>
 
-                <FormSection>
-                  <SectionTitle>
-                    <span>📦</span>
-                    Itens do Kit
-                  </SectionTitle>
+                {isCustomKit && (
+                  <FormSection>
+                    <SectionTitle>
+                      <span>📦</span>
+                      Itens do Kit
+                    </SectionTitle>
 
-                  <ItemsContainer>
-                    {formData.items.map((item) => (
-                      <ItemCard key={item.id}>
-                        <ItemCardBody>
-                          <ItemHeader>
-                            <strong>{item.name}</strong>
-                            <RemoveButton
-                              variant="danger"
-                              size="sm"
-                              onClick={() => removeItem(item.id)}
-                            >
-                              Remover
-                            </RemoveButton>
-                          </ItemHeader>
-                          <div>
-                            <small>
-                              {item.quantity} {item.unit} - {item.category}
-                            </small>
-                          </div>
-                        </ItemCardBody>
-                      </ItemCard>
-                    ))}
+                    <ItemsContainer>
+                      {formData.items.map((item) => (
+                        <ItemCard key={item.id}>
+                          <ItemCardBody>
+                            <ItemHeader>
+                              <strong>{item.name}</strong>
+                              <RemoveButton
+                                variant="danger"
+                                size="sm"
+                                onClick={() => removeItem(item.id)}
+                              >
+                                Remover
+                              </RemoveButton>
+                            </ItemHeader>
+                            {item.description && (
+                              <div>
+                                <small>
+                                  {item.description}
+                                </small>
+                              </div>
+                            )}
+                          </ItemCardBody>
+                        </ItemCard>
+                      ))}
 
-                    <Form.Group className="mb-3">
-                      <Form.Label>Nome do Item</Form.Label>
-                      <Form.Control
-                        type="text"
-                        name="name"
-                        value={newItem.name}
-                        onChange={handleItemInputChange}
-                        placeholder="Ex: Água Mineral"
-                      />
-                    </Form.Group>
+                      <Form.Group className="mb-3">
+                        <Form.Label>Nome do Item</Form.Label>
+                        <Form.Control
+                          type="text"
+                          name="name"
+                          value={newItem.name}
+                          onChange={handleItemInputChange}
+                          placeholder="Ex: Água Mineral"
+                        />
+                      </Form.Group>
 
-                    <Form.Group className="mb-3">
-                      <Form.Label>Categoria</Form.Label>
-                      <Form.Select
-                        name="category"
-                        value={newItem.category}
-                        onChange={handleItemInputChange}
+                      <Form.Group className="mb-3">
+                        <Form.Label>Descrição</Form.Label>
+                        <Form.Control
+                          as="textarea"
+                          rows={2}
+                          name="description"
+                          value={newItem.description}
+                          onChange={handleItemInputChange}
+                          placeholder="Descrição opcional do item"
+                        />
+                      </Form.Group>
+
+                      <AddItemButton
+                        type="button"
+                        variant="outline-light"
+                        onClick={addItem}
+                        disabled={!newItem.name}
                       >
-                        <option value="">Selecione...</option>
-                        <option value="AGUA">Água</option>
-                        <option value="ALIMENTO">Alimento</option>
-                        <option value="MEDICAMENTO">Medicamento</option>
-                        <option value="HIGIENE">Higiene</option>
-                        <option value="DOCUMENTO">Documento</option>
-                        <option value="FERRAMENTA">Ferramenta</option>
-                        <option value="ROUPA">Roupa</option>
-                        <option value="COMUNICACAO">Comunicação</option>
-                        <option value="PRIMEIROS_SOCORROS">Primeiros Socorros</option>
-                      </Form.Select>
-                    </Form.Group>
-
-                    <div className="row">
-                      <div className="col-md-6">
-                        <Form.Group className="mb-3">
-                          <Form.Label>Quantidade</Form.Label>
-                          <Form.Control
-                            type="number"
-                            name="quantity"
-                            value={newItem.quantity}
-                            onChange={handleItemInputChange}
-                            min="1"
-                          />
-                        </Form.Group>
-                      </div>
-                      <div className="col-md-6">
-                        <Form.Group className="mb-3">
-                          <Form.Label>Unidade</Form.Label>
-                          <Form.Select
-                            name="unit"
-                            value={newItem.unit}
-                            onChange={handleItemInputChange}
-                          >
-                            <option value="">Selecione...</option>
-                            <option value="UNIDADE">Unidade</option>
-                            <option value="LITRO">Litro</option>
-                            <option value="KG">Kg</option>
-                            <option value="PACOTE">Pacote</option>
-                            <option value="CAIXA">Caixa</option>
-                          </Form.Select>
-                        </Form.Group>
-                      </div>
-                    </div>
-
-                    <Form.Group className="mb-3">
-                      <Form.Label>Descrição</Form.Label>
-                      <Form.Control
-                        as="textarea"
-                        rows={2}
-                        name="description"
-                        value={newItem.description}
-                        onChange={handleItemInputChange}
-                        placeholder="Descrição opcional do item"
-                      />
-                    </Form.Group>
-
-                    <Form.Group className="mb-3">
-                      <Form.Label>Data de Validade</Form.Label>
-                      <Form.Control
-                        type="date"
-                        name="expirationDate"
-                        value={newItem.expirationDate}
-                        onChange={handleItemInputChange}
-                      />
-                    </Form.Group>
-
-                    <AddItemButton
-                      variant="outline-light"
-                      onClick={addItem}
-                      disabled={!newItem.name || !newItem.category || !newItem.quantity || !newItem.unit}
-                    >
-                      + Adicionar Item
-                    </AddItemButton>
-                  </ItemsContainer>
-                </FormSection>
+                        + Adicionar Item
+                      </AddItemButton>
+                    </ItemsContainer>
+                  </FormSection>
+                )}
 
                 <SubmitButton
                   type="submit"
-                  disabled={submitting || !formData.houseType || !formData.region || !formData.numResidents}
+                  disabled={
+                    submitting || 
+                    !formData.houseType || 
+                    !formData.region || 
+                    !formData.numResidents ||
+                    (isCustomKit && formData.items.length === 0)
+                  }
                 >
                   {submitting ? 'Criando...' : 'Criar Kit de Emergência'}
                 </SubmitButton>
