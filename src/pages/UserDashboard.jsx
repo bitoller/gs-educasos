@@ -3,6 +3,8 @@ import { Container, Row, Col, Card, Table, Button, Nav, Alert, Badge, ProgressBa
 import { Link } from 'react-router-dom';
 import { kits, content } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
+import { FaUser, FaMedkit, FaBook, FaQuestionCircle, FaEdit, FaEye, FaRedo } from 'react-icons/fa';
+import '../styles/dashboard.css';
 
 const UserDashboard = () => {
   const { user } = useAuth();
@@ -13,6 +15,7 @@ const UserDashboard = () => {
   const [error, setError] = useState('');
 
   useEffect(() => {
+    document.title = 'Dashboard do Usuário - Disaster Awareness';
     loadData();
   }, [activeTab]);
 
@@ -25,7 +28,6 @@ const UserDashboard = () => {
         setUserKits(kitsResponse.data.filter(kit => kit.userId === user.id));
       } else if (activeTab === 'learning') {
         const contentResponse = await content.getAll();
-        // Simula o progresso do usuário (isso deve vir do backend em produção)
         const progress = contentResponse.data.map(item => ({
           ...item,
           progress: Math.floor(Math.random() * 100)
@@ -34,38 +36,57 @@ const UserDashboard = () => {
       }
     } catch (err) {
       console.error('Error loading dashboard data:', err);
-      setError('Erro ao carregar dados do dashboard.');
+      setError('Erro ao carregar dados do dashboard. Por favor, tente novamente mais tarde.');
     } finally {
       setLoading(false);
     }
   };
 
   const renderProfile = () => (
-    <Card>
+    <Card className="shadow-sm">
       <Card.Body>
         <Row>
           <Col md={4} className="text-center mb-4">
-            <div className="rounded-circle bg-secondary text-white d-inline-flex align-items-center justify-content-center" style={{ width: '150px', height: '150px', fontSize: '3rem' }}>
+            <div 
+              className="rounded-circle bg-primary text-white d-inline-flex align-items-center justify-content-center" 
+              style={{ width: '150px', height: '150px', fontSize: '3rem' }}
+              role="img"
+              aria-label={`Avatar de ${user.name}`}
+            >
               {user.name.charAt(0).toUpperCase()}
             </div>
           </Col>
           <Col md={8}>
-            <h3>{user.name}</h3>
-            <p className="text-muted">{user.email}</p>
-            <hr />
-            <h5>Informações Pessoais</h5>
-            <Row>
+            <h3 className="mb-3">{user.name}</h3>
+            <p className="text-muted mb-4">{user.email}</p>
+            <hr className="my-4" />
+            <h5 className="mb-4">Informações Pessoais</h5>
+            <Row className="mb-4">
               <Col sm={6}>
-                <p><strong>Região:</strong> {user.region || 'Não informado'}</p>
-                <p><strong>Cidade:</strong> {user.city || 'Não informado'}</p>
+                <dl>
+                  <dt>Região</dt>
+                  <dd>{user.region || 'Não informado'}</dd>
+                  <dt>Cidade</dt>
+                  <dd>{user.city || 'Não informado'}</dd>
+                </dl>
               </Col>
               <Col sm={6}>
-                <p><strong>Membro desde:</strong> {new Date(user.createdAt).toLocaleDateString()}</p>
-                <p><strong>Último acesso:</strong> {new Date().toLocaleDateString()}</p>
+                <dl>
+                  <dt>Membro desde</dt>
+                  <dd>{new Date(user.createdAt).toLocaleDateString()}</dd>
+                  <dt>Último acesso</dt>
+                  <dd>{new Date().toLocaleDateString()}</dd>
+                </dl>
               </Col>
             </Row>
-            <Button variant="outline-primary" as={Link} to="/profile/edit">
-              Editar Perfil
+            <Button 
+              variant="primary"
+              as={Link} 
+              to="/profile/edit"
+              className="d-flex align-items-center gap-2"
+              aria-label="Editar perfil"
+            >
+              <FaEdit /> Editar Perfil
             </Button>
           </Col>
         </Row>
@@ -77,35 +98,44 @@ const UserDashboard = () => {
     <>
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h4>Meus Kits de Emergência</h4>
-        <Button as={Link} to="/emergency-kits/new" variant="success">
-          Criar Novo Kit
+        <Button 
+          as={Link} 
+          to="/emergency-kits/new" 
+          variant="success"
+          className="d-flex align-items-center gap-2"
+          aria-label="Criar novo kit de emergência"
+        >
+          <FaMedkit /> Criar Novo Kit
         </Button>
       </div>
       {userKits.length === 0 ? (
-        <Alert variant="info">
-          Você ainda não possui nenhum kit de emergência.{' '}
-          <Link to="/emergency-kits/new">Crie seu primeiro kit agora!</Link>
+        <Alert variant="info" role="alert">
+          <p className="mb-0">Você ainda não possui nenhum kit de emergência.</p>
+          <Link to="/emergency-kits/new" className="alert-link">Crie seu primeiro kit agora!</Link>
         </Alert>
       ) : (
         <Row>
           {userKits.map(kit => (
             <Col md={6} lg={4} key={kit.kitId} className="mb-4">
-              <Card>
+              <Card className="h-100 shadow-sm hover-effect">
                 <Card.Body>
-                  <Card.Title>{kit.houseType}</Card.Title>
-                  <Card.Subtitle className="mb-2 text-muted">
+                  <Card.Title className="h5 mb-3">{kit.houseType}</Card.Title>
+                  <Card.Subtitle className="mb-3 text-muted">
                     {kit.region}
                   </Card.Subtitle>
                   <Card.Text>
-                    <Badge bg="info">{kit.numResidents} moradores</Badge>
+                    <Badge bg="info" className="mb-3">
+                      {kit.numResidents} {kit.numResidents === 1 ? 'morador' : 'moradores'}
+                    </Badge>
                   </Card.Text>
                   <Button
                     as={Link}
                     to={`/emergency-kits/${kit.kitId}`}
                     variant="outline-primary"
-                    size="sm"
+                    className="d-flex align-items-center gap-2"
+                    aria-label={`Ver detalhes do kit ${kit.houseType}`}
                   >
-                    Ver Detalhes
+                    <FaEye /> Ver Detalhes
                   </Button>
                 </Card.Body>
               </Card>
@@ -120,11 +150,14 @@ const UserDashboard = () => {
     <>
       <h4 className="mb-4">Meu Progresso de Aprendizagem</h4>
       {learningProgress.map(item => (
-        <Card key={item.contentId} className="mb-3">
+        <Card key={item.contentId} className="mb-3 shadow-sm hover-effect">
           <Card.Body>
-            <div className="d-flex justify-content-between align-items-center mb-2">
+            <div className="d-flex justify-content-between align-items-center mb-3">
               <h5 className="mb-0">{item.title}</h5>
-              <Badge bg={item.progress === 100 ? 'success' : 'primary'}>
+              <Badge 
+                bg={item.progress === 100 ? 'success' : 'primary'}
+                aria-label={`Progresso: ${item.progress}%`}
+              >
                 {item.progress}%
               </Badge>
             </div>
@@ -132,6 +165,7 @@ const UserDashboard = () => {
               now={item.progress}
               variant={item.progress === 100 ? 'success' : 'primary'}
               className="mb-3"
+              aria-label={`Barra de progresso: ${item.progress}%`}
             />
             <div className="d-flex justify-content-between align-items-center">
               <small className="text-muted">
@@ -142,8 +176,18 @@ const UserDashboard = () => {
                 to={`/learn/${item.contentId}`}
                 variant="outline-primary"
                 size="sm"
+                className="d-flex align-items-center gap-2"
+                aria-label={item.progress === 100 ? 'Revisar conteúdo' : 'Continuar aprendizado'}
               >
-                {item.progress === 100 ? 'Revisar' : 'Continuar'}
+                {item.progress === 100 ? (
+                  <>
+                    <FaRedo /> Revisar
+                  </>
+                ) : (
+                  <>
+                    <FaBook /> Continuar
+                  </>
+                )}
               </Button>
             </div>
           </Card.Body>
@@ -156,15 +200,20 @@ const UserDashboard = () => {
     <>
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h4>Meus Quizzes</h4>
-        <Button as={Link} to="/quizzes" variant="success">
-          Fazer Novo Quiz
+        <Button 
+          as={Link} 
+          to="/quizzes" 
+          variant="success"
+          className="d-flex align-items-center gap-2"
+          aria-label="Fazer novo quiz"
+        >
+          <FaQuestionCircle /> Fazer Novo Quiz
         </Button>
       </div>
 
-      {/* Status geral */}
       <Row className="mb-4">
         <Col md={4}>
-          <Card className="text-center">
+          <Card className="text-center shadow-sm hover-effect">
             <Card.Body>
               <h2 className="mb-0">{user.score || 0}</h2>
               <Card.Text>Pontuação Total</Card.Text>
@@ -172,7 +221,7 @@ const UserDashboard = () => {
           </Card>
         </Col>
         <Col md={4}>
-          <Card className="text-center">
+          <Card className="text-center shadow-sm hover-effect">
             <Card.Body>
               <h2 className="mb-0">{user.completedQuizzes || 0}</h2>
               <Card.Text>Quizzes Completados</Card.Text>
@@ -180,7 +229,7 @@ const UserDashboard = () => {
           </Card>
         </Col>
         <Col md={4}>
-          <Card className="text-center">
+          <Card className="text-center shadow-sm hover-effect">
             <Card.Body>
               <h2 className="mb-0">{user.averageScore || 0}%</h2>
               <Card.Text>Média de Acertos</Card.Text>
@@ -189,51 +238,58 @@ const UserDashboard = () => {
         </Col>
       </Row>
 
-      {/* Histórico de Quizzes */}
-      <Card>
+      <Card className="shadow-sm">
         <Card.Header>
           <h5 className="mb-0">Histórico de Quizzes</h5>
         </Card.Header>
         <Card.Body>
           {user.quizHistory && user.quizHistory.length > 0 ? (
-            <Table responsive>
-              <thead>
-                <tr>
-                  <th>Quiz</th>
-                  <th>Pontuação</th>
-                  <th>Data</th>
-                  <th>Status</th>
-                  <th>Ações</th>
-                </tr>
-              </thead>
-              <tbody>
-                {user.quizHistory.map((quiz) => (
-                  <tr key={quiz.id}>
-                    <td>{quiz.title}</td>
-                    <td>{quiz.score}%</td>
-                    <td>{new Date(quiz.completedAt).toLocaleDateString()}</td>
-                    <td>
-                      <Badge bg={quiz.score >= 70 ? 'success' : 'warning'}>
-                        {quiz.score >= 70 ? 'Aprovado' : 'Precisa Melhorar'}
-                      </Badge>
-                    </td>
-                    <td>
-                      <Button
-                        as={Link}
-                        to={`/quiz/${quiz.quizId}`}
-                        variant="outline-primary"
-                        size="sm"
-                      >
-                        Tentar Novamente
-                      </Button>
-                    </td>
+            <div className="table-responsive">
+              <Table hover>
+                <thead>
+                  <tr>
+                    <th scope="col">Quiz</th>
+                    <th scope="col">Pontuação</th>
+                    <th scope="col">Data</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Ações</th>
                   </tr>
-                ))}
-              </tbody>
-            </Table>
+                </thead>
+                <tbody>
+                  {user.quizHistory.map((quiz) => (
+                    <tr key={quiz.id}>
+                      <td>{quiz.title}</td>
+                      <td>{quiz.score}%</td>
+                      <td>{new Date(quiz.completedAt).toLocaleDateString()}</td>
+                      <td>
+                        <Badge 
+                          bg={quiz.score >= 70 ? 'success' : 'warning'}
+                          aria-label={quiz.score >= 70 ? 'Aprovado' : 'Precisa Melhorar'}
+                        >
+                          {quiz.score >= 70 ? 'Aprovado' : 'Precisa Melhorar'}
+                        </Badge>
+                      </td>
+                      <td>
+                        <Button
+                          as={Link}
+                          to={`/quiz/${quiz.quizId}`}
+                          variant="outline-primary"
+                          size="sm"
+                          className="d-flex align-items-center gap-2"
+                          aria-label="Tentar quiz novamente"
+                        >
+                          <FaRedo /> Tentar Novamente
+                        </Button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </Table>
+            </div>
           ) : (
-            <Alert variant="info">
-              Você ainda não completou nenhum quiz. <Link to="/quizzes">Comece agora!</Link>
+            <Alert variant="info" role="alert">
+              <p className="mb-0">Você ainda não completou nenhum quiz.</p>
+              <Link to="/quizzes" className="alert-link">Comece agora!</Link>
             </Alert>
           )}
         </Card.Body>
@@ -243,52 +299,83 @@ const UserDashboard = () => {
 
   return (
     <Container className="mt-5 pt-5">
-      <h2 className="mb-4">Meu Dashboard</h2>
+      <h2 className="mb-4 visually-hidden">Meu Dashboard</h2>
 
-      {error && <Alert variant="danger">{error}</Alert>}
+      {error && (
+        <Alert variant="danger" role="alert" dismissible>
+          {error}
+        </Alert>
+      )}
 
-      <Card>
-        <Card.Header>
-          <Nav variant="tabs">
-            <Nav.Item>
-              <Nav.Link
-                active={activeTab === 'profile'}
-                onClick={() => setActiveTab('profile')}
+      <Card className="shadow">
+        <Card.Body>
+          <Nav 
+            variant="tabs" 
+            activeKey={activeTab} 
+            onSelect={setActiveTab}
+            className="mb-4"
+            role="tablist"
+          >
+            <Nav.Item role="presentation">
+              <Nav.Link 
+                eventKey="profile"
+                className="d-flex align-items-center gap-2"
+                role="tab"
+                aria-selected={activeTab === 'profile'}
               >
-                Perfil
+                <FaUser /> Perfil
               </Nav.Link>
             </Nav.Item>
-            <Nav.Item>
-              <Nav.Link
-                active={activeTab === 'quizzes'}
-                onClick={() => setActiveTab('quizzes')}
+            <Nav.Item role="presentation">
+              <Nav.Link 
+                eventKey="kits"
+                className="d-flex align-items-center gap-2"
+                role="tab"
+                aria-selected={activeTab === 'kits'}
               >
-                Quizzes
+                <FaMedkit /> Kits
               </Nav.Link>
             </Nav.Item>
-            <Nav.Item>
-              <Nav.Link
-                active={activeTab === 'kits'}
-                onClick={() => setActiveTab('kits')}
+            <Nav.Item role="presentation">
+              <Nav.Link 
+                eventKey="learning"
+                className="d-flex align-items-center gap-2"
+                role="tab"
+                aria-selected={activeTab === 'learning'}
               >
-                Kits de Emergência
+                <FaBook /> Aprendizagem
               </Nav.Link>
             </Nav.Item>
-            <Nav.Item>
-              <Nav.Link
-                active={activeTab === 'learning'}
-                onClick={() => setActiveTab('learning')}
+            <Nav.Item role="presentation">
+              <Nav.Link 
+                eventKey="quizzes"
+                className="d-flex align-items-center gap-2"
+                role="tab"
+                aria-selected={activeTab === 'quizzes'}
               >
-                Progresso
+                <FaQuestionCircle /> Quizzes
               </Nav.Link>
             </Nav.Item>
           </Nav>
-        </Card.Header>
-        <Card.Body>
-          {activeTab === 'profile' && renderProfile()}
-          {activeTab === 'kits' && renderKits()}
-          {activeTab === 'learning' && renderLearning()}
-          {activeTab === 'quizzes' && renderQuizzes()}
+
+          {loading ? (
+            <div className="text-center p-5">
+              <div 
+                className="spinner-border text-primary" 
+                role="status"
+                style={{ width: '3rem', height: '3rem' }}
+              >
+                <span className="visually-hidden">Carregando...</span>
+              </div>
+            </div>
+          ) : (
+            <div role="tabpanel">
+              {activeTab === 'profile' && renderProfile()}
+              {activeTab === 'kits' && renderKits()}
+              {activeTab === 'learning' && renderLearning()}
+              {activeTab === 'quizzes' && renderQuizzes()}
+            </div>
+          )}
         </Card.Body>
       </Card>
     </Container>
