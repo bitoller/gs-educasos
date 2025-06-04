@@ -8,13 +8,17 @@ import java.util.List;
 
 import com.disasterawareness.dao.UserDAO;
 import com.disasterawareness.dao.UserDAOImpl;
+import com.disasterawareness.dao.UserEarnedQuestionPointsDAO;
+import com.disasterawareness.dao.UserEarnedQuestionPointsDAOImpl;
 import com.disasterawareness.model.User;
 
 public class UserService {
     private final UserDAO userDAO;
+    private final UserEarnedQuestionPointsDAO userEarnedQuestionPointsDAO;
 
     public UserService() {
         this.userDAO = new UserDAOImpl();
+        this.userEarnedQuestionPointsDAO = new UserEarnedQuestionPointsDAOImpl();
     }
 
     public User registerUser(String name, String email, String password) throws SQLException {
@@ -77,11 +81,30 @@ public class UserService {
             throw new IllegalArgumentException("Usuário não encontrado.");
         }
 
-        return userDAO.updateScore(userId, score);
+        Integer newScore = user.getScore() + score;
+
+        return userDAO.updateScore(userId, newScore);
+    }
+
+    public User addCompletedQuiz(Long userId, Long quizId) throws SQLException {
+        User user = userDAO.findById(userId);
+        if (user == null) {
+            throw new IllegalArgumentException("Usuário não encontrado.");
+        }
+
+        return userDAO.addCompletedQuiz(userId, quizId);
     }
 
     public List<User> getLeaderboard() throws SQLException {
         return userDAO.getLeaderboard();
+    }
+
+    public boolean hasUserEarnedPointsForQuestion(Long userId, Long questionId) throws SQLException {
+        return userEarnedQuestionPointsDAO.hasUserEarnedPointsForQuestion(userId, questionId);
+    }
+
+    public void recordUserEarnedPointsForQuestion(Long userId, Long questionId) throws SQLException {
+        userEarnedQuestionPointsDAO.recordUserEarnedPointsForQuestion(userId, questionId);
     }
 
     private String generatePasswordHash(String password) {

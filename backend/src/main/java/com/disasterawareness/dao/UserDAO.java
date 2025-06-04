@@ -20,5 +20,7 @@ public interface UserDAO {
 
     User updateScore(Long userId, Integer score) throws SQLException;
 
+    User addCompletedQuiz(Long userId, Long quizId) throws SQLException;
+
     List<User> getLeaderboard() throws SQLException;
 }

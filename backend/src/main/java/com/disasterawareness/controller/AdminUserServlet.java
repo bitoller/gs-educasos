@@ -34,12 +34,10 @@ public class AdminUserServlet extends HttpServlet {
         try {
             String pathInfo = request.getPathInfo();
             if (pathInfo == null || pathInfo.equals("/")) {
-                // Get all users
                 List<User> users = userService.getAllUsers();
                 response.setStatus(HttpServletResponse.SC_OK);
                 response.getWriter().write(gson.toJson(users));
             } else {
-                // Get specific user
                 String[] splits = pathInfo.split("/");
                 if (splits.length != 2) {
                     response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -92,7 +90,6 @@ public class AdminUserServlet extends HttpServlet {
                 return;
             }
 
-            // Update user fields
             if (jsonRequest.has("name")) {
                 user.setName(jsonRequest.get("name").getAsString());
             }

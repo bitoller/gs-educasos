@@ -56,6 +56,16 @@ CREATE TABLE answer_choices (
     FOREIGN KEY (question_id) REFERENCES questions(question_id) ON DELETE CASCADE
 );
 
+CREATE TABLE user_earned_question_points (
+    user_question_id NUMBER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    user_id NUMBER NOT NULL,
+    question_id NUMBER NOT NULL,
+    earned_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (question_id) REFERENCES questions(question_id) ON DELETE CASCADE,
+    CONSTRAINT uk_user_question UNIQUE (user_id, question_id)
+);
+
 -- Criação de índices
 CREATE INDEX idx_users_email ON users(email);
 CREATE INDEX idx_content_disaster_type ON content(disaster_type);
@@ -403,7 +413,8 @@ INSERT INTO answer_choices (question_id, choice_text, is_correct) VALUES (34, 'A
 
 -- Pergunta 5
 INSERT INTO questions (quiz_id, question_text, points) VALUES (7, 'Qual é uma forma correta de armazenamento de água para tempos de seca?', 10);
-INSERT INTO answer_choices (question_id, choice_text, is_correct) VALUES (35, 'Usar caixas d’água com tampa', 1);
+
+INSERT INTO answer_choices (question_id, choice_text, is_correct) VALUES (35, 'Usar caixas d''água com tampa', 1);
 INSERT INTO answer_choices (question_id, choice_text, is_correct) VALUES (35, 'Deixar baldes cheios de água ao ar livre', 0);
 INSERT INTO answer_choices (question_id, choice_text, is_correct) VALUES (35, 'Armazenar em sacolas plásticas', 0);
 INSERT INTO answer_choices (question_id, choice_text, is_correct) VALUES (35, 'Cavar buracos e enchê-los de água', 0);

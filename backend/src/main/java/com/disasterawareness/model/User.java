@@ -1,5 +1,8 @@
 package com.disasterawareness.model;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class User {
@@ -10,8 +13,10 @@ public class User {
     private String passwordHash;
     private Integer score;
     private Boolean isAdmin;
+    private Set<Long> completedQuizzes;
 
     public User() {
+        this.completedQuizzes = new HashSet<>();
     }
 
     public User(String name, String email, String passwordHash) {
@@ -20,6 +25,7 @@ public class User {
         this.passwordHash = passwordHash;
         this.score = 0;
         this.isAdmin = false;
+        this.completedQuizzes = new HashSet<>();
     }
 
     public Long getUserId() {
@@ -68,5 +74,24 @@ public class User {
 
     public void setIsAdmin(Boolean isAdmin) {
         this.isAdmin = isAdmin;
+    }
+
+    public Set<Long> getCompletedQuizzes() {
+        return completedQuizzes;
+    }
+
+    public void setCompletedQuizzes(Set<Long> completedQuizzes) {
+        this.completedQuizzes = completedQuizzes;
+    }
+
+    public void addCompletedQuiz(Long quizId) {
+        if (this.completedQuizzes == null) {
+            this.completedQuizzes = new HashSet<>();
+        }
+        this.completedQuizzes.add(quizId);
+    }
+
+    public boolean hasCompletedQuiz(Long quizId) {
+        return this.completedQuizzes != null && this.completedQuizzes.contains(quizId);
     }
 }

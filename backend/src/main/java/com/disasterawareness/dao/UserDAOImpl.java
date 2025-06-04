@@ -148,6 +148,30 @@ public class UserDAOImpl implements UserDAO {
         }
     }
 
+    public User addCompletedQuiz(Long userId, Long quizId) throws SQLException {
+        String sql = "UPDATE users SET completed_quizzes = CASE " +
+                "WHEN completed_quizzes IS NULL THEN ? " +
+                "ELSE completed_quizzes || ',' || ? " +
+                "END WHERE user_id = ?";
+
+        try (Connection conn = ConnectionFactory.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            String quizIdStr = quizId.toString();
+            stmt.setString(1, quizIdStr);
+            stmt.setString(2, quizIdStr);
+            stmt.setLong(3, userId);
+
+            int affectedRows = stmt.executeUpdate();
+
+            if (affectedRows == 0) {
+                throw new SQLException("Falha ao atualizar quizzes completados, nenhuma linha afetada.");
+            }
+
+            return findById(userId);
+        }
+    }
+
     @Override
     public List<User> getLeaderboard() throws SQLException {
         String sql = "SELECT * FROM users ORDER BY score DESC";
@@ -173,6 +197,7 @@ public class UserDAOImpl implements UserDAO {
         user.setScore(rs.getInt("score"));
         int isAdminInt = rs.getInt("is_admin");
         user.setIsAdmin(isAdminInt == 1);
+
         return user;
     }
 }
