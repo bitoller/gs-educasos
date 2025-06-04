@@ -323,5 +323,176 @@ INSERT INTO answer_choices (question_id, choice_text, is_correct) VALUES (25, 'D
 INSERT INTO answer_choices (question_id, choice_text, is_correct) VALUES (25, 'Roupas de banho', 0);
 INSERT INTO answer_choices (question_id, choice_text, is_correct) VALUES (25, 'Fogão portátil', 0);
 
+-- Inserção de dados iniciais para o quiz de Deslizamentos
+INSERT INTO quizzes (title, disaster_type) VALUES ('Quiz sobre Deslizamentos de Terra', 'LANDSLIDE');
+
+-- Pergunta 1
+INSERT INTO questions (quiz_id, question_text, points) VALUES (6, 'Qual é uma medida preventiva contra deslizamentos de terra?', 10);
+
+INSERT INTO answer_choices (question_id, choice_text, is_correct) VALUES (26, 'Construir casas em encostas íngremes', 0);
+INSERT INTO answer_choices (question_id, choice_text, is_correct) VALUES (26, 'Remover a vegetação das encostas', 0);
+INSERT INTO answer_choices (question_id, choice_text, is_correct) VALUES (26, 'Plantar vegetação para estabilizar o solo', 1);
+INSERT INTO answer_choices (question_id, choice_text, is_correct) VALUES (26, 'Desviar cursos de água naturais', 0);
+
+-- Pergunta 2
+INSERT INTO questions (quiz_id, question_text, points) VALUES (6, 'O que pode ser um sinal de risco iminente de deslizamento?', 10);
+
+INSERT INTO answer_choices (question_id, choice_text, is_correct) VALUES (27, 'Aparência de rachaduras no solo ou muros', 1);
+INSERT INTO answer_choices (question_id, choice_text, is_correct) VALUES (27, 'Aumento da umidade no ar', 0);
+INSERT INTO answer_choices (question_id, choice_text, is_correct) VALUES (27, 'Grama seca', 0);
+INSERT INTO answer_choices (question_id, choice_text, is_correct) VALUES (27, 'Barulho de pássaros', 0);
+
+-- Pergunta 3
+INSERT INTO questions (quiz_id, question_text, points) VALUES (6, 'Durante um deslizamento, o que você deve fazer?', 10);
+
+INSERT INTO answer_choices (question_id, choice_text, is_correct) VALUES (28, 'Ficar dentro de casa em área próxima ao barranco', 0);
+INSERT INTO answer_choices (question_id, choice_text, is_correct) VALUES (28, 'Buscar abrigo em local elevado e seguro', 1);
+INSERT INTO answer_choices (question_id, choice_text, is_correct) VALUES (28, 'Usar o carro para subir a encosta', 0);
+INSERT INTO answer_choices (question_id, choice_text, is_correct) VALUES (28, 'Se aproximar para observar', 0);
+
+-- Pergunta 4
+INSERT INTO questions (quiz_id, question_text, points) VALUES (6, 'Qual estrutura ajuda a prevenir deslizamentos em áreas inclinadas?', 10);
+
+INSERT INTO answer_choices (question_id, choice_text, is_correct) VALUES (29, 'Muro de arrimo (contenção)', 1);
+INSERT INTO answer_choices (question_id, choice_text, is_correct) VALUES (29, 'Piso de concreto polido', 0);
+INSERT INTO answer_choices (question_id, choice_text, is_correct) VALUES (29, 'Poste de luz', 0);
+INSERT INTO answer_choices (question_id, choice_text, is_correct) VALUES (29, 'Ponte pênsil', 0);
+
+-- Pergunta 5
+INSERT INTO questions (quiz_id, question_text, points) VALUES (6, 'Qual é o principal fator natural que contribui para deslizamentos?', 10);
+
+INSERT INTO answer_choices (question_id, choice_text, is_correct) VALUES (30, 'Chuva intensa e prolongada', 1);
+INSERT INTO answer_choices (question_id, choice_text, is_correct) VALUES (30, 'Baixa umidade do ar', 0);
+INSERT INTO answer_choices (question_id, choice_text, is_correct) VALUES (30, 'Sol forte', 0);
+INSERT INTO answer_choices (question_id, choice_text, is_correct) VALUES (30, 'Temperatura baixa', 0);
+
+-- Inserção de dados iniciais para o quiz de Secas
+INSERT INTO quizzes (title, disaster_type) VALUES ('Quiz sobre Prevenção e Ações em Períodos de Seca', 'DROUGHT');
+
+-- Pergunta 1
+INSERT INTO questions (quiz_id, question_text, points) VALUES (7, 'O que caracteriza uma seca?', 10);
+
+INSERT INTO answer_choices (question_id, choice_text, is_correct) VALUES (31, 'Período prolongado com pouca ou nenhuma chuva', 1);
+INSERT INTO answer_choices (question_id, choice_text, is_correct) VALUES (31, 'Chuvas constantes durante o dia', 0);
+INSERT INTO answer_choices (question_id, choice_text, is_correct) VALUES (31, 'Inundações frequentes', 0);
+INSERT INTO answer_choices (question_id, choice_text, is_correct) VALUES (31, 'Ventos fortes e gelados', 0);
+
+-- Pergunta 2
+INSERT INTO questions (quiz_id, question_text, points) VALUES (7, 'Qual atitude ajuda a economizar água?', 10);
+
+INSERT INTO answer_choices (question_id, choice_text, is_correct) VALUES (32, 'Lavar calçada com mangueira', 0);
+INSERT INTO answer_choices (question_id, choice_text, is_correct) VALUES (32, 'Tomar banho longo e relaxante', 0);
+INSERT INTO answer_choices (question_id, choice_text, is_correct) VALUES (32, 'Reutilizar água da máquina de lavar roupas', 1);
+INSERT INTO answer_choices (question_id, choice_text, is_correct) VALUES (32, 'Deixar torneiras pingando', 0);
+
+-- Pergunta 3
+INSERT INTO questions (quiz_id, question_text, points) VALUES (7, 'Como comunidades podem se preparar para secas?', 10);
+
+INSERT INTO answer_choices (question_id, choice_text, is_correct) VALUES (33, 'Criando reservatórios e usando água racionalmente', 1);
+INSERT INTO answer_choices (question_id, choice_text, is_correct) VALUES (33, 'Plantando apenas culturas que precisam de muita irrigação', 0);
+INSERT INTO answer_choices (question_id, choice_text, is_correct) VALUES (33, 'Aumentando o consumo de água', 0);
+INSERT INTO answer_choices (question_id, choice_text, is_correct) VALUES (33, 'Ignorando alertas meteorológicos', 0);
+
+-- Pergunta 4
+INSERT INTO questions (quiz_id, question_text, points) VALUES (7, 'Qual impacto comum de uma seca prolongada?', 10);
+
+INSERT INTO answer_choices (question_id, choice_text, is_correct) VALUES (34, 'Redução na produção agrícola', 1);
+INSERT INTO answer_choices (question_id, choice_text, is_correct) VALUES (34, 'Aumento da pesca', 0);
+INSERT INTO answer_choices (question_id, choice_text, is_correct) VALUES (34, 'Enchentes', 0);
+INSERT INTO answer_choices (question_id, choice_text, is_correct) VALUES (34, 'Acúmulo de água nos rios', 0);
+
+-- Pergunta 5
+INSERT INTO questions (quiz_id, question_text, points) VALUES (7, 'Qual é uma forma correta de armazenamento de água para tempos de seca?', 10);
+INSERT INTO answer_choices (question_id, choice_text, is_correct) VALUES (35, 'Usar caixas d’água com tampa', 1);
+INSERT INTO answer_choices (question_id, choice_text, is_correct) VALUES (35, 'Deixar baldes cheios de água ao ar livre', 0);
+INSERT INTO answer_choices (question_id, choice_text, is_correct) VALUES (35, 'Armazenar em sacolas plásticas', 0);
+INSERT INTO answer_choices (question_id, choice_text, is_correct) VALUES (35, 'Cavar buracos e enchê-los de água', 0);
+
+-- Inserção de dados iniciais para o quiz de Tempestades
+INSERT INTO quizzes (title, disaster_type) VALUES ('Quiz de Segurança em Tempestades', 'STORM');
+
+-- Pergunta 1
+INSERT INTO questions (quiz_id, question_text, points) VALUES (8, 'O que você deve fazer durante uma tempestade com raios?', 10);
+
+INSERT INTO answer_choices (question_id, choice_text, is_correct) VALUES (36, 'Ficar ao ar livre para observar', 0);
+INSERT INTO answer_choices (question_id, choice_text, is_correct) VALUES (36, 'Evitar usar aparelhos elétricos e se abrigar em local seguro', 1);
+INSERT INTO answer_choices (question_id, choice_text, is_correct) VALUES (36, 'Tomar banho para relaxar', 0);
+INSERT INTO answer_choices (question_id, choice_text, is_correct) VALUES (36, 'Ficar próximo de árvores grandes', 0);
+
+-- Pergunta 2
+INSERT INTO questions (quiz_id, question_text, points) VALUES (8, 'Qual item é importante ter à mão durante tempestades fortes?', 10);
+
+INSERT INTO answer_choices (question_id, choice_text, is_correct) VALUES (37, 'Lanterna com pilhas extras', 1);
+INSERT INTO answer_choices (question_id, choice_text, is_correct) VALUES (37, 'Vara de pescar', 0);
+INSERT INTO answer_choices (question_id, choice_text, is_correct) VALUES (37, 'Buzina de carro', 0);
+INSERT INTO answer_choices (question_id, choice_text, is_correct) VALUES (37, 'Chave de fenda', 0);
+
+-- Pergunta 3
+INSERT INTO questions (quiz_id, question_text, points) VALUES (8, 'O que pode indicar que uma tempestade forte está se aproximando?', 10);
+
+INSERT INTO answer_choices (question_id, choice_text, is_correct) VALUES (38, 'Escurecimento repentino do céu e trovões ao longe', 1);
+INSERT INTO answer_choices (question_id, choice_text, is_correct) VALUES (38, 'Céu azul e limpo', 0);
+INSERT INTO answer_choices (question_id, choice_text, is_correct) VALUES (38, 'Presença de arco-íris', 0);
+INSERT INTO answer_choices (question_id, choice_text, is_correct) VALUES (38, 'Aumento do calor', 0);
+
+-- Pergunta 4
+INSERT INTO questions (quiz_id, question_text, points) VALUES (8, 'Onde é mais seguro se abrigar durante uma tempestade com ventos fortes?', 10);
+
+INSERT INTO answer_choices (question_id, choice_text, is_correct) VALUES (39, 'Próximo a janelas de vidro', 0);
+INSERT INTO answer_choices (question_id, choice_text, is_correct) VALUES (39, 'Debaixo de árvores', 0);
+INSERT INTO answer_choices (question_id, choice_text, is_correct) VALUES (39, 'Em uma construção sólida longe de janelas', 1);
+INSERT INTO answer_choices (question_id, choice_text, is_correct) VALUES (39, 'Dentro do carro, ao ar livre', 0);
+
+-- Pergunta 5
+INSERT INTO questions (quiz_id, question_text, points) VALUES (8, 'Após uma tempestade, qual atitude é correta?', 10);
+
+INSERT INTO answer_choices (question_id, choice_text, is_correct) VALUES (40, 'Andar em ruas alagadas com eletricidade próxima', 0);
+INSERT INTO answer_choices (question_id, choice_text, is_correct) VALUES (40, 'Verificar se há fios caídos antes de sair de casa', 1);
+INSERT INTO answer_choices (question_id, choice_text, is_correct) VALUES (40, 'Retirar galhos com ferramentas metálicas molhadas', 0);
+INSERT INTO answer_choices (question_id, choice_text, is_correct) VALUES (40, 'Subir em postes para verificar danos', 0);
+
+-- inserção de dados iniciais para o quiz de Tsunamis
+INSERT INTO quizzes (title, disaster_type) VALUES ('Quiz de Preparação e Reação a Tsunamis', 'TSUNAMI');
+
+-- Pergunta 1
+INSERT INTO questions (quiz_id, question_text, points) VALUES (9, 'O que pode indicar a aproximação de um tsunami?', 10);
+
+INSERT INTO answer_choices (question_id, choice_text, is_correct) VALUES (41, 'Mar recuando anormalmente rápido', 1);
+INSERT INTO answer_choices (question_id, choice_text, is_correct) VALUES (41, 'Presença de ventos fortes', 0);
+INSERT INTO answer_choices (question_id, choice_text, is_correct) VALUES (41, 'Aparição de arco-íris', 0);
+INSERT INTO answer_choices (question_id, choice_text, is_correct) VALUES (41, 'Ondas pequenas e constantes', 0);
+
+-- Pergunta 2
+INSERT INTO questions (quiz_id, question_text, points) VALUES (9, 'Qual é a atitude correta ao receber um alerta de tsunami?', 10);
+
+INSERT INTO answer_choices (question_id, choice_text, is_correct) VALUES (42, 'Ir à praia para ver o fenômeno', 0);
+INSERT INTO answer_choices (question_id, choice_text, is_correct) VALUES (42, 'Buscar abrigo em locais elevados imediatamente', 1);
+INSERT INTO answer_choices (question_id, choice_text, is_correct) VALUES (42, 'Permanecer em áreas costeiras até confirmar o perigo', 0);
+INSERT INTO answer_choices (question_id, choice_text, is_correct) VALUES (42, 'Esperar orientação apenas pelas redes sociais', 0);
+
+-- Pergunta 3
+INSERT INTO questions (quiz_id, question_text, points) VALUES (9, 'Tsunamis geralmente são causados por:', 10);
+
+INSERT INTO answer_choices (question_id, choice_text, is_correct) VALUES (43, 'Furacões', 0);
+INSERT INTO answer_choices (question_id, choice_text, is_correct) VALUES (43, 'Terremotos submarinos', 1);
+INSERT INTO answer_choices (question_id, choice_text, is_correct) VALUES (43, 'Erupções solares', 0);
+INSERT INTO answer_choices (question_id, choice_text, is_correct) VALUES (43, 'Tempestades tropicais', 0);
+
+-- Pergunta 4
+INSERT INTO questions (quiz_id, question_text, points) VALUES (9, 'O que deve estar incluído no kit de emergência para evacuação em caso de tsunami?', 10);
+
+INSERT INTO answer_choices (question_id, choice_text, is_correct) VALUES (44, 'Documentos, água, alimentos não perecíveis e lanterna', 1);
+INSERT INTO answer_choices (question_id, choice_text, is_correct) VALUES (44, 'Somente roupas de banho e toalhas', 0);
+INSERT INTO answer_choices (question_id, choice_text, is_correct) VALUES (44, 'Objetos pesados para proteção física', 0);
+INSERT INTO answer_choices (question_id, choice_text, is_correct) VALUES (44, 'Itens eletrônicos como notebooks e videogames', 0);
+
+-- Pergunta 5
+INSERT INTO questions (quiz_id, question_text, points) VALUES (9, 'Após um tsunami, qual medida é recomendada?', 10);
+
+INSERT INTO answer_choices (question_id, choice_text, is_correct) VALUES (45, 'Retornar imediatamente à costa para avaliar os danos', 0);
+INSERT INTO answer_choices (question_id, choice_text, is_correct) VALUES (45, 'Aguardar autorização das autoridades antes de retornar', 1);
+INSERT INTO answer_choices (question_id, choice_text, is_correct) VALUES (45, 'Entrar em casas danificadas sem avaliação', 0);
+INSERT INTO answer_choices (question_id, choice_text, is_correct) VALUES (45, 'Utilizar a água do mar para beber', 0);
+
 -- Commit das alterações
 COMMIT; 
