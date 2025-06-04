@@ -2,6 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Card, Table, Button, Nav, Alert, Badge, Spinner, Form, Modal } from 'react-bootstrap';
 import { admin, content, kits } from '../services/api';
 
+const DISASTER_TYPES = {
+  FLOOD: { name: 'Enchente', color: 'info' },
+  LANDSLIDE: { name: 'Deslizamento', color: 'warning' },
+  WILDFIRE: { name: 'Queimada', color: 'danger' },
+  DROUGHT: { name: 'Seca', color: 'warning' },
+  STORM: { name: 'Tempestade', color: 'primary' }
+};
+
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState('users');
   const [users, setUsers] = useState([]);
@@ -15,10 +23,13 @@ const AdminDashboard = () => {
   const [showContentModal, setShowContentModal] = useState(false);
   const [contentForm, setContentForm] = useState({
     title: '',
-    disasterType: '',
+    disasterType: 'FLOOD',
     description: '',
     videoUrl: '',
-    imageUrl: ''
+    imageUrl: '',
+    beforeTips: [''],
+    duringTips: [''],
+    afterTips: ['']
   });
 
   useEffect(() => {
@@ -95,10 +106,13 @@ const AdminDashboard = () => {
       setShowContentModal(false);
       setContentForm({
         title: '',
-        disasterType: '',
+        disasterType: 'FLOOD',
         description: '',
         videoUrl: '',
-        imageUrl: ''
+        imageUrl: '',
+        beforeTips: [''],
+        duringTips: [''],
+        afterTips: ['']
       });
     } catch (err) {
       setError('Erro ao adicionar conteúdo.');
@@ -114,7 +128,10 @@ const AdminDashboard = () => {
         disasterType: contentToEdit.disasterType,
         description: contentToEdit.description,
         videoUrl: contentToEdit.videoUrl,
-        imageUrl: contentToEdit.imageUrl
+        imageUrl: contentToEdit.imageUrl,
+        beforeTips: contentToEdit.beforeTips || [''],
+        duringTips: contentToEdit.duringTips || [''],
+        afterTips: contentToEdit.afterTips || ['']
       });
       setShowEditModal(true);
     } catch (err) {
@@ -158,6 +175,27 @@ const AdminDashboard = () => {
     } catch (err) {
       setError('Erro ao atualizar status do kit.');
     }
+  };
+
+  const handleAddTip = (type) => {
+    setContentForm(prev => ({
+      ...prev,
+      [type]: [...prev[type], '']
+    }));
+  };
+
+  const handleRemoveTip = (type, index) => {
+    setContentForm(prev => ({
+      ...prev,
+      [type]: prev[type].filter((_, i) => i !== index)
+    }));
+  };
+
+  const handleTipChange = (type, index, value) => {
+    setContentForm(prev => ({
+      ...prev,
+      [type]: prev[type].map((tip, i) => i === index ? value : tip)
+    }));
   };
 
   const renderUsersTable = () => (
@@ -213,23 +251,53 @@ const AdminDashboard = () => {
     </Table>
   );
 
+  const renderTipsSection = (title, type) => (
+    <div className="mb-4">
+      <h5>{title}</h5>
+      {contentForm[type].map((tip, index) => (
+        <div key={index} className="d-flex mb-2">
+          <Form.Control
+            type="text"
+            value={tip}
+            onChange={(e) => handleTipChange(type, index, e.target.value)}
+            placeholder={`Digite a dica ${index + 1}`}
+          />
+          <Button
+            variant="danger"
+            className="ms-2"
+            onClick={() => handleRemoveTip(type, index)}
+          >
+            <i className="bi bi-trash"></i>
+          </Button>
+        </div>
+      ))}
+      <Button
+        variant="secondary"
+        size="sm"
+        onClick={() => handleAddTip(type)}
+        className="mt-2"
+      >
+        + Adicionar Dica
+      </Button>
+    </div>
+  );
+
   const renderContentTable = () => (
-    <>
-      <div className="d-flex justify-content-between align-items-center mb-4">
-        <h4>Conteúdo Educacional</h4>
+    <div>
+      <div className="d-flex justify-content-between mb-4">
+        <h3>Gerenciar Conteúdo</h3>
         <Button variant="success" onClick={() => setShowContentModal(true)}>
-          Adicionar Novo Conteúdo
+          + Adicionar Conteúdo
         </Button>
       </div>
       <Table striped bordered hover responsive>
         <thead>
           <tr>
             <th>ID</th>
-            <th>Título</th>
             <th>Tipo</th>
-            <th>Visualizações</th>
-            <th>Última Atualização</th>
-            <th>Status</th>
+            <th>Título</th>
+            <th>Descrição</th>
+            <th>Dicas</th>
             <th>Ações</th>
           </tr>
         </thead>
@@ -237,13 +305,22 @@ const AdminDashboard = () => {
           {contents.map(content => (
             <tr key={content.contentId}>
               <td>{content.contentId}</td>
-              <td>{content.title}</td>
-              <td>{content.disasterType}</td>
-              <td>{content.views || 0}</td>
-              <td>{new Date(content.updatedAt).toLocaleDateString()}</td>
               <td>
-                <Badge bg={content.isPublished ? 'success' : 'warning'}>
-                  {content.isPublished ? 'Publicado' : 'Rascunho'}
+                <Badge bg={DISASTER_TYPES[content.disasterType]?.color}>
+                  {DISASTER_TYPES[content.disasterType]?.name}
+                </Badge>
+              </td>
+              <td>{content.title}</td>
+              <td>{content.description.substring(0, 100)}...</td>
+              <td>
+                <Badge bg="secondary" className="me-1">
+                  Antes: {content.beforeTips?.length || 0}
+                </Badge>
+                <Badge bg="secondary" className="me-1">
+                  Durante: {content.duringTips?.length || 0}
+                </Badge>
+                <Badge bg="secondary">
+                  Depois: {content.afterTips?.length || 0}
                 </Badge>
               </td>
               <td>
@@ -267,7 +344,7 @@ const AdminDashboard = () => {
           ))}
         </tbody>
       </Table>
-    </>
+    </div>
   );
 
   const renderKitsTable = () => (
@@ -386,12 +463,11 @@ const AdminDashboard = () => {
                 value={editForm.disasterType}
                 onChange={(e) => setEditForm({ ...editForm, disasterType: e.target.value })}
               >
-                <option value="">Selecione...</option>
-                <option value="flood">Inundação</option>
-                <option value="landslide">Deslizamento</option>
-                <option value="wildfire">Incêndio Florestal</option>
-                <option value="drought">Seca</option>
-                <option value="earthquake">Terremoto</option>
+                {Object.entries(DISASTER_TYPES).map(([type, info]) => (
+                  <option key={type} value={type}>
+                    {info.name}
+                  </option>
+                ))}
               </Form.Select>
             </Form.Group>
             <Form.Group className="mb-3">
@@ -437,67 +513,79 @@ const AdminDashboard = () => {
   );
 
   const renderAddContentModal = () => (
-    <Modal show={showContentModal} onHide={() => setShowContentModal(false)}>
+    <Modal show={showContentModal} onHide={() => setShowContentModal(false)} size="lg">
       <Modal.Header closeButton>
         <Modal.Title>Adicionar Novo Conteúdo</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <Form>
           <Form.Group className="mb-3">
+            <Form.Label>Tipo de Desastre</Form.Label>
+            <Form.Select
+              value={contentForm.disasterType}
+              onChange={(e) => setContentForm({...contentForm, disasterType: e.target.value})}
+            >
+              {Object.entries(DISASTER_TYPES).map(([type, info]) => (
+                <option key={type} value={type}>
+                  {info.name}
+                </option>
+              ))}
+            </Form.Select>
+          </Form.Group>
+
+          <Form.Group className="mb-3">
             <Form.Label>Título</Form.Label>
             <Form.Control
               type="text"
               value={contentForm.title}
-              onChange={(e) => setContentForm({ ...contentForm, title: e.target.value })}
+              onChange={(e) => setContentForm({...contentForm, title: e.target.value})}
+              placeholder="Digite o título"
             />
           </Form.Group>
-          <Form.Group className="mb-3">
-            <Form.Label>Tipo de Desastre</Form.Label>
-            <Form.Select
-              value={contentForm.disasterType}
-              onChange={(e) => setContentForm({ ...contentForm, disasterType: e.target.value })}
-            >
-              <option value="">Selecione...</option>
-              <option value="flood">Inundação</option>
-              <option value="landslide">Deslizamento</option>
-              <option value="wildfire">Incêndio Florestal</option>
-              <option value="drought">Seca</option>
-              <option value="earthquake">Terremoto</option>
-            </Form.Select>
-          </Form.Group>
+
           <Form.Group className="mb-3">
             <Form.Label>Descrição</Form.Label>
             <Form.Control
               as="textarea"
               rows={3}
               value={contentForm.description}
-              onChange={(e) => setContentForm({ ...contentForm, description: e.target.value })}
+              onChange={(e) => setContentForm({...contentForm, description: e.target.value})}
+              placeholder="Digite a descrição"
             />
           </Form.Group>
+
           <Form.Group className="mb-3">
             <Form.Label>URL do Vídeo</Form.Label>
             <Form.Control
               type="text"
               value={contentForm.videoUrl}
-              onChange={(e) => setContentForm({ ...contentForm, videoUrl: e.target.value })}
+              onChange={(e) => setContentForm({...contentForm, videoUrl: e.target.value})}
+              placeholder="Cole a URL do vídeo (YouTube)"
             />
           </Form.Group>
+
           <Form.Group className="mb-3">
-            <Form.Label>URL da Imagem</Form.Label>
+            <Form.Label>URL da Imagem (opcional)</Form.Label>
             <Form.Control
               type="text"
               value={contentForm.imageUrl}
-              onChange={(e) => setContentForm({ ...contentForm, imageUrl: e.target.value })}
+              onChange={(e) => setContentForm({...contentForm, imageUrl: e.target.value})}
+              placeholder="Cole a URL da imagem"
             />
           </Form.Group>
+
+          <hr />
+          {renderTipsSection('Dicas para Antes do Desastre', 'beforeTips')}
+          {renderTipsSection('Dicas Durante o Desastre', 'duringTips')}
+          {renderTipsSection('Dicas para Depois do Desastre', 'afterTips')}
         </Form>
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={() => setShowContentModal(false)}>
           Cancelar
         </Button>
-        <Button variant="success" onClick={handleAddContent}>
-          Adicionar
+        <Button variant="primary" onClick={handleAddContent}>
+          Salvar
         </Button>
       </Modal.Footer>
     </Modal>

@@ -20,26 +20,46 @@ const Login = () => {
 
     try {
       const response = await auth.login({ email, password });
+      console.log('Login response:', response.data);
       
       if (response.data && response.data.token) {
         // Store the token
         localStorage.setItem('token', response.data.token);
         
+        // User data should now have the role set from the token
+        const userData = response.data.user;
+        console.log('Processed user data:', userData);
+        
         // Update auth context with user data
-        login(response.data.user);
+        login(userData);
         
         // Reset form
         setEmail('');
         setPassword('');
         
-        // Redirect to the page they tried to visit or home
-        const from = location.state?.from?.pathname || '/';
-        navigate(from);
+        // Debug log before redirect
+        console.log('User role:', userData.role);
+        console.log('Is admin?', userData.role === 'admin');
+        
+        // Redirect based on role with exact comparison
+        if (userData.role === 'admin') {
+          console.log('Redirecting to admin dashboard');
+          navigate('/admin');
+        } else {
+          console.log('Redirecting to user dashboard');
+          const from = location.state?.from?.pathname || '/dashboard';
+          navigate(from);
+        }
       } else {
         setError('Resposta inválida do servidor. Token não encontrado.');
       }
     } catch (err) {
       console.error('Login error details:', err);
+      console.error('Full error object:', {
+        message: err.message,
+        response: err.response,
+        data: err.response?.data
+      });
       setError(
         err.response?.data?.error || 
         'Erro ao fazer login. Por favor, verifique suas credenciais e tente novamente.'

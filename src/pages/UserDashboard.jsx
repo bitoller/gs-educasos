@@ -152,6 +152,95 @@ const UserDashboard = () => {
     </>
   );
 
+  const renderQuizzes = () => (
+    <>
+      <div className="d-flex justify-content-between align-items-center mb-4">
+        <h4>Meus Quizzes</h4>
+        <Button as={Link} to="/quizzes" variant="success">
+          Fazer Novo Quiz
+        </Button>
+      </div>
+
+      {/* Status geral */}
+      <Row className="mb-4">
+        <Col md={4}>
+          <Card className="text-center">
+            <Card.Body>
+              <h2 className="mb-0">{user.score || 0}</h2>
+              <Card.Text>Pontuação Total</Card.Text>
+            </Card.Body>
+          </Card>
+        </Col>
+        <Col md={4}>
+          <Card className="text-center">
+            <Card.Body>
+              <h2 className="mb-0">{user.completedQuizzes || 0}</h2>
+              <Card.Text>Quizzes Completados</Card.Text>
+            </Card.Body>
+          </Card>
+        </Col>
+        <Col md={4}>
+          <Card className="text-center">
+            <Card.Body>
+              <h2 className="mb-0">{user.averageScore || 0}%</h2>
+              <Card.Text>Média de Acertos</Card.Text>
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
+
+      {/* Histórico de Quizzes */}
+      <Card>
+        <Card.Header>
+          <h5 className="mb-0">Histórico de Quizzes</h5>
+        </Card.Header>
+        <Card.Body>
+          {user.quizHistory && user.quizHistory.length > 0 ? (
+            <Table responsive>
+              <thead>
+                <tr>
+                  <th>Quiz</th>
+                  <th>Pontuação</th>
+                  <th>Data</th>
+                  <th>Status</th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
+              <tbody>
+                {user.quizHistory.map((quiz) => (
+                  <tr key={quiz.id}>
+                    <td>{quiz.title}</td>
+                    <td>{quiz.score}%</td>
+                    <td>{new Date(quiz.completedAt).toLocaleDateString()}</td>
+                    <td>
+                      <Badge bg={quiz.score >= 70 ? 'success' : 'warning'}>
+                        {quiz.score >= 70 ? 'Aprovado' : 'Precisa Melhorar'}
+                      </Badge>
+                    </td>
+                    <td>
+                      <Button
+                        as={Link}
+                        to={`/quiz/${quiz.quizId}`}
+                        variant="outline-primary"
+                        size="sm"
+                      >
+                        Tentar Novamente
+                      </Button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </Table>
+          ) : (
+            <Alert variant="info">
+              Você ainda não completou nenhum quiz. <Link to="/quizzes">Comece agora!</Link>
+            </Alert>
+          )}
+        </Card.Body>
+      </Card>
+    </>
+  );
+
   return (
     <Container className="mt-5 pt-5">
       <h2 className="mb-4">Meu Dashboard</h2>
@@ -167,6 +256,14 @@ const UserDashboard = () => {
                 onClick={() => setActiveTab('profile')}
               >
                 Perfil
+              </Nav.Link>
+            </Nav.Item>
+            <Nav.Item>
+              <Nav.Link
+                active={activeTab === 'quizzes'}
+                onClick={() => setActiveTab('quizzes')}
+              >
+                Quizzes
               </Nav.Link>
             </Nav.Item>
             <Nav.Item>
@@ -191,6 +288,7 @@ const UserDashboard = () => {
           {activeTab === 'profile' && renderProfile()}
           {activeTab === 'kits' && renderKits()}
           {activeTab === 'learning' && renderLearning()}
+          {activeTab === 'quizzes' && renderQuizzes()}
         </Card.Body>
       </Card>
     </Container>

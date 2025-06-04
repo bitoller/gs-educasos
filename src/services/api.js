@@ -1,5 +1,18 @@
 import axios from 'axios';
 
+// Function to parse JWT token
+const parseJwt = (token) => {
+  try {
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const payload = JSON.parse(window.atob(base64));
+    return payload;
+  } catch (e) {
+    console.error('Error parsing JWT:', e);
+    return null;
+  }
+};
+
 // When using Vite's proxy, we use relative URLs
 const API_BASE_URL = '/api';
 
@@ -33,11 +46,18 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => {
     // Log successful response
-    console.log('Received response:', response.status, response.data);
+    console.log('Received response:', {
+      url: response.config.url,
+      status: response.status,
+      data: response.data
+    });
     
     // Store user role if it's a login response
-    if (response.config.url === '/login' && response.data.role) {
-      localStorage.setItem('userRole', response.data.role);
+    if (response.config.url === '/login' && response.data?.token) {
+      const tokenData = parseJwt(response.data.token);
+      const role = tokenData?.isAdmin ? 'admin' : 'user';
+      localStorage.setItem('userRole', role);
+      console.log('Stored user role from token:', role);
     }
     
     return response;
@@ -47,12 +67,14 @@ api.interceptors.response.use(
     console.error('API Error:', {
       status: error.response?.status,
       data: error.response?.data,
-      config: error.config
+      config: error.config,
+      message: error.message
     });
 
     // Só redireciona para o login em caso de erro 401 se NÃO for uma rota pública
     if (error.response?.status === 401 && !isPublicRoute(error.config.url)) {
       localStorage.removeItem('token');
+      localStorage.removeItem('userRole');
       window.location.href = '/login';
     }
     return Promise.reject(error);
@@ -70,7 +92,31 @@ const isPublicRoute = (url) => {
 
 // Auth API
 export const auth = {
-  login: (credentials) => api.post('/login', credentials),
+  login: async (credentials) => {
+    // Debug log before making the request
+    console.log('Attempting login with credentials:', { email: credentials.email });
+    
+    try {
+      const response = await api.post('/login', credentials);
+      console.log('Login response:', response.data);
+      
+      // Parse the JWT token to get isAdmin flag
+      if (response.data?.token) {
+        const tokenData = parseJwt(response.data.token);
+        if (tokenData?.isAdmin) {
+          response.data.user.role = 'admin';
+        } else {
+          response.data.user.role = 'user';
+        }
+        console.log('User role set from token:', response.data.user.role);
+      }
+      
+      return response;
+    } catch (error) {
+      console.error('Login error:', error);
+      throw error;
+    }
+  },
   register: (userData) => api.post('/register', userData),
 };
 
@@ -98,7 +144,7 @@ export const quiz = {
   getAll: () => api.get('/quizzes'),
   getById: (id) => api.get(`/quizzes/${id}`),
   submitAnswers: (quizId, submittedAnswers) => 
-    api.post('/quizzes/submit', { quizId, submittedAnswers }),
+    api.post('/quizzes/submit', { quizId, submittedAnswers })
 };
 
 // Leaderboard API
