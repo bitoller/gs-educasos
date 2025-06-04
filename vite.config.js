@@ -10,7 +10,7 @@ export default defineConfig({
         target: 'http://localhost:8080/disaster-awareness',
         changeOrigin: true,
         secure: false,
-        rewrite: (path) => path.replace(/^\/api/, '/api'),
+        rewrite: (path) => path,
         configure: (proxy, _options) => {
           proxy.on('error', (err, _req, _res) => {
             console.log('proxy error', err);

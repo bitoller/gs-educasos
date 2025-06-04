@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Card, Button, Row, Col, ProgressBar, Badge, Alert, Spinner } from 'react-bootstrap';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { quiz } from '../services/api';
 import { motion } from 'framer-motion';
 import confetti from 'canvas-confetti';
+import { useAuth } from '../contexts/AuthContext';
+import UnauthorizedContent from '../components/UnauthorizedContent';
 
 const Quiz = () => {
   const [quizData, setQuizData] = useState(null);
@@ -16,6 +18,7 @@ const Quiz = () => {
   const [score, setScore] = useState(null);
   const { id } = useParams();
   const navigate = useNavigate();
+  const { user, login } = useAuth();
 
   useEffect(() => {
     loadQuiz();
@@ -36,6 +39,10 @@ const Quiz = () => {
   };
 
   const handleAnswerSelect = (questionId, choiceId) => {
+    if (!user) {
+      navigate('/login', { state: { from: `/quiz/${id}` } });
+      return;
+    }
     setSelectedAnswers({
       ...selectedAnswers,
       [questionId]: choiceId
@@ -64,6 +71,10 @@ const Quiz = () => {
   };
 
   const handleSubmit = async () => {
+    if (!user) {
+      navigate('/login', { state: { from: `/quiz/${id}` } });
+      return;
+    }
     try {
       setSubmitting(true);
       setError('');
@@ -71,6 +82,15 @@ const Quiz = () => {
       const response = await quiz.submitAnswers(quizData.quizId, selectedAnswers);
       setScore(response.data.scoreEarned);
       setQuizCompleted(true);
+
+      // Atualiza os dados do usuário no contexto
+      const updatedUser = {
+        ...user,
+        score: response.data.totalScore,
+        completedQuizzes: (user.completedQuizzes || 0) + 1,
+        averageScore: response.data.averageScore
+      };
+      login(updatedUser);
 
       // Dispara o confetti se acertou mais de 70%
       if (response.data.scoreEarned >= 70) {
@@ -154,6 +174,23 @@ const Quiz = () => {
               </div>
             </Card.Header>
             <Card.Body>
+              {!user && (
+                <Alert variant="info" className="mb-4">
+                  <Alert.Heading>Faça login para responder!</Alert.Heading>
+                  <p>
+                    Para responder este quiz e salvar sua pontuação, você precisa estar logado.
+                  </p>
+                  <div className="d-flex gap-2">
+                    <Button as={Link} to="/login" variant="primary">
+                      Fazer Login
+                    </Button>
+                    <Button as={Link} to="/register" variant="outline-primary">
+                      Criar Conta
+                    </Button>
+                  </div>
+                </Alert>
+              )}
+
               <ProgressBar 
                 now={calculateProgress()} 
                 label={`${Math.round(calculateProgress())}%`}

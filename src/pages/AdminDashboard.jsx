@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Card, Table, Button, Nav, Alert, Badge, Spinner, Form, Modal } from 'react-bootstrap';
 import { admin, content, kits } from '../services/api';
+import { useAuth } from '../contexts/AuthContext';
 
 const DISASTER_TYPES = {
   FLOOD: { name: 'Enchente', color: 'info' },
@@ -11,6 +12,7 @@ const DISASTER_TYPES = {
 };
 
 const AdminDashboard = () => {
+  const { user } = useAuth();
   const [activeTab, setActiveTab] = useState('users');
   const [users, setUsers] = useState([]);
   const [contents, setContents] = useState([]);
@@ -647,7 +649,7 @@ const AdminDashboard = () => {
       {renderAddContentModal()}
 
       <Row className="mt-4">
-        <Col md={4}>
+        <Col md={3}>
           <Card className="text-center">
             <Card.Body>
               <h3>{users.length}</h3>
@@ -655,7 +657,7 @@ const AdminDashboard = () => {
             </Card.Body>
           </Card>
         </Col>
-        <Col md={4}>
+        <Col md={3}>
           <Card className="text-center">
             <Card.Body>
               <h3>{contents.length}</h3>
@@ -663,11 +665,19 @@ const AdminDashboard = () => {
             </Card.Body>
           </Card>
         </Col>
-        <Col md={4}>
+        <Col md={3}>
           <Card className="text-center">
             <Card.Body>
               <h3>{emergencyKits.length}</h3>
               <Card.Text>Kits Criados</Card.Text>
+            </Card.Body>
+          </Card>
+        </Col>
+        <Col md={3}>
+          <Card className="text-center">
+            <Card.Body>
+              <h3>{users.reduce((total, user) => total + (user.completedQuizzes || 0), 0)}</h3>
+              <Card.Text>Total de Quizzes Realizados</Card.Text>
             </Card.Body>
           </Card>
         </Col>
