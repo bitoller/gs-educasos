@@ -137,11 +137,26 @@ export const content = {
 // Kit API
 export const kits = {
   getAll: () => api.get('/kit'),
+  getById: (id) => api.get(`/kit/${id}`),
   getByHouseType: (type) => api.get(`/kit/house/${type}`),
   getByRegion: (region) => api.get(`/kit/region/${region}`),
   create: (data) => api.post('/kit', data),
   update: (id, data) => api.put(`/kit/${id}`, data),
   delete: (id) => api.delete(`/kit/${id}`),
+  addItem: (kitId, item) => api.post(`/kit/${kitId}/items`, item),
+  updateItem: (kitId, itemId, item) => api.put(`/kit/${kitId}/items/${itemId}`, item),
+  deleteItem: (kitId, itemId) => api.delete(`/kit/${kitId}/items/${itemId}`),
+  getRecommendations: (kitId) => api.get(`/kit/${kitId}/recommendations`),
+  getItemsByCategory: (category) => api.get(`/kit/items/category/${category}`),
+  getCategories: () => api.get('/kit/categories'),
+  getUnits: () => api.get('/kit/units'),
+  validateKit: (kitId) => api.post(`/kit/${kitId}/validate`),
+  exportKit: (kitId, format) => api.get(`/kit/${kitId}/export?format=${format}`),
+  importKit: (data) => api.post('/kit/import', data),
+  shareKit: (kitId, userId) => api.post(`/kit/${kitId}/share`, { userId }),
+  getSharedKits: () => api.get('/kit/shared'),
+  getKitHistory: (kitId) => api.get(`/kit/${kitId}/history`),
+  restoreKitVersion: (kitId, versionId) => api.post(`/kit/${kitId}/restore/${versionId}`),
 };
 
 // Quiz API
