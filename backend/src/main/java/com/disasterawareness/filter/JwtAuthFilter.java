@@ -36,6 +36,14 @@ public class JwtAuthFilter implements Filter {
             return;
         }
 
+        String requestURI = httpRequest.getRequestURI();
+        if (httpRequest.getMethod().equals("GET")
+                && (requestURI.startsWith(httpRequest.getContextPath() + "/api/content")
+                        || requestURI.startsWith(httpRequest.getContextPath() + "/api/content/"))) {
+            chain.doFilter(request, response);
+            return;
+        }
+
         String authHeader = httpRequest.getHeader("Authorization");
         String token = null;
 
