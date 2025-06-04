@@ -14,9 +14,9 @@ public class KitDAOImpl implements KitDAO {
 
     @Override
     public Kit create(Kit kit) throws SQLException {
-        String sql = "INSERT INTO kits (house_type, num_residents, has_children, has_elderly, has_pets, region, recommended_items) "
+        String sql = "INSERT INTO kits (house_type, num_residents, has_children, has_elderly, has_pets, region, recommended_items, is_custom) "
                 +
-                "VALUES (?, ?, ?, ?, ?, ?, ?)";
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = ConnectionFactory.getConnection();
                 PreparedStatement stmt = conn.prepareStatement(sql, new String[] { "kit_id" })) {
@@ -28,6 +28,7 @@ public class KitDAOImpl implements KitDAO {
             stmt.setBoolean(5, kit.getHasPets());
             stmt.setString(6, kit.getRegion());
             stmt.setString(7, kit.getRecommendedItems());
+            stmt.setBoolean(8, kit.getIsCustom());
 
             int affectedRows = stmt.executeUpdate();
 
@@ -122,7 +123,7 @@ public class KitDAOImpl implements KitDAO {
     @Override
     public Kit update(Kit kit) throws SQLException {
         String sql = "UPDATE kits SET house_type = ?, num_residents = ?, has_children = ?, " +
-                "has_elderly = ?, has_pets = ?, region = ?, recommended_items = ? WHERE kit_id = ?";
+                "has_elderly = ?, has_pets = ?, region = ?, recommended_items = ?, is_custom = ? WHERE kit_id = ?";
 
         try (Connection conn = ConnectionFactory.getConnection();
                 PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -134,7 +135,8 @@ public class KitDAOImpl implements KitDAO {
             stmt.setBoolean(5, kit.getHasPets());
             stmt.setString(6, kit.getRegion());
             stmt.setString(7, kit.getRecommendedItems());
-            stmt.setLong(8, kit.getKitId());
+            stmt.setBoolean(8, kit.getIsCustom());
+            stmt.setLong(9, kit.getKitId());
 
             int affectedRows = stmt.executeUpdate();
 
@@ -170,6 +172,7 @@ public class KitDAOImpl implements KitDAO {
         kit.setHasPets(rs.getBoolean("has_pets"));
         kit.setRegion(rs.getString("region"));
         kit.setRecommendedItems(rs.getString("recommended_items"));
+        kit.setIsCustom(rs.getBoolean("is_custom"));
         return kit;
     }
 }

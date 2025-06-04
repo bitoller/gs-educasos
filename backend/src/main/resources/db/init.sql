@@ -28,6 +28,7 @@ CREATE TABLE kits (
     has_pets NUMBER(1) DEFAULT 0,
     region VARCHAR2(50) NOT NULL,
     recommended_items CLOB,
+    is_custom NUMBER(1) DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

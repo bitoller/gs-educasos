@@ -108,13 +108,36 @@ These endpoints require **admin privileges** and a valid **JWT token** (`Authori
 ### Kit Management
 These endpoints require a valid **JWT token** (`Authorization: Bearer <token>` header):
 -   `GET /api/kit`: Retrieve all emergency kits. Each kit object now includes a `recommendedItems` field containing a JSON string of recommended items based on the kit's attributes.
--   `POST /api/kit`: Create a new emergency kit. Recommended items will be automatically generated based on the provided attributes (`houseType`, `numResidents`, `hasChildren`, `hasElderly`, `hasPets`, `region`) and stored in the `recommendedItems` field.
-    -   Request Body: JSON object with `houseType`, `numResidents`, `hasChildren`, `hasElderly`, `hasPets`, and `region`.
--   `GET /api/kit/{id}`: Retrieve a specific emergency kit by its ID. The kit object includes the `recommendedItems` field.
+-   `POST /api/kit`: Create a new emergency kit.
+    -   If creating an **automatically generated** kit, provide `houseType`, `numResidents`, `hasChildren`, `hasElderly`, `hasPets`, and `region`. Recommended items will be automatically generated.
+        ```json
+        {
+          "houseType": "CASA",
+          "numResidents": 4,
+          "hasChildren": true,
+          "hasElderly": false,
+          "hasPets": true,
+          "region": "SUDOESTE"
+        }
+        ```
+    -   If creating a **custom** kit, include `isCustom: true` and provide your list of items in the `recommendedItems` field as a JSON array of objects, each with `name` and `description`. Other kit attributes can still be provided for context but are not used for item generation.
+        ```json
+        {
+          "houseType": "APARTAMENTO",
+          "numResidents": 1,
+          "hasChildren": false,
+          "hasElderly": false,
+          "hasPets": false,
+          "region": "SUDESTE",
+          "isCustom": true,
+          "recommendedItems": "[{\"name\":\"Minha Bateria Portátil\",\"description\":\"Para carregar meu celular em emergências.\"}, {\"name\":\"Meu Livro Favorito\",\"description\":\"Para me manter entretido.\"}]"
+        }
+        ```
+-   `GET /api/kit/{id}`: Retrieve a specific emergency kit by its ID. The kit object includes the `recommendedItems` field and the `isCustom` flag.
     -   `{id}`: The ID of the kit (path parameter).
--   `PUT /api/kit/{id}`: Update an existing emergency kit. The `recommendedItems` field will be regenerated based on the updated attributes.
+-   `PUT /api/kit/{id}`: Update an existing emergency kit.
     -   `{id}`: The ID of the kit (path parameter).
-    -   Request Body: JSON object with updated `houseType`, `numResidents`, `hasChildren`, `hasElderly`, `hasPets`, and `region`.
+    -   Request Body: Can include updated standard kit attributes. If updating a custom kit, you can also provide an updated `recommendedItems` JSON string. If updating an automatically generated kit, changing attributes like residents or region will regenerate the recommended items unless `isCustom` is set to `true` in the update request.
 -   `DELETE /api/kit/{id}`: Delete an emergency kit by its ID.
     -   `{id}`: The ID of the kit (path parameter).
 -   `GET /api/kit/house/{houseType}`: Retrieve kits filtered by house type.

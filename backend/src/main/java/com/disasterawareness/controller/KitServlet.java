@@ -80,8 +80,12 @@ public class KitServlet extends HttpServlet {
             boolean hasElderly = jsonRequest.get("hasElderly").getAsBoolean();
             boolean hasPets = jsonRequest.get("hasPets").getAsBoolean();
             String region = jsonRequest.get("region").getAsString();
+            
+            // Extract isCustom and recommendedItems for custom kits
+            boolean isCustom = jsonRequest.has("isCustom") ? jsonRequest.get("isCustom").getAsBoolean() : false;
+            String recommendedItems = jsonRequest.has("recommendedItems") ? jsonRequest.get("recommendedItems").getAsString() : null;
 
-            Kit kit = kitService.createKit(houseType, numResidents, hasChildren, hasElderly, hasPets, region);
+            Kit kit = kitService.createKit(houseType, numResidents, hasChildren, hasElderly, hasPets, region, isCustom, recommendedItems);
 
             response.setStatus(HttpServletResponse.SC_CREATED);
             response.getWriter().write(gson.toJson(new SuccessResponse("Kit criado com sucesso.", kit)));
@@ -120,6 +124,10 @@ public class KitServlet extends HttpServlet {
             boolean hasElderly = jsonRequest.get("hasElderly").getAsBoolean();
             boolean hasPets = jsonRequest.get("hasPets").getAsBoolean();
             String region = jsonRequest.get("region").getAsString();
+            
+            // Extract isCustom and recommendedItems for custom kits during update
+            boolean isCustom = jsonRequest.has("isCustom") ? jsonRequest.get("isCustom").getAsBoolean() : false;
+            String recommendedItems = jsonRequest.has("recommendedItems") ? jsonRequest.get("recommendedItems").getAsString() : null;
 
             Kit kit = new Kit();
             kit.setKitId(kitId);
@@ -129,6 +137,8 @@ public class KitServlet extends HttpServlet {
             kit.setHasElderly(hasElderly);
             kit.setHasPets(hasPets);
             kit.setRegion(region);
+            kit.setIsCustom(isCustom); // Set isCustom
+            kit.setRecommendedItems(recommendedItems); // Set recommendedItems
 
             Kit updatedKit = kitService.updateKit(kit);
 

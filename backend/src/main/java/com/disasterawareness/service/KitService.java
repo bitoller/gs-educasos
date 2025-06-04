@@ -17,10 +17,22 @@ public class KitService {
     }
 
     public Kit createKit(String houseType, int residents, boolean hasChildren,
-            boolean hasElderly, boolean hasPets, String region) throws SQLException {
-        Kit kit = new Kit(houseType, residents, hasChildren, hasElderly, hasPets, region, "");
+            boolean hasElderly, boolean hasPets, String region, boolean isCustom, String customRecommendedItems)
+            throws SQLException {
+
+        Kit kit = new Kit(houseType, residents, hasChildren, hasElderly, hasPets, region, "", isCustom);
+
         validateKit(kit);
-        kit.setRecommendedItems(recommendedItemsService.generateRecommendedItems(kit));
+
+        if (isCustom) {
+            if (customRecommendedItems == null || customRecommendedItems.trim().isEmpty()) {
+                throw new IllegalArgumentException("Item de recomendação é obrigatório para kits personalizados.");
+            }
+            kit.setRecommendedItems(customRecommendedItems);
+        } else {
+            kit.setRecommendedItems(recommendedItemsService.generateRecommendedItems(kit));
+        }
+
         return kitDAO.create(kit);
     }
 
@@ -51,7 +63,15 @@ public class KitService {
         }
 
         validateKit(kit);
-        kit.setRecommendedItems(recommendedItemsService.generateRecommendedItems(kit));
+
+        if (kit.getIsCustom()) {
+            if (kit.getRecommendedItems() == null || kit.getRecommendedItems().trim().isEmpty()) {
+                throw new IllegalArgumentException("Item de recomendação é obrigatório para kits personalizados.");
+            }
+        } else {
+            kit.setRecommendedItems(recommendedItemsService.generateRecommendedItems(kit));
+        }
+
         return kitDAO.update(kit);
     }
 
