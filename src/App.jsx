@@ -18,6 +18,7 @@ import UserDashboard from "./pages/UserDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
 import Quiz from "./pages/Quiz";
 import QuizList from "./pages/QuizList";
+import About from "./pages/About";
 import PrivateRoute from "./components/PrivateRoute";
 import { AuthProvider } from "./contexts/AuthContext";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -47,6 +48,7 @@ function App() {
             <Route path="/learn" element={<LearnDisasters />} />
             <Route path="/quizzes" element={<QuizList />} />
             <Route path="/quiz/:id" element={<Quiz />} />
+            <Route path="/about" element={<About />} />
             <Route
               path="/dashboard"
               element={

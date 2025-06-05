@@ -31,7 +31,7 @@ export const Title = styled.h1`
   text-shadow: 0 2px 10px rgba(0, 242, 254, 0.2);
 `;
 
-export const Subtitle = styled.p`
+export const Subtitle = styled.div`
   color: rgba(255, 255, 255, 0.8);
   font-size: 1.2rem;
   margin-bottom: 2rem;
