@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 import { translateDisasterType, getDisasterDescription } from '../utils/translations';
 import { getYouTubeEmbedUrl } from '../utils/videoUtils';
 import { parseDisasterDescription } from '../utils/descriptionUtils';
+import styled from 'styled-components';
 import {
   PageContainer,
   ContentWrapper,
@@ -47,6 +48,15 @@ import {
   PhaseDescription,
   DisasterPhasesTabs
 } from './LearnDisasters.styles';
+
+const StyledAlert = styled(Alert)`
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  backdrop-filter: blur(10px);
+  border-radius: 15px;
+  margin-bottom: 2rem;
+`;
 
 const getDisasterGradient = (type) => {
   const translatedType = translateDisasterType(type);
