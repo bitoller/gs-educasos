@@ -388,7 +388,6 @@ const KitDetails = () => {
           throw new Error("ID do kit não fornecido");
         }
 
-        console.log("Fetching kit with ID:", id);
         const response = await kits.getById(id);
 
         if (!response || !response.data) {
@@ -396,7 +395,6 @@ const KitDetails = () => {
         }
 
         const kitData = response.data.kit || response.data;
-        console.log("Dados brutos do kit:", kitData);
 
         const processedKit = {
           ...kitData,
@@ -421,7 +419,6 @@ const KitDetails = () => {
           processedKit.recommendedItems = [];
         }
 
-        console.log("Dados do kit processados:", processedKit);
         setKit(processedKit);
       } catch (err) {
         console.error("Error fetching kit:", err);
@@ -439,14 +436,6 @@ const KitDetails = () => {
 
   useEffect(() => {
     if (kit) {
-      console.log("Estado atual do kit:", {
-        id: kit.id,
-        region: kit.region,
-        numResidents: kit.numResidents,
-        houseType: kit.houseType,
-        isCustom: kit.isCustom,
-        allData: kit,
-      });
     }
   }, [kit]);
 

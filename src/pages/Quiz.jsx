@@ -273,13 +273,11 @@ const Quiz = () => {
         quizData.quizId,
         selectedAnswers
       );
-      console.log("Quiz submission response:", response.data);
 
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
       const userResponse = await auth.getUserData();
       if (userResponse.data) {
-        console.log("Fresh user data after quiz:", userResponse.data);
         login(userResponse.data);
       }
 

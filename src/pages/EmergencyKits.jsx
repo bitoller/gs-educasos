@@ -325,11 +325,9 @@ const EmergencyKits = () => {
   const loadKits = async () => {
     try {
       const response = await kits.getAll();
-      console.log("Raw response from API:", response);
 
       const processedKits = Array.isArray(response.data)
         ? response.data.map((kit) => {
-            console.log("Processing kit:", kit);
             return {
               ...kit,
               id: kit.id || kit.kitId,
@@ -340,7 +338,6 @@ const EmergencyKits = () => {
           })
         : [];
 
-      console.log("Processed kits:", processedKits);
       setUserKits(processedKits);
     } catch (err) {
       console.error("Error loading kits:", err);
@@ -356,7 +353,6 @@ const EmergencyKits = () => {
         return;
       }
 
-      console.log("Deleting kit:", kitId);
       await kits.delete(kitId);
 
       setUserKits((prevKits) => prevKits.filter((kit) => kit.id !== kitId));

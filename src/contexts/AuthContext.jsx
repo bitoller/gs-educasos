@@ -20,7 +20,6 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = (userData) => {
-    console.log("Updating user data in context:", userData);
     setUser(userData);
     setIsAdmin(userData.role === "admin");
     localStorage.setItem("user", JSON.stringify(userData));
@@ -36,7 +35,6 @@ export const AuthProvider = ({ children }) => {
   };
 
   const updateUserData = (newData) => {
-    console.log("Updating user data:", newData);
     const updatedUser = { ...user, ...newData };
     setUser(updatedUser);
     localStorage.setItem("user", JSON.stringify(updatedUser));

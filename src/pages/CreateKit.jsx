@@ -327,18 +327,13 @@ const CreateKit = () => {
         };
       }
 
-      console.log("Enviando dados do kit:", kitData);
-
       const response = await kits.create(kitData);
-
-      console.log("Resposta da criação do kit:", response);
 
       if (!response || !response.data) {
         throw new Error("Resposta inválida do servidor");
       }
 
       const responseData = response.data;
-      console.log("Dados da resposta:", responseData);
 
       let kitId = null;
 

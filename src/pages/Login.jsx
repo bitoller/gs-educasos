@@ -21,7 +21,6 @@ const Login = () => {
 
     try {
       const response = await auth.login({ email, password });
-      console.log("Raw login response:", response.data);
 
       if (response.data && response.data.token) {
         localStorage.setItem("token", response.data.token);
@@ -37,7 +36,6 @@ const Login = () => {
         };
 
         localStorage.setItem("user", JSON.stringify(userData));
-        console.log("Processed and stored user data:", userData);
 
         login(userData);
 

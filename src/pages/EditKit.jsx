@@ -411,7 +411,6 @@ const EditKit = () => {
           ),
         };
 
-        console.log("Processed kit data:", processedKit);
         setKit(processedKit);
       } catch (err) {
         setError(err.message || "Erro ao carregar o kit");
@@ -425,18 +424,10 @@ const EditKit = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Submit button clicked");
     setError(null);
     setSuccess(false);
 
     try {
-      console.log("Current kit state:", {
-        id: kit.id,
-        isCustom: kit.isCustom,
-        itemsCount: kit.recommendedItems?.length,
-        fullKit: kit,
-      });
-
       const kitData = { ...kit };
 
       const processedItemsForSubmission = (kit.recommendedItems || []).map(
@@ -462,24 +453,8 @@ const EditKit = () => {
         hasPets: Boolean(kitData.hasPets),
       };
 
-      console.log("Request details:", {
-        url: `/api/kit/${id}`,
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        data: submitData,
-      });
-
       try {
-        console.log("Sending request to backend...");
         const response = await kits.update(id, submitData);
-        console.log("Backend response:", {
-          status: response.status,
-          statusText: response.statusText,
-          headers: response.headers,
-          data: response.data,
-        });
 
         setSuccess(true);
         setTimeout(() => {
@@ -536,14 +511,11 @@ const EditKit = () => {
       description: newItem.description.trim(),
     };
 
-    console.log("Adding new item:", itemToAdd);
-
     setKit((prev) => {
       const updatedKit = {
         ...prev,
         recommendedItems: [...(prev.recommendedItems || []), itemToAdd],
       };
-      console.log("Updated kit after adding:", updatedKit);
       return updatedKit;
     });
 
@@ -592,7 +564,6 @@ const EditKit = () => {
   };
 
   const handleDeleteClick = (item) => {
-    console.log("Clicked delete for item:", item);
     if (!item.id) {
       console.warn("Item without ID:", item);
       return;
@@ -603,34 +574,20 @@ const EditKit = () => {
 
   const confirmDelete = () => {
     if (!itemToDelete?.id || !kit?.recommendedItems) {
-      console.log("No item ID to delete or no recommendedItems");
       return;
     }
 
-    console.log("Current items before delete:", kit.recommendedItems);
-    console.log("Attempting to delete item:", itemToDelete);
-
     const updatedItems = kit.recommendedItems.filter((item) => {
       const shouldKeep = item.id !== itemToDelete.id;
-      console.log(
-        "Comparing item:",
-        { id: item.id, name: item.name },
-        "with item to delete:",
-        { id: itemToDelete.id, name: itemToDelete.name },
-        "keeping?",
-        shouldKeep
-      );
       return shouldKeep;
     });
-
-    console.log("Items after filter:", updatedItems);
 
     setKit((prev) => {
       const updatedKit = {
         ...prev,
         recommendedItems: updatedItems,
       };
-      console.log("Final kit state:", updatedKit);
+
       return updatedKit;
     });
 
@@ -804,7 +761,6 @@ const EditKit = () => {
 
                 <ItemsList>
                   {kit?.recommendedItems?.map((item, index) => {
-                    console.log("Rendering item:", item);
                     return (
                       <motion.div
                         key={item.id || `item-${index}`}
