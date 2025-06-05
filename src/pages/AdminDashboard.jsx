@@ -1,68 +1,93 @@
-import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Card, Table, Button, Nav, Alert, Badge, Spinner, Form, Modal } from 'react-bootstrap';
-import { admin, content, kits } from '../services/api';
-import { useAuth } from '../contexts/AuthContext';
-import { FaUsers, FaBook, FaMedkit, FaEdit, FaTrash, FaPlus, FaCheck, FaTimes, FaSearch } from 'react-icons/fa';
-import '../styles/dashboard.css';
+import React, { useState, useEffect } from "react";
+import {
+  Container,
+  Row,
+  Col,
+  Card,
+  Table,
+  Button,
+  Nav,
+  Alert,
+  Badge,
+  Spinner,
+  Form,
+  Modal,
+} from "react-bootstrap";
+import { admin, content, kits } from "../services/api";
+import { useAuth } from "../contexts/AuthContext";
+import {
+  FaUsers,
+  FaBook,
+  FaMedkit,
+  FaEdit,
+  FaTrash,
+  FaPlus,
+  FaCheck,
+  FaTimes,
+  FaSearch,
+} from "react-icons/fa";
+import "../styles/dashboard.css";
 
 const DISASTER_TYPES = {
-  FLOOD: { name: 'Enchente', color: 'info', icon: '🌊' },
-  LANDSLIDE: { name: 'Deslizamento', color: 'warning', icon: '⛰️' },
-  WILDFIRE: { name: 'Queimada', color: 'danger', icon: '🔥' },
-  DROUGHT: { name: 'Seca', color: 'warning', icon: '☀️' },
-  STORM: { name: 'Tempestade', color: 'primary', icon: '⛈️' }
+  FLOOD: { name: "Enchente", color: "info", icon: "🌊" },
+  LANDSLIDE: { name: "Deslizamento", color: "warning", icon: "⛰️" },
+  WILDFIRE: { name: "Queimada", color: "danger", icon: "🔥" },
+  DROUGHT: { name: "Seca", color: "warning", icon: "☀️" },
+  STORM: { name: "Tempestade", color: "primary", icon: "⛈️" },
 };
 
 const AdminDashboard = () => {
   const { user } = useAuth();
-  const [activeTab, setActiveTab] = useState('users');
+  const [activeTab, setActiveTab] = useState("users");
   const [users, setUsers] = useState([]);
   const [contents, setContents] = useState([]);
   const [emergencyKits, setEmergencyKits] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [showEditModal, setShowEditModal] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
   const [editForm, setEditForm] = useState({});
   const [showContentModal, setShowContentModal] = useState(false);
   const [contentForm, setContentForm] = useState({
-    title: '',
-    disasterType: 'FLOOD',
-    description: '',
-    videoUrl: '',
-    imageUrl: '',
-    beforeTips: [''],
-    duringTips: [''],
-    afterTips: ['']
+    title: "",
+    disasterType: "FLOOD",
+    description: "",
+    videoUrl: "",
+    imageUrl: "",
+    beforeTips: [""],
+    duringTips: [""],
+    afterTips: [""],
   });
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
-    document.title = 'Dashboard Administrativo - Disaster Awareness';
+    document.title = "Dashboard Administrativo - Disaster Awareness";
     loadData();
   }, [activeTab]);
 
   const loadData = async () => {
     setLoading(true);
-    setError('');
+    setError("");
     try {
       switch (activeTab) {
-        case 'users':
+        case "users":
           const usersResponse = await admin.getAllUsers();
           setUsers(usersResponse.data);
           break;
-        case 'content':
+        case "content":
           const contentResponse = await content.getAll();
           setContents(contentResponse.data);
           break;
-        case 'kits':
+        case "kits":
           const kitsResponse = await kits.getAll();
           setEmergencyKits(kitsResponse.data);
           break;
       }
     } catch (err) {
-      console.error('Error loading dashboard data:', err);
-      setError('Erro ao carregar dados do dashboard. Por favor, tente novamente mais tarde.');
+      console.error("Error loading dashboard data:", err);
+      setError(
+        "Erro ao carregar dados do dashboard. Por favor, tente novamente mais tarde."
+      );
     } finally {
       setLoading(false);
     }
@@ -74,7 +99,7 @@ const AdminDashboard = () => {
       name: user.name,
       email: user.email,
       role: user.role,
-      isActive: user.isActive
+      isActive: user.isActive,
     });
     setShowEditModal(true);
   };
@@ -82,24 +107,28 @@ const AdminDashboard = () => {
   const handleSaveUserEdit = async () => {
     try {
       await admin.updateUser(editingItem.userId, editForm);
-      setUsers(users.map(user => 
-        user.userId === editingItem.userId 
-          ? { ...user, ...editForm }
-          : user
-      ));
+      setUsers(
+        users.map((user) =>
+          user.userId === editingItem.userId ? { ...user, ...editForm } : user
+        )
+      );
       setShowEditModal(false);
     } catch (err) {
-      setError('Erro ao atualizar usuário. Por favor, tente novamente.');
+      setError("Erro ao atualizar usuário. Por favor, tente novamente.");
     }
   };
 
   const handleDeleteUser = async (userId) => {
-    if (window.confirm('Tem certeza que deseja excluir este usuário? Esta ação não pode ser desfeita.')) {
+    if (
+      window.confirm(
+        "Tem certeza que deseja excluir este usuário? Esta ação não pode ser desfeita."
+      )
+    ) {
       try {
         await admin.deleteUser(userId);
-        setUsers(users.filter(user => user.userId !== userId));
+        setUsers(users.filter((user) => user.userId !== userId));
       } catch (err) {
-        setError('Erro ao excluir usuário. Por favor, tente novamente.');
+        setError("Erro ao excluir usuário. Por favor, tente novamente.");
       }
     }
   };
@@ -111,23 +140,23 @@ const AdminDashboard = () => {
       setContents(contentResponse.data);
       setShowContentModal(false);
       setContentForm({
-        title: '',
-        disasterType: 'FLOOD',
-        description: '',
-        videoUrl: '',
-        imageUrl: '',
-        beforeTips: [''],
-        duringTips: [''],
-        afterTips: ['']
+        title: "",
+        disasterType: "FLOOD",
+        description: "",
+        videoUrl: "",
+        imageUrl: "",
+        beforeTips: [""],
+        duringTips: [""],
+        afterTips: [""],
       });
     } catch (err) {
-      setError('Erro ao adicionar conteúdo. Por favor, tente novamente.');
+      setError("Erro ao adicionar conteúdo. Por favor, tente novamente.");
     }
   };
 
   const handleEditContent = async (contentId) => {
     try {
-      const contentToEdit = contents.find(c => c.contentId === contentId);
+      const contentToEdit = contents.find((c) => c.contentId === contentId);
       setEditingItem(contentToEdit);
       setEditForm({
         title: contentToEdit.title,
@@ -135,37 +164,41 @@ const AdminDashboard = () => {
         description: contentToEdit.description,
         videoUrl: contentToEdit.videoUrl,
         imageUrl: contentToEdit.imageUrl,
-        beforeTips: contentToEdit.beforeTips || [''],
-        duringTips: contentToEdit.duringTips || [''],
-        afterTips: contentToEdit.afterTips || ['']
+        beforeTips: contentToEdit.beforeTips || [""],
+        duringTips: contentToEdit.duringTips || [""],
+        afterTips: contentToEdit.afterTips || [""],
       });
       setShowEditModal(true);
     } catch (err) {
-      setError('Erro ao editar conteúdo. Por favor, tente novamente.');
+      setError("Erro ao editar conteúdo. Por favor, tente novamente.");
     }
   };
 
   const handleSaveContentEdit = async () => {
     try {
       await content.update(editingItem.contentId, editForm);
-      setContents(contents.map(c => 
-        c.contentId === editingItem.contentId 
-          ? { ...c, ...editForm }
-          : c
-      ));
+      setContents(
+        contents.map((c) =>
+          c.contentId === editingItem.contentId ? { ...c, ...editForm } : c
+        )
+      );
       setShowEditModal(false);
     } catch (err) {
-      setError('Erro ao atualizar conteúdo. Por favor, tente novamente.');
+      setError("Erro ao atualizar conteúdo. Por favor, tente novamente.");
     }
   };
 
   const handleDeleteContent = async (contentId) => {
-    if (window.confirm('Tem certeza que deseja excluir este conteúdo? Esta ação não pode ser desfeita.')) {
+    if (
+      window.confirm(
+        "Tem certeza que deseja excluir este conteúdo? Esta ação não pode ser desfeita."
+      )
+    ) {
       try {
         await content.delete(contentId);
-        setContents(contents.filter(c => c.contentId !== contentId));
+        setContents(contents.filter((c) => c.contentId !== contentId));
       } catch (err) {
-        setError('Erro ao excluir conteúdo. Por favor, tente novamente.');
+        setError("Erro ao excluir conteúdo. Por favor, tente novamente.");
       }
     }
   };
@@ -173,41 +206,42 @@ const AdminDashboard = () => {
   const handleUpdateKitStatus = async (kitId, status) => {
     try {
       await kits.update(kitId, { status });
-      setEmergencyKits(emergencyKits.map(kit => 
-        kit.kitId === kitId 
-          ? { ...kit, status }
-          : kit
-      ));
+      setEmergencyKits(
+        emergencyKits.map((kit) =>
+          kit.kitId === kitId ? { ...kit, status } : kit
+        )
+      );
     } catch (err) {
-      setError('Erro ao atualizar status do kit. Por favor, tente novamente.');
+      setError("Erro ao atualizar status do kit. Por favor, tente novamente.");
     }
   };
 
   const handleAddTip = (type) => {
-    setContentForm(prev => ({
+    setContentForm((prev) => ({
       ...prev,
-      [type]: [...prev[type], '']
+      [type]: [...prev[type], ""],
     }));
   };
 
   const handleRemoveTip = (type, index) => {
-    setContentForm(prev => ({
+    setContentForm((prev) => ({
       ...prev,
-      [type]: prev[type].filter((_, i) => i !== index)
+      [type]: prev[type].filter((_, i) => i !== index),
     }));
   };
 
   const handleTipChange = (type, index, value) => {
-    setContentForm(prev => ({
+    setContentForm((prev) => ({
       ...prev,
-      [type]: prev[type].map((tip, i) => i === index ? value : tip)
+      [type]: prev[type].map((tip, i) => (i === index ? value : tip)),
     }));
   };
 
   const renderUsersTable = () => {
-    const filteredUsers = users.filter(user =>
-      user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.email.toLowerCase().includes(searchTerm.toLowerCase())
+    const filteredUsers = users.filter(
+      (user) =>
+        user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        user.email.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     return (
@@ -222,32 +256,42 @@ const AdminDashboard = () => {
                 <th scope="col">Papel</th>
                 <th scope="col">Status</th>
                 <th scope="col">Último Acesso</th>
-                <th scope="col" className="text-end">Ações</th>
+                <th scope="col" className="text-end">
+                  Ações
+                </th>
               </tr>
             </thead>
             <tbody>
-              {filteredUsers.map(user => (
+              {filteredUsers.map((user) => (
                 <tr key={user.userId}>
                   <td>{user.userId}</td>
                   <td>{user.name}</td>
                   <td>{user.email}</td>
                   <td>
-                    <Badge 
-                      bg={user.role === 'admin' ? 'danger' : 'info'}
-                      aria-label={`Papel: ${user.role === 'admin' ? 'Administrador' : 'Usuário'}`}
+                    <Badge
+                      bg={user.role === "admin" ? "danger" : "info"}
+                      aria-label={`Papel: ${
+                        user.role === "admin" ? "Administrador" : "Usuário"
+                      }`}
                     >
-                      {user.role === 'admin' ? 'Admin' : 'Usuário'}
+                      {user.role === "admin" ? "Admin" : "Usuário"}
                     </Badge>
                   </td>
                   <td>
-                    <Badge 
-                      bg={user.isActive ? 'success' : 'danger'}
-                      aria-label={`Status: ${user.isActive ? 'Ativo' : 'Inativo'}`}
+                    <Badge
+                      bg={user.isActive ? "success" : "danger"}
+                      aria-label={`Status: ${
+                        user.isActive ? "Ativo" : "Inativo"
+                      }`}
                     >
-                      {user.isActive ? 'Ativo' : 'Inativo'}
+                      {user.isActive ? "Ativo" : "Inativo"}
                     </Badge>
                   </td>
-                  <td>{new Date(user.lastLogin || user.createdAt).toLocaleDateString()}</td>
+                  <td>
+                    {new Date(
+                      user.lastLogin || user.createdAt
+                    ).toLocaleDateString()}
+                  </td>
                   <td>
                     <div className="d-flex justify-content-end gap-2">
                       <Button
@@ -316,9 +360,10 @@ const AdminDashboard = () => {
   );
 
   const renderContentTable = () => {
-    const filteredContents = contents.filter(content =>
-      content.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      content.description.toLowerCase().includes(searchTerm.toLowerCase())
+    const filteredContents = contents.filter(
+      (content) =>
+        content.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        content.description.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     return (
@@ -342,31 +387,43 @@ const AdminDashboard = () => {
                 <th scope="col">Tipo</th>
                 <th scope="col">Descrição</th>
                 <th scope="col">Status</th>
-                <th scope="col" className="text-end">Ações</th>
+                <th scope="col" className="text-end">
+                  Ações
+                </th>
               </tr>
             </thead>
             <tbody>
-              {filteredContents.map(content => (
+              {filteredContents.map((content) => (
                 <tr key={content.contentId}>
                   <td>{content.title}</td>
                   <td>
-                    <Badge 
-                      bg={DISASTER_TYPES[content.disasterType]?.color || 'secondary'}
+                    <Badge
+                      bg={
+                        DISASTER_TYPES[content.disasterType]?.color ||
+                        "secondary"
+                      }
                       className="d-flex align-items-center gap-1"
-                      aria-label={`Tipo: ${DISASTER_TYPES[content.disasterType]?.name || content.disasterType}`}
+                      aria-label={`Tipo: ${
+                        DISASTER_TYPES[content.disasterType]?.name ||
+                        content.disasterType
+                      }`}
                     >
-                      {DISASTER_TYPES[content.disasterType]?.icon} {DISASTER_TYPES[content.disasterType]?.name || content.disasterType}
+                      {DISASTER_TYPES[content.disasterType]?.icon}{" "}
+                      {DISASTER_TYPES[content.disasterType]?.name ||
+                        content.disasterType}
                     </Badge>
                   </td>
-                  <td className="text-truncate" style={{ maxWidth: '300px' }}>
+                  <td className="text-truncate" style={{ maxWidth: "300px" }}>
                     {content.description}
                   </td>
                   <td>
-                    <Badge 
-                      bg={content.isPublished ? 'success' : 'warning'}
-                      aria-label={`Status: ${content.isPublished ? 'Publicado' : 'Rascunho'}`}
+                    <Badge
+                      bg={content.isPublished ? "success" : "warning"}
+                      aria-label={`Status: ${
+                        content.isPublished ? "Publicado" : "Rascunho"
+                      }`}
                     >
-                      {content.isPublished ? 'Publicado' : 'Rascunho'}
+                      {content.isPublished ? "Publicado" : "Rascunho"}
                     </Badge>
                   </td>
                   <td>
@@ -406,9 +463,10 @@ const AdminDashboard = () => {
   };
 
   const renderKitsTable = () => {
-    const filteredKits = emergencyKits.filter(kit =>
-      kit.houseType.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      kit.region.toLowerCase().includes(searchTerm.toLowerCase())
+    const filteredKits = emergencyKits.filter(
+      (kit) =>
+        kit.houseType.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        kit.region.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     return (
@@ -422,22 +480,40 @@ const AdminDashboard = () => {
                 <th scope="col">Região</th>
                 <th scope="col">Moradores</th>
                 <th scope="col">Status</th>
-                <th scope="col" className="text-end">Ações</th>
+                <th scope="col" className="text-end">
+                  Ações
+                </th>
               </tr>
             </thead>
             <tbody>
-              {filteredKits.map(kit => (
+              {filteredKits.map((kit) => (
                 <tr key={kit.kitId}>
                   <td>{kit.kitId}</td>
                   <td>{kit.houseType}</td>
                   <td>{kit.region}</td>
                   <td>{kit.numResidents}</td>
                   <td>
-                    <Badge 
-                      bg={kit.status === 'APPROVED' ? 'success' : kit.status === 'PENDING' ? 'warning' : 'danger'}
-                      aria-label={`Status: ${kit.status === 'APPROVED' ? 'Aprovado' : kit.status === 'PENDING' ? 'Pendente' : 'Rejeitado'}`}
+                    <Badge
+                      bg={
+                        kit.status === "APPROVED"
+                          ? "success"
+                          : kit.status === "PENDING"
+                          ? "warning"
+                          : "danger"
+                      }
+                      aria-label={`Status: ${
+                        kit.status === "APPROVED"
+                          ? "Aprovado"
+                          : kit.status === "PENDING"
+                          ? "Pendente"
+                          : "Rejeitado"
+                      }`}
                     >
-                      {kit.status === 'APPROVED' ? 'Aprovado' : kit.status === 'PENDING' ? 'Pendente' : 'Rejeitado'}
+                      {kit.status === "APPROVED"
+                        ? "Aprovado"
+                        : kit.status === "PENDING"
+                        ? "Pendente"
+                        : "Rejeitado"}
                     </Badge>
                   </td>
                   <td>
@@ -445,8 +521,10 @@ const AdminDashboard = () => {
                       <Button
                         variant="outline-success"
                         size="sm"
-                        onClick={() => handleUpdateKitStatus(kit.kitId, 'APPROVED')}
-                        disabled={kit.status === 'APPROVED'}
+                        onClick={() =>
+                          handleUpdateKitStatus(kit.kitId, "APPROVED")
+                        }
+                        disabled={kit.status === "APPROVED"}
                         className="d-flex align-items-center gap-1"
                         aria-label="Aprovar kit"
                       >
@@ -455,8 +533,10 @@ const AdminDashboard = () => {
                       <Button
                         variant="outline-danger"
                         size="sm"
-                        onClick={() => handleUpdateKitStatus(kit.kitId, 'REJECTED')}
-                        disabled={kit.status === 'REJECTED'}
+                        onClick={() =>
+                          handleUpdateKitStatus(kit.kitId, "REJECTED")
+                        }
+                        disabled={kit.status === "REJECTED"}
                         className="d-flex align-items-center gap-1"
                         aria-label="Rejeitar kit"
                       >
@@ -479,20 +559,21 @@ const AdminDashboard = () => {
   };
 
   const renderEditModal = () => (
-    <Modal 
-      show={showEditModal} 
+    <Modal
+      show={showEditModal}
       onHide={() => setShowEditModal(false)}
       aria-labelledby="edit-modal-title"
     >
       <Modal.Header closeButton>
         <Modal.Title id="edit-modal-title">
-          {editingItem?.name ? `Editar Usuário: ${editingItem.name}` : 'Editar Conteúdo'}
+          {editingItem?.name
+            ? `Editar Usuário: ${editingItem.name}`
+            : "Editar Conteúdo"}
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <Form>
           {editingItem?.name ? (
-            // Formulário de edição de usuário
             <>
               <Form.Group className="mb-3">
                 <Form.Label htmlFor="edit-name">Nome</Form.Label>
@@ -500,7 +581,9 @@ const AdminDashboard = () => {
                   id="edit-name"
                   type="text"
                   value={editForm.name}
-                  onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+                  onChange={(e) =>
+                    setEditForm({ ...editForm, name: e.target.value })
+                  }
                   aria-describedby="name-help"
                 />
                 <Form.Text id="name-help" muted>
@@ -514,7 +597,9 @@ const AdminDashboard = () => {
                   id="edit-email"
                   type="email"
                   value={editForm.email}
-                  onChange={(e) => setEditForm({ ...editForm, email: e.target.value })}
+                  onChange={(e) =>
+                    setEditForm({ ...editForm, email: e.target.value })
+                  }
                   aria-describedby="email-help"
                 />
                 <Form.Text id="email-help" muted>
@@ -527,7 +612,9 @@ const AdminDashboard = () => {
                 <Form.Select
                   id="edit-role"
                   value={editForm.role}
-                  onChange={(e) => setEditForm({ ...editForm, role: e.target.value })}
+                  onChange={(e) =>
+                    setEditForm({ ...editForm, role: e.target.value })
+                  }
                   aria-describedby="role-help"
                 >
                   <option value="user">Usuário</option>
@@ -544,7 +631,9 @@ const AdminDashboard = () => {
                   id="edit-status"
                   label="Usuário Ativo"
                   checked={editForm.isActive}
-                  onChange={(e) => setEditForm({ ...editForm, isActive: e.target.checked })}
+                  onChange={(e) =>
+                    setEditForm({ ...editForm, isActive: e.target.checked })
+                  }
                   aria-describedby="status-help"
                 />
                 <Form.Text id="status-help" muted>
@@ -553,7 +642,6 @@ const AdminDashboard = () => {
               </Form.Group>
             </>
           ) : (
-            // Formulário de edição de conteúdo
             <>
               <Form.Group className="mb-3">
                 <Form.Label htmlFor="edit-title">Título</Form.Label>
@@ -561,7 +649,9 @@ const AdminDashboard = () => {
                   id="edit-title"
                   type="text"
                   value={editForm.title}
-                  onChange={(e) => setEditForm({ ...editForm, title: e.target.value })}
+                  onChange={(e) =>
+                    setEditForm({ ...editForm, title: e.target.value })
+                  }
                   aria-describedby="title-help"
                 />
                 <Form.Text id="title-help" muted>
@@ -570,15 +660,21 @@ const AdminDashboard = () => {
               </Form.Group>
 
               <Form.Group className="mb-3">
-                <Form.Label htmlFor="edit-disaster-type">Tipo de Desastre</Form.Label>
+                <Form.Label htmlFor="edit-disaster-type">
+                  Tipo de Desastre
+                </Form.Label>
                 <Form.Select
                   id="edit-disaster-type"
                   value={editForm.disasterType}
-                  onChange={(e) => setEditForm({ ...editForm, disasterType: e.target.value })}
+                  onChange={(e) =>
+                    setEditForm({ ...editForm, disasterType: e.target.value })
+                  }
                   aria-describedby="disaster-type-help"
                 >
                   {Object.entries(DISASTER_TYPES).map(([key, { name }]) => (
-                    <option key={key} value={key}>{name}</option>
+                    <option key={key} value={key}>
+                      {name}
+                    </option>
                   ))}
                 </Form.Select>
                 <Form.Text id="disaster-type-help" muted>
@@ -593,7 +689,9 @@ const AdminDashboard = () => {
                   as="textarea"
                   rows={3}
                   value={editForm.description}
-                  onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
+                  onChange={(e) =>
+                    setEditForm({ ...editForm, description: e.target.value })
+                  }
                   aria-describedby="description-help"
                 />
                 <Form.Text id="description-help" muted>
@@ -607,7 +705,9 @@ const AdminDashboard = () => {
                   id="edit-video"
                   type="url"
                   value={editForm.videoUrl}
-                  onChange={(e) => setEditForm({ ...editForm, videoUrl: e.target.value })}
+                  onChange={(e) =>
+                    setEditForm({ ...editForm, videoUrl: e.target.value })
+                  }
                   aria-describedby="video-help"
                 />
                 <Form.Text id="video-help" muted>
@@ -621,7 +721,9 @@ const AdminDashboard = () => {
                   id="edit-image"
                   type="url"
                   value={editForm.imageUrl}
-                  onChange={(e) => setEditForm({ ...editForm, imageUrl: e.target.value })}
+                  onChange={(e) =>
+                    setEditForm({ ...editForm, imageUrl: e.target.value })
+                  }
                   aria-describedby="image-help"
                 />
                 <Form.Text id="image-help" muted>
@@ -633,16 +735,18 @@ const AdminDashboard = () => {
         </Form>
       </Modal.Body>
       <Modal.Footer>
-        <Button 
-          variant="secondary" 
+        <Button
+          variant="secondary"
           onClick={() => setShowEditModal(false)}
           className="d-flex align-items-center gap-2"
         >
           Cancelar
         </Button>
-        <Button 
-          variant="primary" 
-          onClick={editingItem?.name ? handleSaveUserEdit : handleSaveContentEdit}
+        <Button
+          variant="primary"
+          onClick={
+            editingItem?.name ? handleSaveUserEdit : handleSaveContentEdit
+          }
           className="d-flex align-items-center gap-2"
         >
           <FaCheck /> Salvar Alterações
@@ -652,14 +756,16 @@ const AdminDashboard = () => {
   );
 
   const renderAddContentModal = () => (
-    <Modal 
-      show={showContentModal} 
+    <Modal
+      show={showContentModal}
       onHide={() => setShowContentModal(false)}
       size="lg"
       aria-labelledby="add-content-modal-title"
     >
       <Modal.Header closeButton>
-        <Modal.Title id="add-content-modal-title">Adicionar Novo Conteúdo</Modal.Title>
+        <Modal.Title id="add-content-modal-title">
+          Adicionar Novo Conteúdo
+        </Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <Form>
@@ -669,7 +775,9 @@ const AdminDashboard = () => {
               id="content-title"
               type="text"
               value={contentForm.title}
-              onChange={(e) => setContentForm({ ...contentForm, title: e.target.value })}
+              onChange={(e) =>
+                setContentForm({ ...contentForm, title: e.target.value })
+              }
               aria-describedby="content-title-help"
             />
             <Form.Text id="content-title-help" muted>
@@ -678,15 +786,21 @@ const AdminDashboard = () => {
           </Form.Group>
 
           <Form.Group className="mb-3">
-            <Form.Label htmlFor="content-disaster-type">Tipo de Desastre</Form.Label>
+            <Form.Label htmlFor="content-disaster-type">
+              Tipo de Desastre
+            </Form.Label>
             <Form.Select
               id="content-disaster-type"
               value={contentForm.disasterType}
-              onChange={(e) => setContentForm({ ...contentForm, disasterType: e.target.value })}
+              onChange={(e) =>
+                setContentForm({ ...contentForm, disasterType: e.target.value })
+              }
               aria-describedby="content-disaster-type-help"
             >
               {Object.entries(DISASTER_TYPES).map(([key, { name }]) => (
-                <option key={key} value={key}>{name}</option>
+                <option key={key} value={key}>
+                  {name}
+                </option>
               ))}
             </Form.Select>
             <Form.Text id="content-disaster-type-help" muted>
@@ -701,7 +815,9 @@ const AdminDashboard = () => {
               as="textarea"
               rows={3}
               value={contentForm.description}
-              onChange={(e) => setContentForm({ ...contentForm, description: e.target.value })}
+              onChange={(e) =>
+                setContentForm({ ...contentForm, description: e.target.value })
+              }
               aria-describedby="content-description-help"
             />
             <Form.Text id="content-description-help" muted>
@@ -715,7 +831,9 @@ const AdminDashboard = () => {
               id="content-video"
               type="url"
               value={contentForm.videoUrl}
-              onChange={(e) => setContentForm({ ...contentForm, videoUrl: e.target.value })}
+              onChange={(e) =>
+                setContentForm({ ...contentForm, videoUrl: e.target.value })
+              }
               aria-describedby="content-video-help"
             />
             <Form.Text id="content-video-help" muted>
@@ -729,7 +847,9 @@ const AdminDashboard = () => {
               id="content-image"
               type="url"
               value={contentForm.imageUrl}
-              onChange={(e) => setContentForm({ ...contentForm, imageUrl: e.target.value })}
+              onChange={(e) =>
+                setContentForm({ ...contentForm, imageUrl: e.target.value })
+              }
               aria-describedby="content-image-help"
             />
             <Form.Text id="content-image-help" muted>
@@ -737,19 +857,23 @@ const AdminDashboard = () => {
             </Form.Text>
           </Form.Group>
 
-          {['beforeTips', 'duringTips', 'afterTips'].map((tipType, index) => (
+          {["beforeTips", "duringTips", "afterTips"].map((tipType, index) => (
             <Form.Group key={tipType} className="mb-4">
               <Form.Label>
-                {tipType === 'beforeTips' ? 'Dicas Antes do Desastre' :
-                 tipType === 'duringTips' ? 'Dicas Durante o Desastre' :
-                 'Dicas Após o Desastre'}
+                {tipType === "beforeTips"
+                  ? "Dicas Antes do Desastre"
+                  : tipType === "duringTips"
+                  ? "Dicas Durante o Desastre"
+                  : "Dicas Após o Desastre"}
               </Form.Label>
               {contentForm[tipType].map((tip, i) => (
                 <div key={i} className="d-flex gap-2 mb-2">
                   <Form.Control
                     type="text"
                     value={tip}
-                    onChange={(e) => handleTipChange(tipType, i, e.target.value)}
+                    onChange={(e) =>
+                      handleTipChange(tipType, i, e.target.value)
+                    }
                     placeholder="Digite uma dica..."
                     aria-label={`Dica ${i + 1}`}
                   />
@@ -776,14 +900,11 @@ const AdminDashboard = () => {
         </Form>
       </Modal.Body>
       <Modal.Footer>
-        <Button 
-          variant="secondary" 
-          onClick={() => setShowContentModal(false)}
-        >
+        <Button variant="secondary" onClick={() => setShowContentModal(false)}>
           Cancelar
         </Button>
-        <Button 
-          variant="success" 
+        <Button
+          variant="success"
           onClick={handleAddContent}
           className="d-flex align-items-center gap-2"
         >
@@ -808,7 +929,12 @@ const AdminDashboard = () => {
       <h2 className="mb-4 visually-hidden">Dashboard Administrativo</h2>
 
       {error && (
-        <Alert variant="danger" role="alert" dismissible onClose={() => setError('')}>
+        <Alert
+          variant="danger"
+          role="alert"
+          dismissible
+          onClose={() => setError("")}
+        >
           {error}
         </Alert>
       )}
@@ -816,39 +942,39 @@ const AdminDashboard = () => {
       <Card className="shadow">
         <Card.Body>
           <div className="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
-            <Nav 
-              variant="tabs" 
-              activeKey={activeTab} 
+            <Nav
+              variant="tabs"
+              activeKey={activeTab}
               onSelect={setActiveTab}
               role="tablist"
               className="border-0"
             >
               <Nav.Item role="presentation">
-                <Nav.Link 
+                <Nav.Link
                   eventKey="users"
                   className="d-flex align-items-center gap-2"
                   role="tab"
-                  aria-selected={activeTab === 'users'}
+                  aria-selected={activeTab === "users"}
                 >
                   <FaUsers /> Usuários
                 </Nav.Link>
               </Nav.Item>
               <Nav.Item role="presentation">
-                <Nav.Link 
+                <Nav.Link
                   eventKey="content"
                   className="d-flex align-items-center gap-2"
                   role="tab"
-                  aria-selected={activeTab === 'content'}
+                  aria-selected={activeTab === "content"}
                 >
                   <FaBook /> Conteúdo
                 </Nav.Link>
               </Nav.Item>
               <Nav.Item role="presentation">
-                <Nav.Link 
+                <Nav.Link
                   eventKey="kits"
                   className="d-flex align-items-center gap-2"
                   role="tab"
-                  aria-selected={activeTab === 'kits'}
+                  aria-selected={activeTab === "kits"}
                 >
                   <FaMedkit /> Kits
                 </Nav.Link>
@@ -872,20 +998,20 @@ const AdminDashboard = () => {
 
           {loading ? (
             <div className="text-center p-5">
-              <Spinner 
-                animation="border" 
-                role="status" 
+              <Spinner
+                animation="border"
+                role="status"
                 variant="primary"
-                style={{ width: '3rem', height: '3rem' }}
+                style={{ width: "3rem", height: "3rem" }}
               >
                 <span className="visually-hidden">Carregando...</span>
               </Spinner>
             </div>
           ) : (
             <div role="tabpanel">
-              {activeTab === 'users' && renderUsersTable()}
-              {activeTab === 'content' && renderContentTable()}
-              {activeTab === 'kits' && renderKitsTable()}
+              {activeTab === "users" && renderUsersTable()}
+              {activeTab === "content" && renderContentTable()}
+              {activeTab === "kits" && renderKitsTable()}
             </div>
           )}
         </Card.Body>
@@ -922,7 +1048,12 @@ const AdminDashboard = () => {
         <Col md={3}>
           <Card className="text-center">
             <Card.Body>
-              <h3>{users.reduce((total, user) => total + (user.completedQuizzes || 0), 0)}</h3>
+              <h3>
+                {users.reduce(
+                  (total, user) => total + (user.completedQuizzes || 0),
+                  0
+                )}
+              </h3>
               <Card.Text>Total de Quizzes Realizados</Card.Text>
             </Card.Body>
           </Card>
@@ -932,4 +1063,4 @@ const AdminDashboard = () => {
   );
 };
 
-export default AdminDashboard; 
+export default AdminDashboard;

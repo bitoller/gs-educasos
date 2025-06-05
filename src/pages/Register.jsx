@@ -31,13 +31,11 @@ const Register = () => {
     setError("");
     setSuccess("");
 
-    // Validate passwords match
     if (formData.password !== formData.confirmPassword) {
       setError("As senhas não coincidem");
       return;
     }
 
-    // Validate password length
     if (formData.password.length < 6) {
       setError("A senha deve ter pelo menos 6 caracteres");
       return;
@@ -46,7 +44,6 @@ const Register = () => {
     setLoading(true);
 
     try {
-      // First, try to register
       const registerResponse = await auth.register({
         name: formData.name,
         email: formData.email,
@@ -56,7 +53,6 @@ const Register = () => {
       if (registerResponse.status === 201) {
         setSuccess("Conta criada com sucesso! Fazendo login...");
 
-        // Then, try to login with the same credentials
         try {
           const loginResponse = await auth.login({
             email: formData.email,
@@ -64,13 +60,10 @@ const Register = () => {
           });
 
           if (loginResponse.data && loginResponse.data.token) {
-            // Store the token
             localStorage.setItem("token", loginResponse.data.token);
 
-            // Update auth context with user data
             login(loginResponse.data.user);
 
-            // Reset form
             setFormData({
               name: "",
               email: "",
@@ -78,7 +71,6 @@ const Register = () => {
               confirmPassword: "",
             });
 
-            // Short delay to show success message before redirecting
             setTimeout(() => {
               navigate("/");
             }, 1500);

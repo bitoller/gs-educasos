@@ -65,7 +65,7 @@ const UserDashboard = () => {
 
   useEffect(() => {
     refreshUserData();
-  }, [activeTab]); // Atualizar apenas quando mudar de aba
+  }, [activeTab]);
 
   const loadData = async () => {
     setLoading(true);
@@ -259,7 +259,6 @@ const UserDashboard = () => {
     <>
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h4>Meus Quizzes</h4>
-        {/* Botão de atualizar pontuação removido */}
       </div>
       <Card className="shadow-sm">
         <Card.Body>
@@ -321,7 +320,7 @@ const UserDashboard = () => {
                 eventKey="quizzes"
                 onClick={() => {
                   setActiveTab("quizzes");
-                  loadData(); // Force immediate data refresh
+                  loadData();
                 }}
                 className="d-flex align-items-center gap-2"
               >

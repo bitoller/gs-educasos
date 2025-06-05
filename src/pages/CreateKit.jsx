@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
-import { Container, Form, Button, Alert, Card } from 'react-bootstrap';
-import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import styled from 'styled-components';
-import { kits } from '../services/api';
-import { useAuth } from '../contexts/AuthContext';
+import React, { useState } from "react";
+import { Container, Form, Button, Alert, Card } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
+import styled from "styled-components";
+import { kits } from "../services/api";
+import { useAuth } from "../contexts/AuthContext";
 
 const PageContainer = styled.div`
   min-height: 100vh;
@@ -72,7 +72,8 @@ const StyledForm = styled(Form)`
     margin-bottom: 0.5rem;
   }
 
-  .form-control, .form-select {
+  .form-control,
+  .form-select {
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 12px;
@@ -215,43 +216,43 @@ const StyledAlert = styled(Alert)`
 const CreateKit = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [isCustomKit, setIsCustomKit] = useState(false);
 
   const [formData, setFormData] = useState({
-    houseType: '',
-    region: '',
-    numResidents: '',
+    houseType: "",
+    region: "",
+    numResidents: "",
     hasChildren: false,
     hasElderly: false,
     hasPets: false,
     isCustom: false,
-    items: []
+    items: [],
   });
 
   const [newItem, setNewItem] = useState({
-    name: '',
-    description: '',
-    category: '',
-    quantity: '',
-    unit: '',
-    expirationDate: ''
+    name: "",
+    description: "",
+    category: "",
+    quantity: "",
+    unit: "",
+    expirationDate: "",
   });
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
   const handleItemInputChange = (e) => {
     const { name, value } = e.target;
-    setNewItem(prev => ({
+    setNewItem((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
@@ -261,50 +262,47 @@ const CreateKit = () => {
       return;
     }
 
-    // Ensure we have at least a name for the item
     const itemToAdd = {
       id: Date.now(),
       name: newItem.name.trim(),
-      description: newItem.description ? newItem.description.trim() : ''
+      description: newItem.description ? newItem.description.trim() : "",
     };
 
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      items: [...prev.items, itemToAdd]
+      items: [...prev.items, itemToAdd],
     }));
 
-    // Reset the form
     setNewItem({
-      name: '',
-      description: ''
+      name: "",
+      description: "",
     });
   };
 
   const removeItem = (itemId) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      items: prev.items.filter(item => item.id !== itemId)
+      items: prev.items.filter((item) => item.id !== itemId),
     }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!user) {
-      navigate('/login');
+      navigate("/login");
       return;
     }
 
     try {
       setSubmitting(true);
-      setError('');
-      
+      setError("");
+
       let kitData;
-      
+
       if (isCustomKit) {
-        // Prepare custom kit data
-        const recommendedItems = formData.items.map(item => ({
+        const recommendedItems = formData.items.map((item) => ({
           name: item.name,
-          description: item.description || ''
+          description: item.description || "",
         }));
 
         kitData = {
@@ -315,10 +313,9 @@ const CreateKit = () => {
           hasPets: formData.hasPets,
           region: formData.region,
           isCustom: true,
-          recommendedItems: JSON.stringify(recommendedItems)
+          recommendedItems: JSON.stringify(recommendedItems),
         };
       } else {
-        // Prepare automatic kit data
         kitData = {
           houseType: formData.houseType,
           numResidents: parseInt(formData.numResidents),
@@ -326,39 +323,37 @@ const CreateKit = () => {
           hasElderly: formData.hasElderly,
           hasPets: formData.hasPets,
           region: formData.region,
-          isCustom: false
+          isCustom: false,
         };
       }
 
-      console.log('Enviando dados do kit:', kitData);
-      
+      console.log("Enviando dados do kit:", kitData);
+
       const response = await kits.create(kitData);
-      
-      console.log('Resposta da criação do kit:', response);
-      
+
+      console.log("Resposta da criação do kit:", response);
+
       if (!response || !response.data) {
-        throw new Error('Resposta inválida do servidor');
+        throw new Error("Resposta inválida do servidor");
       }
 
-      // Extrai os dados da resposta
       const responseData = response.data;
-      console.log('Dados da resposta:', responseData);
+      console.log("Dados da resposta:", responseData);
 
-      // Tenta encontrar o ID do kit na resposta
       let kitId = null;
 
-      if (typeof responseData === 'object') {
-        // Tenta diferentes possíveis localizações do ID
-        kitId = responseData.id || 
-               responseData.kitId || 
-               responseData.kit?.id || 
-               responseData.kit?.kitId;
+      if (typeof responseData === "object") {
+        kitId =
+          responseData.id ||
+          responseData.kitId ||
+          responseData.kit?.id ||
+          responseData.kit?.kitId;
 
-        // Se ainda não encontrou, procura em qualquer campo que contenha um ID
         if (!kitId) {
           for (const key in responseData) {
-            if (responseData[key] && typeof responseData[key] === 'object') {
-              const possibleId = responseData[key].id || responseData[key].kitId;
+            if (responseData[key] && typeof responseData[key] === "object") {
+              const possibleId =
+                responseData[key].id || responseData[key].kitId;
               if (possibleId) {
                 kitId = possibleId;
                 break;
@@ -369,26 +364,27 @@ const CreateKit = () => {
       }
 
       if (!kitId) {
-        console.error('Estrutura da resposta:', responseData);
-        throw new Error('Não foi possível encontrar o ID do kit na resposta do servidor. Verifique o console para mais detalhes.');
+        console.error("Estrutura da resposta:", responseData);
+        throw new Error(
+          "Não foi possível encontrar o ID do kit na resposta do servidor. Verifique o console para mais detalhes."
+        );
       }
-      
+
       navigate(`/emergency-kits/${kitId}`);
     } catch (err) {
-      console.error('Error creating kit:', err);
-      let errorMessage = 'Erro ao criar o kit. ';
-      
+      console.error("Error creating kit:", err);
+      let errorMessage = "Erro ao criar o kit. ";
+
       if (err.response) {
-        // Erro da API com resposta
-        errorMessage += err.response.data?.message || err.response.statusText || err.message;
+        errorMessage +=
+          err.response.data?.message || err.response.statusText || err.message;
       } else if (err.request) {
-        // Erro de rede
-        errorMessage += 'Não foi possível conectar ao servidor. Verifique sua conexão.';
+        errorMessage +=
+          "Não foi possível conectar ao servidor. Verifique sua conexão.";
       } else {
-        // Outros erros
         errorMessage += err.message;
       }
-      
+
       setError(errorMessage);
       setSubmitting(false);
     }
@@ -403,7 +399,7 @@ const CreateKit = () => {
           transition={{ duration: 0.5 }}
         >
           <PageHeader>
-            <BackButton onClick={() => navigate('/emergency-kits')}>
+            <BackButton onClick={() => navigate("/emergency-kits")}>
               ← Voltar para Kits
             </BackButton>
             <PageTitle>
@@ -498,10 +494,12 @@ const CreateKit = () => {
                       type="checkbox"
                       name="hasChildren"
                       checked={formData.hasChildren}
-                      onChange={(e) => setFormData(prev => ({
-                        ...prev,
-                        hasChildren: e.target.checked
-                      }))}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          hasChildren: e.target.checked,
+                        }))
+                      }
                       label="Há crianças na residência?"
                     />
                   </Form.Group>
@@ -511,10 +509,12 @@ const CreateKit = () => {
                       type="checkbox"
                       name="hasElderly"
                       checked={formData.hasElderly}
-                      onChange={(e) => setFormData(prev => ({
-                        ...prev,
-                        hasElderly: e.target.checked
-                      }))}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          hasElderly: e.target.checked,
+                        }))
+                      }
                       label="Há idosos na residência?"
                     />
                   </Form.Group>
@@ -524,10 +524,12 @@ const CreateKit = () => {
                       type="checkbox"
                       name="hasPets"
                       checked={formData.hasPets}
-                      onChange={(e) => setFormData(prev => ({
-                        ...prev,
-                        hasPets: e.target.checked
-                      }))}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          hasPets: e.target.checked,
+                        }))
+                      }
                       label="Há animais de estimação?"
                     />
                   </Form.Group>
@@ -556,9 +558,7 @@ const CreateKit = () => {
                             </ItemHeader>
                             {item.description && (
                               <div>
-                                <small>
-                                  {item.description}
-                                </small>
+                                <small>{item.description}</small>
                               </div>
                             )}
                           </ItemCardBody>
@@ -603,14 +603,14 @@ const CreateKit = () => {
                 <SubmitButton
                   type="submit"
                   disabled={
-                    submitting || 
-                    !formData.houseType || 
-                    !formData.region || 
+                    submitting ||
+                    !formData.houseType ||
+                    !formData.region ||
                     !formData.numResidents ||
                     (isCustomKit && formData.items.length === 0)
                   }
                 >
-                  {submitting ? 'Criando...' : 'Criar Kit de Emergência'}
+                  {submitting ? "Criando..." : "Criar Kit de Emergência"}
                 </SubmitButton>
               </StyledForm>
             </FormCardBody>
@@ -621,4 +621,4 @@ const CreateKit = () => {
   );
 };
 
-export default CreateKit; 
+export default CreateKit;

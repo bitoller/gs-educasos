@@ -1,8 +1,7 @@
-import styled from 'styled-components';
-import { Button, Card, Tabs } from 'react-bootstrap';
-import { motion } from 'framer-motion';
+import styled from "styled-components";
+import { Button, Card, Tabs } from "react-bootstrap";
+import { motion } from "framer-motion";
 
-// Create a custom motion component that handles animation props
 const MotionDiv = styled(motion.div)``;
 
 export const PageContainer = styled.div`
@@ -50,16 +49,17 @@ export const FilterSection = styled(MotionDiv)`
 `;
 
 export const FilterButton = styled(Button)`
-  background: ${props => props.active ? 
-    'linear-gradient(135deg, #00f2fe 0%, #4facfe 100%)' : 
-    'rgba(255, 255, 255, 0.1)'};
+  background: ${(props) =>
+    props.active
+      ? "linear-gradient(135deg, #00f2fe 0%, #4facfe 100%)"
+      : "rgba(255, 255, 255, 0.1)"};
   border: none;
   margin: 0 0.25rem;
   padding: 0.75rem 1.5rem;
   border-radius: 25px;
   transition: all 0.3s ease;
   backdrop-filter: blur(5px);
-  
+
   &:hover {
     transform: translateY(-2px);
     background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
@@ -95,8 +95,8 @@ export const InfoTooltip = styled.div`
   position: absolute;
   top: -10px;
   right: -10px;
-  background: rgba(255,255,255,0.1);
-  border: 1px solid rgba(255,255,255,0.2);
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 50%;
   width: 24px;
   height: 24px;
@@ -104,11 +104,11 @@ export const InfoTooltip = styled.div`
   align-items: center;
   justify-content: center;
   font-size: 14px;
-  color: rgba(255,255,255,0.8);
+  color: rgba(255, 255, 255, 0.8);
   cursor: help;
-  
+
   &:hover {
-    background: rgba(255,255,255,0.2);
+    background: rgba(255, 255, 255, 0.2);
   }
 `;
 
@@ -121,9 +121,10 @@ export const Pagination = styled.div`
 `;
 
 export const PageButton = styled(Button)`
-  background: ${props => props.active ? 
-    'linear-gradient(135deg, #00f2fe 0%, #4facfe 100%)' : 
-    'rgba(255, 255, 255, 0.1)'};
+  background: ${(props) =>
+    props.active
+      ? "linear-gradient(135deg, #00f2fe 0%, #4facfe 100%)"
+      : "rgba(255, 255, 255, 0.1)"};
   border: none;
   width: 40px;
   height: 40px;
@@ -146,7 +147,7 @@ export const PageButton = styled(Button)`
 `;
 
 export const CompactCard = styled(Card)`
-  background: ${props => props.gradient || 'rgba(255, 255, 255, 0.05)'};
+  background: ${(props) => props.gradient || "rgba(255, 255, 255, 0.05)"};
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 15px;
@@ -155,9 +156,9 @@ export const CompactCard = styled(Card)`
   height: 100%;
   overflow: hidden;
   position: relative;
-  
+
   &:before {
-    content: '';
+    content: "";
     position: absolute;
     top: 0;
     left: 0;
@@ -166,11 +167,11 @@ export const CompactCard = styled(Card)`
     background: rgba(0, 0, 0, 0.3);
     z-index: 1;
   }
-  
+
   &:hover {
     transform: translateY(-5px);
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-    
+
     &:before {
       background: rgba(0, 0, 0, 0.2);
     }
@@ -247,7 +248,7 @@ export const LearnMoreButton = styled(Button)`
   transition: all 0.3s ease;
   color: white;
   backdrop-filter: blur(5px);
-  
+
   &:hover {
     transform: translateY(-2px);
     background: rgba(255, 255, 255, 0.25);
@@ -260,7 +261,6 @@ export const LearnMoreButton = styled(Button)`
   }
 `;
 
-// Detailed card components
 export const DetailedCard = styled(Card)`
   background: rgba(20, 24, 40, 0.95);
   backdrop-filter: blur(10px);
@@ -278,7 +278,8 @@ export const DetailedCard = styled(Card)`
 
 export const DetailedHeader = styled.div`
   text-align: center;
-  background: ${props => props.gradient || 'linear-gradient(135deg, #00f2fe 0%, #4facfe 100%)'};
+  background: ${(props) =>
+    props.gradient || "linear-gradient(135deg, #00f2fe 0%, #4facfe 100%)"};
   padding: 3rem 2rem 3.5rem;
   position: relative;
   clip-path: polygon(0 0, 100% 0, 100% 85%, 0 100%);
@@ -287,9 +288,9 @@ export const DetailedHeader = styled.div`
 export const DetailedHeaderContent = styled.div`
   position: relative;
   z-index: 2;
-  
+
   &:before {
-    content: '';
+    content: "";
     position: absolute;
     top: -3rem;
     left: 0;
@@ -361,7 +362,7 @@ export const TipTitleDetailed = styled.h3`
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  color: ${props => props.color || '#ffffff'};
+  color: ${(props) => props.color || "#ffffff"};
 
   span {
     font-size: 1.5rem;
@@ -403,7 +404,7 @@ export const TipListDetailed = styled.ul`
       content: "✓";
       position: absolute;
       left: 1rem;
-      color: ${props => props.color || '#00f2fe'};
+      color: ${(props) => props.color || "#00f2fe"};
       font-weight: bold;
       font-size: 1.2rem;
       filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
@@ -444,7 +445,8 @@ export const VideoContainerDetailed = styled.div`
 `;
 
 export const ActionButtonDetailed = styled(Button)`
-  background: ${props => props.gradient || 'linear-gradient(90deg, #00f2fe, #4facfe)'};
+  background: ${(props) =>
+    props.gradient || "linear-gradient(90deg, #00f2fe, #4facfe)"};
   border: none;
   color: white;
   padding: 1rem 2rem;
@@ -471,7 +473,7 @@ export const ActionButtonDetailed = styled(Button)`
   }
 
   &:before {
-    content: '';
+    content: "";
     position: absolute;
     top: 0;
     left: 0;
@@ -553,13 +555,18 @@ export const DisasterPhasesTabs = styled(Tabs)`
     justify-content: center;
 
     &:before {
-      content: '';
+      content: "";
       position: absolute;
       top: 0;
       left: 0;
       right: 0;
       height: 3px;
-      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+      background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.1),
+        transparent
+      );
       transform: translateY(-100%);
       transition: transform 0.3s ease;
     }
@@ -568,7 +575,7 @@ export const DisasterPhasesTabs = styled(Tabs)`
       background: rgba(255, 255, 255, 0.08);
       border-color: rgba(255, 255, 255, 0.2);
       transform: translateY(-2px);
-      
+
       &:before {
         transform: translateY(0);
       }
@@ -583,7 +590,8 @@ export const DisasterPhasesTabs = styled(Tabs)`
 
       &:before {
         transform: translateY(0);
-        background: ${props => props.activeColor || 'linear-gradient(90deg, #00f2fe, #4facfe)'};
+        background: ${(props) =>
+          props.activeColor || "linear-gradient(90deg, #00f2fe, #4facfe)"};
       }
     }
   }
@@ -650,6 +658,6 @@ export const PhaseDescription = styled.div`
   padding: 2rem;
   background: rgba(255, 255, 255, 0.05);
   border-radius: 12px;
-  border-left: 4px solid ${props => props.color || '#94a3b8'};
+  border-left: 4px solid ${(props) => props.color || "#94a3b8"};
   letter-spacing: 0.3px;
-`; 
+`;

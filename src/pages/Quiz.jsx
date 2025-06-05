@@ -1,11 +1,21 @@
-import React, { useState, useEffect } from 'react';
-import { Container, Card, Button, Row, Col, ProgressBar, Badge, Alert, Spinner } from 'react-bootstrap';
-import { useParams, useNavigate, Link } from 'react-router-dom';
-import { quiz, auth } from '../services/api';
-import { motion } from 'framer-motion';
-import confetti from 'canvas-confetti';
-import { useAuth } from '../contexts/AuthContext';
-import styled from 'styled-components';
+import React, { useState, useEffect } from "react";
+import {
+  Container,
+  Card,
+  Button,
+  Row,
+  Col,
+  ProgressBar,
+  Badge,
+  Alert,
+  Spinner,
+} from "react-bootstrap";
+import { useParams, useNavigate, Link } from "react-router-dom";
+import { quiz, auth } from "../services/api";
+import { motion } from "framer-motion";
+import confetti from "canvas-confetti";
+import { useAuth } from "../contexts/AuthContext";
+import styled from "styled-components";
 
 const PageContainer = styled.div`
   min-height: 100vh;
@@ -72,8 +82,13 @@ const StyledProgressBar = styled(ProgressBar)`
 `;
 
 const AnswerButton = styled(Button)`
-  background: ${props => props.selected ? 'linear-gradient(135deg, #00f2fe 0%, #4facfe 100%)' : 'rgba(255, 255, 255, 0.1)'};
-  border: 1px solid ${props => props.selected ? 'rgba(0, 242, 254, 0.5)' : 'rgba(255, 255, 255, 0.2)'};
+  background: ${(props) =>
+    props.selected
+      ? "linear-gradient(135deg, #00f2fe 0%, #4facfe 100%)"
+      : "rgba(255, 255, 255, 0.1)"};
+  border: 1px solid
+    ${(props) =>
+      props.selected ? "rgba(0, 242, 254, 0.5)" : "rgba(255, 255, 255, 0.2)"};
   color: white;
   padding: 1.2rem;
   border-radius: 15px;
@@ -85,8 +100,12 @@ const AnswerButton = styled(Button)`
   backdrop-filter: blur(5px);
 
   &:hover {
-    background: ${props => props.selected ? 'linear-gradient(135deg, #00f2fe 0%, #4facfe 100%)' : 'rgba(255, 255, 255, 0.15)'};
-    border-color: ${props => props.selected ? 'rgba(0, 242, 254, 0.6)' : 'rgba(255, 255, 255, 0.3)'};
+    background: ${(props) =>
+      props.selected
+        ? "linear-gradient(135deg, #00f2fe 0%, #4facfe 100%)"
+        : "rgba(255, 255, 255, 0.15)"};
+    border-color: ${(props) =>
+      props.selected ? "rgba(0, 242, 254, 0.6)" : "rgba(255, 255, 255, 0.3)"};
     transform: translateY(-2px);
     color: white;
   }
@@ -144,9 +163,10 @@ const ScoreBadge = styled(Badge)`
   padding: 1rem 2rem;
   border-radius: 30px;
   margin-bottom: 2rem;
-  background: ${props => props.score >= 70 ? 
-    'linear-gradient(135deg, #10B981 0%, #059669 100%)' : 
-    'linear-gradient(135deg, #F59E0B 0%, #B45309 100%)'};
+  background: ${(props) =>
+    props.score >= 70
+      ? "linear-gradient(135deg, #10B981 0%, #059669 100%)"
+      : "linear-gradient(135deg, #F59E0B 0%, #B45309 100%)"};
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 `;
 
@@ -179,7 +199,7 @@ const Quiz = () => {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [selectedAnswers, setSelectedAnswers] = useState({});
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [quizCompleted, setQuizCompleted] = useState(false);
   const [score, setScore] = useState(null);
@@ -194,12 +214,12 @@ const Quiz = () => {
   const loadQuiz = async () => {
     try {
       setLoading(true);
-      setError('');
+      setError("");
       const response = await quiz.getById(id);
       setQuizData(response.data);
     } catch (err) {
-      setError('Erro ao carregar o quiz. Por favor, tente novamente.');
-      console.error('Error loading quiz:', err);
+      setError("Erro ao carregar o quiz. Por favor, tente novamente.");
+      console.error("Error loading quiz:", err);
     } finally {
       setLoading(false);
     }
@@ -207,12 +227,12 @@ const Quiz = () => {
 
   const handleAnswerSelect = (questionId, choiceId) => {
     if (!user) {
-      navigate('/login', { state: { from: `/quiz/${id}` } });
+      navigate("/login", { state: { from: `/quiz/${id}` } });
       return;
     }
     setSelectedAnswers({
       ...selectedAnswers,
-      [questionId]: choiceId
+      [questionId]: choiceId,
     });
   };
 
@@ -234,48 +254,48 @@ const Quiz = () => {
 
   const calculateProgress = () => {
     if (!quizData) return 0;
-    return (Object.keys(selectedAnswers).length / quizData.questions.length) * 100;
+    return (
+      (Object.keys(selectedAnswers).length / quizData.questions.length) * 100
+    );
   };
 
   const handleSubmit = async () => {
     if (!user) {
-      navigate('/login', { state: { from: `/quiz/${id}` } });
+      navigate("/login", { state: { from: `/quiz/${id}` } });
       return;
     }
 
     try {
       setSubmitting(true);
-      setError('');
+      setError("");
 
-      // Enviar respostas do quiz
-      const response = await quiz.submitAnswers(quizData.quizId, selectedAnswers);
-      console.log('Quiz submission response:', response.data);
-      
-      // Aguardar um momento para garantir que o banco de dados foi atualizado
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const response = await quiz.submitAnswers(
+        quizData.quizId,
+        selectedAnswers
+      );
+      console.log("Quiz submission response:", response.data);
 
-      // Buscar dados atualizados do usuário
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
       const userResponse = await auth.getUserData();
       if (userResponse.data) {
-        console.log('Fresh user data after quiz:', userResponse.data);
+        console.log("Fresh user data after quiz:", userResponse.data);
         login(userResponse.data);
       }
 
-      // Atualizar estado local
       setScore(response.data.scoreEarned);
       setQuizCompleted(true);
 
-      // Animação de confete para pontuações altas
       if (response.data.scoreEarned >= 70) {
         confetti({
           particleCount: 100,
           spread: 70,
-          origin: { y: 0.6 }
+          origin: { y: 0.6 },
         });
       }
     } catch (err) {
-      setError('Erro ao enviar respostas. Por favor, tente novamente.');
-      console.error('Error submitting quiz:', err);
+      setError("Erro ao enviar respostas. Por favor, tente novamente.");
+      console.error("Error submitting quiz:", err);
     } finally {
       setSubmitting(false);
     }
@@ -296,7 +316,7 @@ const Quiz = () => {
       <PageContainer>
         <Container>
           <StyledAlert variant="danger">{error}</StyledAlert>
-          <NavButton variant="primary" onClick={() => navigate('/quizzes')}>
+          <NavButton variant="primary" onClick={() => navigate("/quizzes")}>
             Voltar para Lista de Quizzes
           </NavButton>
         </Container>
@@ -319,11 +339,14 @@ const Quiz = () => {
                   <ResultTitle>Quiz Concluído!</ResultTitle>
                   <ScoreBadge score={score}>{score}%</ScoreBadge>
                   <ResultMessage>
-                    {score >= 70 
-                      ? "Parabéns! Você demonstrou um ótimo conhecimento sobre este tema. Continue aprendendo e se preparando!" 
+                    {score >= 70
+                      ? "Parabéns! Você demonstrou um ótimo conhecimento sobre este tema. Continue aprendendo e se preparando!"
                       : "Continue estudando e praticando. A preparação é fundamental para lidar com desastres naturais."}
                   </ResultMessage>
-                  <NavButton variant="primary" onClick={() => navigate('/quizzes')}>
+                  <NavButton
+                    variant="primary"
+                    onClick={() => navigate("/quizzes")}
+                  >
                     Voltar para Lista de Quizzes
                   </NavButton>
                 </ResultCard>
@@ -356,21 +379,26 @@ const Quiz = () => {
                   <StyledAlert>
                     <Alert.Heading>Faça login para responder!</Alert.Heading>
                     <p className="mb-3">
-                      Para responder este quiz e salvar sua pontuação, você precisa estar logado.
+                      Para responder este quiz e salvar sua pontuação, você
+                      precisa estar logado.
                     </p>
                     <div className="d-flex gap-2">
                       <NavButton as={Link} to="/login" variant="primary">
                         Fazer Login
                       </NavButton>
-                      <NavButton as={Link} to="/register" variant="outline-light">
+                      <NavButton
+                        as={Link}
+                        to="/register"
+                        variant="outline-light"
+                      >
                         Criar Conta
                       </NavButton>
                     </div>
                   </StyledAlert>
                 )}
 
-                <StyledProgressBar 
-                  now={calculateProgress()} 
+                <StyledProgressBar
+                  now={calculateProgress()}
                   label={`${Math.round(calculateProgress())}%`}
                 />
 
@@ -381,7 +409,9 @@ const Quiz = () => {
                   exit={{ x: -50, opacity: 0 }}
                   transition={{ duration: 0.3 }}
                 >
-                  <QuestionText>{currentQuestionData.questionText}</QuestionText>
+                  <QuestionText>
+                    {currentQuestionData.questionText}
+                  </QuestionText>
 
                   {currentQuestionData.answerChoices.map((choice) => (
                     <motion.div
@@ -390,8 +420,16 @@ const Quiz = () => {
                       whileTap={{ scale: 0.98 }}
                     >
                       <AnswerButton
-                        selected={selectedAnswers[currentQuestionData.questionId] === choice.choiceId}
-                        onClick={() => handleAnswerSelect(currentQuestionData.questionId, choice.choiceId)}
+                        selected={
+                          selectedAnswers[currentQuestionData.questionId] ===
+                          choice.choiceId
+                        }
+                        onClick={() =>
+                          handleAnswerSelect(
+                            currentQuestionData.questionId,
+                            choice.choiceId
+                          )
+                        }
                       >
                         {choice.choiceText}
                       </AnswerButton>
@@ -412,15 +450,21 @@ const Quiz = () => {
                     <NavButton
                       variant="success"
                       onClick={handleSubmit}
-                      disabled={submitting || Object.keys(selectedAnswers).length !== quizData.questions.length}
+                      disabled={
+                        submitting ||
+                        Object.keys(selectedAnswers).length !==
+                          quizData.questions.length
+                      }
                     >
-                      {submitting ? 'Enviando...' : 'Finalizar Quiz'}
+                      {submitting ? "Enviando..." : "Finalizar Quiz"}
                     </NavButton>
                   ) : (
                     <NavButton
                       variant="primary"
                       onClick={handleNext}
-                      disabled={!isQuestionAnswered(currentQuestionData.questionId)}
+                      disabled={
+                        !isQuestionAnswered(currentQuestionData.questionId)
+                      }
                     >
                       Próxima →
                     </NavButton>
@@ -435,4 +479,4 @@ const Quiz = () => {
   );
 };
 
-export default Quiz; 
+export default Quiz;

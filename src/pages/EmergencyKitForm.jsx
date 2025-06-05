@@ -1,39 +1,42 @@
-import React, { useState } from 'react';
-import { Container, Card, Form, Button, Alert } from 'react-bootstrap';
-import { useNavigate } from 'react-router-dom';
-import api from '../services/api';
+import React, { useState } from "react";
+import { Container, Card, Form, Button, Alert } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
+import api from "../services/api";
 
 const EmergencyKitForm = () => {
   const [formData, setFormData] = useState({
-    houseType: 'APARTMENT', // APARTMENT, HOUSE, CONDO
+    houseType: "APARTMENT",
     numResidents: 1,
     hasChildren: false,
     hasElderly: false,
     hasPets: false,
-    region: 'SOUTHEAST' // SOUTHEAST, NORTHEAST, MIDWEST, SOUTHWEST, WEST
+    region: "SOUTHEAST",
   });
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value
+      [name]: type === "checkbox" ? checked : value,
     }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
+    setError("");
     setLoading(true);
 
     try {
-      await api.post('/kit', formData);
-      navigate('/emergency-kits'); // Redireciona para a lista de kits
+      await api.post("/kit", formData);
+      navigate("/emergency-kits");
     } catch (err) {
-      setError(err.response?.data?.message || 'Erro ao criar kit de emergência. Por favor, tente novamente.');
+      setError(
+        err.response?.data?.message ||
+          "Erro ao criar kit de emergência. Por favor, tente novamente."
+      );
     } finally {
       setLoading(false);
     }
@@ -45,7 +48,7 @@ const EmergencyKitForm = () => {
         <Card.Body>
           <h2 className="text-center mb-4">Monte seu Kit de Emergência</h2>
           {error && <Alert variant="danger">{error}</Alert>}
-          
+
           <Form onSubmit={handleSubmit}>
             <Form.Group className="mb-4">
               <Form.Label>Tipo de Residência</Form.Label>
@@ -120,12 +123,8 @@ const EmergencyKitForm = () => {
             </Form.Group>
 
             <div className="d-grid">
-              <Button
-                type="submit"
-                size="lg"
-                disabled={loading}
-              >
-                {loading ? 'Criando Kit...' : 'Criar Kit de Emergência'}
+              <Button type="submit" size="lg" disabled={loading}>
+                {loading ? "Criando Kit..." : "Criar Kit de Emergência"}
               </Button>
             </div>
           </Form>
@@ -135,4 +134,4 @@ const EmergencyKitForm = () => {
   );
 };
 
-export default EmergencyKitForm; 
+export default EmergencyKitForm;

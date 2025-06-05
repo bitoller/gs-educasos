@@ -1,12 +1,20 @@
-import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Card, Button, Alert, Spinner } from 'react-bootstrap';
-import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
-import { kits } from '../services/api';
-import UnauthorizedContent from '../components/UnauthorizedContent';
-import { motion } from 'framer-motion';
-import styled from 'styled-components';
-import ReactDOM from 'react-dom/client';
+import React, { useState, useEffect } from "react";
+import {
+  Container,
+  Row,
+  Col,
+  Card,
+  Button,
+  Alert,
+  Spinner,
+} from "react-bootstrap";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
+import { kits } from "../services/api";
+import UnauthorizedContent from "../components/UnauthorizedContent";
+import { motion } from "framer-motion";
+import styled from "styled-components";
+import ReactDOM from "react-dom/client";
 
 const PageContainer = styled.div`
   min-height: 100vh;
@@ -123,7 +131,7 @@ const KitInfoItem = styled.div`
 
   div {
     flex: 1;
-    
+
     strong {
       display: inline;
       color: rgba(255, 255, 255, 0.6);
@@ -279,29 +287,29 @@ const SuccessMessage = styled.div`
 
 const getKitIcon = (houseType) => {
   const icons = {
-    'CASA': '🏠',
-    'APARTAMENTO': '🏢',
-    'SITIO': '🏡',
-    'OUTRO': '🏘️',
-    default: '📦'
+    CASA: "🏠",
+    APARTAMENTO: "🏢",
+    SITIO: "🏡",
+    OUTRO: "🏘️",
+    default: "📦",
   };
   return icons[houseType] || icons.default;
 };
 
 const getRegionIcon = (region) => {
   const icons = {
-    'URBANA': '🌆',
-    'RURAL': '🌾',
-    'COSTEIRA': '🏖️',
-    'MONTANHOSA': '⛰️',
-    default: '📍'
+    URBANA: "🌆",
+    RURAL: "🌾",
+    COSTEIRA: "🏖️",
+    MONTANHOSA: "⛰️",
+    default: "📍",
   };
   return icons[region] || icons.default;
 };
 
 const EmergencyKits = () => {
   const [userKits, setUserKits] = useState([]);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -317,24 +325,26 @@ const EmergencyKits = () => {
   const loadKits = async () => {
     try {
       const response = await kits.getAll();
-      console.log('Raw response from API:', response);
-      
-      const processedKits = Array.isArray(response.data) ? response.data.map(kit => {
-        console.log('Processing kit:', kit);
-        return {
-          ...kit,
-          id: kit.id || kit.kitId,
-          numResidents: kit.numResidents || kit.residents || 0,
-          houseType: kit.houseType || 'OUTRO',
-          region: kit.region || 'SUDESTE'
-        };
-      }) : [];
-      
-      console.log('Processed kits:', processedKits);
+      console.log("Raw response from API:", response);
+
+      const processedKits = Array.isArray(response.data)
+        ? response.data.map((kit) => {
+            console.log("Processing kit:", kit);
+            return {
+              ...kit,
+              id: kit.id || kit.kitId,
+              numResidents: kit.numResidents || kit.residents || 0,
+              houseType: kit.houseType || "OUTRO",
+              region: kit.region || "SUDESTE",
+            };
+          })
+        : [];
+
+      console.log("Processed kits:", processedKits);
       setUserKits(processedKits);
     } catch (err) {
-      console.error('Error loading kits:', err);
-      setError('Erro ao carregar os kits de emergência.');
+      console.error("Error loading kits:", err);
+      setError("Erro ao carregar os kits de emergência.");
     } finally {
       setLoading(false);
     }
@@ -342,42 +352,40 @@ const EmergencyKits = () => {
 
   const handleDeleteKit = async (kitId) => {
     try {
-      if (!window.confirm('Tem certeza que deseja excluir este kit?')) {
+      if (!window.confirm("Tem certeza que deseja excluir este kit?")) {
         return;
       }
 
-      console.log('Deleting kit:', kitId);
+      console.log("Deleting kit:", kitId);
       await kits.delete(kitId);
-      
-      setUserKits(prevKits => prevKits.filter(kit => kit.id !== kitId));
-      
-      const successMessageElement = document.createElement('div');
-      successMessageElement.id = 'success-message';
+
+      setUserKits((prevKits) => prevKits.filter((kit) => kit.id !== kitId));
+
+      const successMessageElement = document.createElement("div");
+      successMessageElement.id = "success-message";
       document.body.appendChild(successMessageElement);
 
       const root = ReactDOM.createRoot(successMessageElement);
-      root.render(
-        <SuccessMessage>
-          Kit excluído com sucesso!
-        </SuccessMessage>
-      );
+      root.render(<SuccessMessage>Kit excluído com sucesso!</SuccessMessage>);
 
       setTimeout(() => {
-        if (successMessageElement && document.body.contains(successMessageElement)) {
+        if (
+          successMessageElement &&
+          document.body.contains(successMessageElement)
+        ) {
           root.unmount();
           document.body.removeChild(successMessageElement);
         }
       }, 3000);
-
     } catch (err) {
-      console.error('Error deleting kit:', err);
-      setError('Erro ao excluir o kit. Por favor, tente novamente.');
+      console.error("Error deleting kit:", err);
+      setError("Erro ao excluir o kit. Por favor, tente novamente.");
     }
   };
 
   if (!user) {
     return (
-      <UnauthorizedContent 
+      <UnauthorizedContent
         title="Kits de Emergência"
         message="Faça login para criar e gerenciar seus kits de emergência personalizados. 
                 Com uma conta, você pode salvar diferentes kits para diferentes situações e 
@@ -407,7 +415,11 @@ const EmergencyKits = () => {
         </PageHeader>
 
         {error && (
-          <StyledAlert variant="danger" onClose={() => setError('')} dismissible>
+          <StyledAlert
+            variant="danger"
+            onClose={() => setError("")}
+            dismissible
+          >
             {error}
           </StyledAlert>
         )}
@@ -421,8 +433,8 @@ const EmergencyKits = () => {
             <EmptyState>
               <EmptyStateTitle>Nenhum Kit Encontrado</EmptyStateTitle>
               <EmptyStateText>
-                Você ainda não tem nenhum kit de emergência. 
-                Que tal criar seu primeiro kit agora? Estar preparado é fundamental!
+                Você ainda não tem nenhum kit de emergência. Que tal criar seu
+                primeiro kit agora? Estar preparado é fundamental!
               </EmptyStateText>
               <CreateKitButton as={Link} to="/emergency-kits/new">
                 Criar Meu Primeiro Kit
@@ -438,66 +450,69 @@ const EmergencyKits = () => {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.1 }}
                   onClick={(e) => {
-                    if (e.target.closest('button')) {
+                    if (e.target.closest("button")) {
                       e.stopPropagation();
                       return;
                     }
                     navigate(`/emergency-kits/${kit.id}`);
                   }}
-                  style={{ cursor: 'pointer' }}
+                  style={{ cursor: "pointer" }}
                 >
                   <KitCardBody>
                     <KitTitle>
                       <span>📦</span>
-                      Kit de Emergência {kit.id ? `#${kit.id}` : ''}
+                      Kit de Emergência {kit.id ? `#${kit.id}` : ""}
                     </KitTitle>
                     <KitInfo>
                       <KitInfoItem>
                         <span>🎯</span>
                         <div>
                           <strong>Tipo:</strong>
-                          {kit.isCustom ? 'Personalizado' : 'Automático'}
+                          {kit.isCustom ? "Personalizado" : "Automático"}
                         </div>
                       </KitInfoItem>
                       <KitInfoItem>
                         <span>🏠</span>
                         <div>
                           <strong>Residência:</strong>
-                          {kit.houseType === 'CASA' && 'Casa'}
-                          {kit.houseType === 'APARTAMENTO' && 'Apartamento'}
-                          {kit.houseType === 'SITIO' && 'Sítio'}
-                          {kit.houseType === 'OUTRO' && 'Outro'}
+                          {kit.houseType === "CASA" && "Casa"}
+                          {kit.houseType === "APARTAMENTO" && "Apartamento"}
+                          {kit.houseType === "SITIO" && "Sítio"}
+                          {kit.houseType === "OUTRO" && "Outro"}
                         </div>
                       </KitInfoItem>
                       <KitInfoItem>
                         <span>👥</span>
                         <div>
                           <strong>Moradores:</strong>
-                          {(kit.numResidents || kit.residents) > 0 
-                            ? (kit.numResidents || kit.residents) 
-                            : '0'}
+                          {(kit.numResidents || kit.residents) > 0
+                            ? kit.numResidents || kit.residents
+                            : "0"}
                         </div>
                       </KitInfoItem>
                       <KitInfoItem>
                         <span>📍</span>
                         <div>
                           <strong>Região:</strong>
-                          {kit.region === 'SUDESTE' && 'Sudeste'}
-                          {kit.region === 'NORDESTE' && 'Nordeste'}
-                          {kit.region === 'CENTRO_OESTE' && 'Centro-Oeste'}
-                          {kit.region === 'SUL' && 'Sul'}
-                          {kit.region === 'NORTE' && 'Norte'}
+                          {kit.region === "SUDESTE" && "Sudeste"}
+                          {kit.region === "NORDESTE" && "Nordeste"}
+                          {kit.region === "CENTRO_OESTE" && "Centro-Oeste"}
+                          {kit.region === "SUL" && "Sul"}
+                          {kit.region === "NORTE" && "Norte"}
                         </div>
                       </KitInfoItem>
                     </KitInfo>
                     {kit.createdAt && (
                       <KitDate>
                         <span>📅</span>
-                        Criado em: {new Date(kit.createdAt).toLocaleDateString('pt-BR')}
+                        Criado em:{" "}
+                        {new Date(kit.createdAt).toLocaleDateString("pt-BR")}
                       </KitDate>
                     )}
                     <KitActions>
-                      <ViewButton onClick={() => navigate(`/emergency-kits/${kit.id}`)}>
+                      <ViewButton
+                        onClick={() => navigate(`/emergency-kits/${kit.id}`)}
+                      >
                         Ver Detalhes
                       </ViewButton>
                       <DeleteButton onClick={() => handleDeleteKit(kit.id)}>
@@ -515,4 +530,4 @@ const EmergencyKits = () => {
   );
 };
 
-export default EmergencyKits; 
+export default EmergencyKits;

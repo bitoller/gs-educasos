@@ -1,12 +1,44 @@
-# React + Vite
+# Disaster Awareness Platform - Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This is the frontend application for the Disaster Awareness Platform, built with React and Vite.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+*   User Authentication (Login, Register)
+*   Emergency Kit Management (View, Create, Edit, Delete Auto and Custom Kits)
+*   Disaster Awareness Content (View Content)
+*   (Add any other key frontend features here)
 
-## Expanding the ESLint configuration
+## Getting Started
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+To set up and run the frontend application, follow these steps:
+
+1.  **Navigate to the frontend project root:**
+
+    ```bash
+    cd /path/to/your/project/root
+    ```
+
+2.  **Install Dependencies:**
+
+    ```bash
+    npm install
+    # or yarn install
+    ```
+
+3.  **Start the Development Server:**
+
+    ```bash
+    npm run dev
+    # or yarn dev
+    ```
+
+    The frontend application should now be running on `http://localhost:5173` (or another port if 5173 is in use).
+
+## API Communication
+
+This frontend application communicates with the backend API. Ensure the backend is running before starting the frontend development server.
+
+The frontend development server is configured to proxy API requests (starting with `/api`) to the backend, which is expected to be running on `http://localhost:8080/disaster-awareness`.
+
+For details on setting up and running the backend, please refer to the `README.md` file located in the `backend/` directory.

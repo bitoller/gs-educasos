@@ -1,6 +1,6 @@
-import styled from 'styled-components';
-import { motion } from 'framer-motion';
-import { Card, Button } from 'react-bootstrap';
+import styled from "styled-components";
+import { motion } from "framer-motion";
+import { Card, Button } from "react-bootstrap";
 
 export const PageContainer = styled.div`
   min-height: 100vh;
@@ -39,7 +39,8 @@ export const Subtitle = styled.p`
 `;
 
 export const QuizCard = styled(motion.div)`
-  background: ${props => props.gradient || 'linear-gradient(135deg, #6B7280 0%, #4B5563 100%)'};
+  background: ${(props) =>
+    props.gradient || "linear-gradient(135deg, #6B7280 0%, #4B5563 100%)"};
   border-radius: 16px;
   overflow: hidden;
   transition: transform 0.3s ease;
@@ -97,30 +98,32 @@ export const BadgeContainer = styled.div`
 `;
 
 export const StyledBadge = styled.span`
-  background: ${props => {
-    // Cores específicas para cada posição do badge
-    if (props.position === 'first') {
+  background: ${(props) => {
+    if (props.position === "first") {
       const gradients = {
-        ENCHENTE: 'linear-gradient(135deg, #3B82F6 0%, #1E40AF 100%)',
-        TERREMOTO: 'linear-gradient(135deg, #D97706 0%, #92400E 100%)',
-        INCENDIO: 'linear-gradient(135deg, #DC2626 0%, #991B1B 100%)',
-        FURACAO: 'linear-gradient(135deg, #2563EB 0%, #1E3A8A 100%)',
-        TORNADO: 'linear-gradient(135deg, #7C3AED 0%, #5B21B6 100%)',
-        DESLIZAMENTO: 'linear-gradient(135deg, #65A30D 0%, #3F6212 100%)',
-        SECA: 'linear-gradient(135deg, #EA580C 0%, #9A3412 100%)',
-        TSUNAMI: 'linear-gradient(135deg, #0891B2 0%, #155E75 100%)',
-        TEMPESTADE: 'linear-gradient(135deg, #334155 0%, #0F172A 100%)',
-        default: 'linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05))'
+        ENCHENTE: "linear-gradient(135deg, #3B82F6 0%, #1E40AF 100%)",
+        TERREMOTO: "linear-gradient(135deg, #D97706 0%, #92400E 100%)",
+        INCENDIO: "linear-gradient(135deg, #DC2626 0%, #991B1B 100%)",
+        FURACAO: "linear-gradient(135deg, #2563EB 0%, #1E3A8A 100%)",
+        TORNADO: "linear-gradient(135deg, #7C3AED 0%, #5B21B6 100%)",
+        DESLIZAMENTO: "linear-gradient(135deg, #65A30D 0%, #3F6212 100%)",
+        SECA: "linear-gradient(135deg, #EA580C 0%, #9A3412 100%)",
+        TSUNAMI: "linear-gradient(135deg, #0891B2 0%, #155E75 100%)",
+        TEMPESTADE: "linear-gradient(135deg, #334155 0%, #0F172A 100%)",
+        default:
+          "linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05))",
       };
-      return props.type ? gradients[props.type] || gradients.default : gradients.default;
+      return props.type
+        ? gradients[props.type] || gradients.default
+        : gradients.default;
     }
-    if (props.position === 'second') {
-      return 'linear-gradient(135deg, #475569 0%, #1E293B 100%)';
+    if (props.position === "second") {
+      return "linear-gradient(135deg, #475569 0%, #1E293B 100%)";
     }
-    if (props.position === 'third') {
-      return 'linear-gradient(135deg, #64748B 0%, #334155 100%)';
+    if (props.position === "third") {
+      return "linear-gradient(135deg, #64748B 0%, #334155 100%)";
     }
-    return 'linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05))';
+    return "linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05))";
   }};
   color: white;
   padding: 0.5rem;
@@ -142,12 +145,15 @@ export const StyledBadge = styled.span`
   text-overflow: ellipsis;
 
   &::before {
-    content: ${props => {
-      if (props.position === 'second') return '"⏱️"';
-      if (props.position === 'third') return '"📝"';
+    content: ${(props) => {
+      if (props.position === "second") return '"⏱️"';
+      if (props.position === "third") return '"📝"';
       return '""';
     }};
-    margin-right: ${props => (props.position === 'second' || props.position === 'third') ? '0.25rem' : '0'};
+    margin-right: ${(props) =>
+      props.position === "second" || props.position === "third"
+        ? "0.25rem"
+        : "0"};
   }
 `;
 
@@ -183,4 +189,4 @@ export const LoadingContainer = styled.div`
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-`; 
+`;

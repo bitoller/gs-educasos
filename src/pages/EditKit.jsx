@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import { Container, Form, Button, Alert, Modal } from 'react-bootstrap';
-import { useParams, useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import styled from 'styled-components';
-import { kits } from '../services/api';
+import React, { useEffect, useState } from "react";
+import { Container, Form, Button, Alert, Modal } from "react-bootstrap";
+import { useParams, useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
+import styled from "styled-components";
+import { kits } from "../services/api";
 
 const PageContainer = styled.div`
   min-height: 100vh;
@@ -45,7 +45,8 @@ const StyledForm = styled(Form)`
     font-weight: 500;
   }
 
-  .form-control, .form-select {
+  .form-control,
+  .form-select {
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.2);
     color: white;
@@ -92,7 +93,7 @@ const ButtonsContainer = styled.div`
 const BackButton = styled(Button)`
   background: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.2);
-  
+
   &:hover {
     background: rgba(255, 255, 255, 0.15);
     border-color: rgba(255, 255, 255, 0.3);
@@ -104,7 +105,7 @@ const SaveButton = styled(Button)`
   border: none;
   padding: 0.75rem 2rem;
   font-weight: 600;
-  
+
   &:hover {
     background: linear-gradient(135deg, #00d8e4 0%, #4590e4 100%);
   }
@@ -192,7 +193,7 @@ const ActionButton = styled(Button)`
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  
+
   &.delete {
     background: rgba(255, 59, 48, 0.1);
     border: 1px solid rgba(255, 59, 48, 0.2);
@@ -270,82 +271,101 @@ const ItemModal = styled(Modal)`
 
 const getItemIconByName = (name) => {
   const normalizedName = name.toLowerCase().trim();
-  
-  // Água e Bebidas
-  if (normalizedName.includes('água') || normalizedName.includes('agua')) return '💧';
-  if (normalizedName.includes('garrafa')) return '🫗';
-  if (normalizedName.includes('suco')) return '🧃';
-  
-  // Alimentos
-  if (normalizedName.includes('comida') || normalizedName.includes('alimento')) return '🍱';
-  if (normalizedName.includes('biscoito') || normalizedName.includes('bolacha')) return '🍪';
-  if (normalizedName.includes('pão') || normalizedName.includes('pao')) return '🍞';
-  if (normalizedName.includes('fruta')) return '🍎';
-  if (normalizedName.includes('lata') || normalizedName.includes('enlatado')) return '🥫';
-  if (normalizedName.includes('cereal')) return '🥣';
-  
-  // Medicamentos e Primeiros Socorros
-  if (normalizedName.includes('remédio') || normalizedName.includes('remedio')) return '💊';
-  if (normalizedName.includes('band') || normalizedName.includes('curativo')) return '🩹';
-  if (normalizedName.includes('termômetro') || normalizedName.includes('termometro')) return '🌡️';
-  if (normalizedName.includes('kit') && normalizedName.includes('socorros')) return '🏥';
-  
-  // Higiene
-  if (normalizedName.includes('sabonete') || normalizedName.includes('sabão')) return '🧼';
-  if (normalizedName.includes('papel') && normalizedName.includes('higiênico')) return '🧻';
-  if (normalizedName.includes('escova') && normalizedName.includes('dente')) return '🪥';
-  if (normalizedName.includes('pasta') && normalizedName.includes('dente')) return '🪥';
-  if (normalizedName.includes('toalha')) return '🧴';
-  if (normalizedName.includes('shampoo')) return '🧴';
-  
-  // Roupas e Proteção
-  if (normalizedName.includes('roupa')) return '👕';
-  if (normalizedName.includes('casaco') || normalizedName.includes('blusa')) return '🧥';
-  if (normalizedName.includes('calça') || normalizedName.includes('calca')) return '👖';
-  if (normalizedName.includes('sapato') || normalizedName.includes('tênis')) return '👟';
-  if (normalizedName.includes('máscara') || normalizedName.includes('mascara')) return '😷';
-  if (normalizedName.includes('luva')) return '🧤';
-  if (normalizedName.includes('guarda') && normalizedName.includes('chuva')) return '☔';
-  
-  // Documentos e Comunicação
-  if (normalizedName.includes('documento')) return '📄';
-  if (normalizedName.includes('celular')) return '📱';
-  if (normalizedName.includes('rádio') || normalizedName.includes('radio')) return '📻';
-  if (normalizedName.includes('carregador')) return '🔌';
-  if (normalizedName.includes('bateria')) return '🔋';
-  if (normalizedName.includes('lanterna')) return '🔦';
-  
-  // Ferramentas e Equipamentos
-  if (normalizedName.includes('faca') || normalizedName.includes('canivete')) return '🔪';
-  if (normalizedName.includes('ferramenta')) return '🔧';
-  if (normalizedName.includes('corda')) return '➰';
-  if (normalizedName.includes('fósforo') || normalizedName.includes('fosforo')) return '🔥';
-  if (normalizedName.includes('isqueiro')) return '🔥';
-  if (normalizedName.includes('pilha')) return '🔋';
-  
-  // Itens de Sobrevivência
-  if (normalizedName.includes('mapa')) return '🗺️';
-  if (normalizedName.includes('bússola') || normalizedName.includes('bussola')) return '🧭';
-  if (normalizedName.includes('apito')) return '🎯';
-  if (normalizedName.includes('cobertor')) return '🛏️';
-  if (normalizedName.includes('saco') && normalizedName.includes('dormir')) return '🛏️';
-  
-  // Itens para Pets
-  if (normalizedName.includes('ração') || normalizedName.includes('racao')) return '🐾';
-  if (normalizedName.includes('pet') || normalizedName.includes('animal')) return '🐾';
-  
-  // Itens de Limpeza
-  if (normalizedName.includes('álcool') || normalizedName.includes('alcool')) return '🧴';
-  if (normalizedName.includes('desinfetante')) return '🧴';
-  if (normalizedName.includes('cloro')) return '🧴';
-  
-  // Outros
-  if (normalizedName.includes('dinheiro')) return '💵';
-  if (normalizedName.includes('caderno') || normalizedName.includes('bloco')) return '📓';
-  if (normalizedName.includes('caneta')) return '✏️';
-  if (normalizedName.includes('óculos') || normalizedName.includes('oculos')) return '👓';
-  
-  // Fallback para o ícone da categoria ou padrão
+
+  if (normalizedName.includes("água") || normalizedName.includes("agua"))
+    return "💧";
+  if (normalizedName.includes("garrafa")) return "🫗";
+  if (normalizedName.includes("suco")) return "🧃";
+
+  if (normalizedName.includes("comida") || normalizedName.includes("alimento"))
+    return "🍱";
+  if (normalizedName.includes("biscoito") || normalizedName.includes("bolacha"))
+    return "🍪";
+  if (normalizedName.includes("pão") || normalizedName.includes("pao"))
+    return "🍞";
+  if (normalizedName.includes("fruta")) return "🍎";
+  if (normalizedName.includes("lata") || normalizedName.includes("enlatado"))
+    return "🥫";
+  if (normalizedName.includes("cereal")) return "🥣";
+
+  if (normalizedName.includes("remédio") || normalizedName.includes("remedio"))
+    return "💊";
+  if (normalizedName.includes("band") || normalizedName.includes("curativo"))
+    return "🩹";
+  if (
+    normalizedName.includes("termômetro") ||
+    normalizedName.includes("termometro")
+  )
+    return "🌡️";
+  if (normalizedName.includes("kit") && normalizedName.includes("socorros"))
+    return "🏥";
+
+  if (normalizedName.includes("sabonete") || normalizedName.includes("sabão"))
+    return "🧼";
+  if (normalizedName.includes("papel") && normalizedName.includes("higiênico"))
+    return "🧻";
+  if (normalizedName.includes("escova") && normalizedName.includes("dente"))
+    return "🪥";
+  if (normalizedName.includes("pasta") && normalizedName.includes("dente"))
+    return "🪥";
+  if (normalizedName.includes("toalha")) return "🧴";
+  if (normalizedName.includes("shampoo")) return "🧴";
+
+  if (normalizedName.includes("roupa")) return "👕";
+  if (normalizedName.includes("casaco") || normalizedName.includes("blusa"))
+    return "🧥";
+  if (normalizedName.includes("calça") || normalizedName.includes("calca"))
+    return "👖";
+  if (normalizedName.includes("sapato") || normalizedName.includes("tênis"))
+    return "👟";
+  if (normalizedName.includes("máscara") || normalizedName.includes("mascara"))
+    return "😷";
+  if (normalizedName.includes("luva")) return "🧤";
+  if (normalizedName.includes("guarda") && normalizedName.includes("chuva"))
+    return "☔";
+
+  if (normalizedName.includes("documento")) return "📄";
+  if (normalizedName.includes("celular")) return "📱";
+  if (normalizedName.includes("rádio") || normalizedName.includes("radio"))
+    return "📻";
+  if (normalizedName.includes("carregador")) return "🔌";
+  if (normalizedName.includes("bateria")) return "🔋";
+  if (normalizedName.includes("lanterna")) return "🔦";
+
+  if (normalizedName.includes("faca") || normalizedName.includes("canivete"))
+    return "🔪";
+  if (normalizedName.includes("ferramenta")) return "🔧";
+  if (normalizedName.includes("corda")) return "➰";
+  if (normalizedName.includes("fósforo") || normalizedName.includes("fosforo"))
+    return "🔥";
+  if (normalizedName.includes("isqueiro")) return "🔥";
+  if (normalizedName.includes("pilha")) return "🔋";
+
+  if (normalizedName.includes("mapa")) return "🗺️";
+  if (normalizedName.includes("bússola") || normalizedName.includes("bussola"))
+    return "🧭";
+  if (normalizedName.includes("apito")) return "🎯";
+  if (normalizedName.includes("cobertor")) return "🛏️";
+  if (normalizedName.includes("saco") && normalizedName.includes("dormir"))
+    return "🛏️";
+
+  if (normalizedName.includes("ração") || normalizedName.includes("racao"))
+    return "🐾";
+  if (normalizedName.includes("pet") || normalizedName.includes("animal"))
+    return "🐾";
+
+  if (normalizedName.includes("álcool") || normalizedName.includes("alcool"))
+    return "🧴";
+  if (normalizedName.includes("desinfetante")) return "🧴";
+  if (normalizedName.includes("cloro")) return "🧴";
+
+  if (normalizedName.includes("dinheiro")) return "💵";
+  if (normalizedName.includes("caderno") || normalizedName.includes("bloco"))
+    return "📓";
+  if (normalizedName.includes("caneta")) return "✏️";
+  if (normalizedName.includes("óculos") || normalizedName.includes("oculos"))
+    return "👓";
+
   return null;
 };
 
@@ -361,8 +381,8 @@ const EditKit = () => {
   const [itemToDelete, setItemToDelete] = useState(null);
   const [editingItem, setEditingItem] = useState(null);
   const [newItem, setNewItem] = useState({
-    name: '',
-    description: ''
+    name: "",
+    description: "",
   });
 
   useEffect(() => {
@@ -370,31 +390,31 @@ const EditKit = () => {
       try {
         const response = await kits.getById(id);
         const kitData = response.data;
-        
-        // Parse recommendedItems if it's a string
-        if (typeof kitData.recommendedItems === 'string') {
+
+        if (typeof kitData.recommendedItems === "string") {
           try {
             kitData.recommendedItems = JSON.parse(kitData.recommendedItems);
           } catch (err) {
-            console.warn('Error parsing recommendedItems:', err);
+            console.warn("Error parsing recommendedItems:", err);
             kitData.recommendedItems = [];
           }
         }
 
-        // Ensure numResidents is properly set and add IDs to items if they don't have one
         const processedKit = {
           ...kitData,
           numResidents: kitData.numResidents || kitData.residents || 0,
-          recommendedItems: (kitData.recommendedItems || []).map((item, index) => ({
-            ...item,
-            id: item.id || `item-${Date.now()}-${index}`
-          }))
+          recommendedItems: (kitData.recommendedItems || []).map(
+            (item, index) => ({
+              ...item,
+              id: item.id || `item-${Date.now()}-${index}`,
+            })
+          ),
         };
-        
-        console.log('Processed kit data:', processedKit);
+
+        console.log("Processed kit data:", processedKit);
         setKit(processedKit);
       } catch (err) {
-        setError(err.message || 'Erro ao carregar o kit');
+        setError(err.message || "Erro ao carregar o kit");
       } finally {
         setLoading(false);
       }
@@ -405,82 +425,60 @@ const EditKit = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Submit button clicked');
+    console.log("Submit button clicked");
     setError(null);
     setSuccess(false);
 
     try {
-      console.log('Current kit state:', {
+      console.log("Current kit state:", {
         id: kit.id,
         isCustom: kit.isCustom,
         itemsCount: kit.recommendedItems?.length,
-        fullKit: kit
+        fullKit: kit,
       });
 
-      // Create a copy of the kit data
       const kitData = { ...kit };
 
-      // For automatic kits, we need to preserve the original structure
-      if (!kit.isCustom) {
-        console.log('Processing automatic kit items. Original items:', kit.recommendedItems);
-        
-        // Remove any added properties that shouldn't be sent
-        kitData.recommendedItems = kit.recommendedItems.map(item => {
-          // Keep only the essential properties for automatic kits
-          const { id, name, category, description } = item;
-          const processedItem = {
-            id,
-            name,
-            category,
-            description: description || ''
+      const processedItemsForSubmission = (kit.recommendedItems || []).map(
+        (item) => {
+          const { id, name, description, category } = item;
+          return {
+            id: id || null,
+            name: name || "",
+            description: description || "",
+            category: category || null,
           };
-          console.log('Processed automatic item:', processedItem);
-          return processedItem;
-        });
-        
-        console.log('Final automatic items:', kitData.recommendedItems);
-      } else {
-        console.log('Processing custom kit items');
-        // For custom kits, convert to string as before
-        kitData.recommendedItems = JSON.stringify(kit.recommendedItems.map(item => {
-          const processedItem = {
-            name: item.name,
-            description: item.description || ''
-          };
-          console.log('Processed custom item:', processedItem);
-          return processedItem;
-        }));
-        console.log('Final custom items (stringified):', kitData.recommendedItems);
-      }
+        }
+      );
 
-      // Prepare the final data for submission
+      kitData.recommendedItems = JSON.stringify(processedItemsForSubmission);
+
       const submitData = {
         ...kitData,
         numResidents: Number(kitData.numResidents),
-        isCustom: Boolean(kitData.isCustom),
+        isCustom: true,
         hasChildren: Boolean(kitData.hasChildren),
         hasElderly: Boolean(kitData.hasElderly),
-        hasPets: Boolean(kitData.hasPets)
+        hasPets: Boolean(kitData.hasPets),
       };
 
-      // Log the complete request details
-      console.log('Request details:', {
+      console.log("Request details:", {
         url: `/api/kit/${id}`,
-        method: 'PUT',
+        method: "PUT",
         headers: {
-          'Content-Type': 'application/json'
+          "Content-Type": "application/json",
         },
-        data: submitData
+        data: submitData,
       });
 
       try {
-        console.log('Sending request to backend...');
+        console.log("Sending request to backend...");
         const response = await kits.update(id, submitData);
-        console.log('Backend response:', {
+        console.log("Backend response:", {
           status: response.status,
           statusText: response.statusText,
           headers: response.headers,
-          data: response.data
+          data: response.data,
         });
 
         setSuccess(true);
@@ -488,41 +486,44 @@ const EditKit = () => {
           navigate(`/emergency-kits/${id}`);
         }, 2000);
       } catch (err) {
-        console.error('Backend error details:', {
+        console.error("Backend error details:", {
           status: err.response?.status,
           statusText: err.response?.statusText,
           data: err.response?.data,
           message: err.message,
-          stack: err.stack
+          stack: err.stack,
         });
-        
-        // Mostrar mensagem de erro mais detalhada
-        const errorMessage = err.response?.data?.message || 
-                           err.response?.data?.error || 
-                           err.message || 
-                           'Erro ao atualizar o kit';
-        
+
+        const errorMessage =
+          err.response?.data?.message ||
+          err.response?.data?.error ||
+          err.message ||
+          "Erro ao atualizar o kit";
+
         setError(`Erro do servidor: ${errorMessage}`);
       }
     } catch (err) {
-      console.error('Error in form submission:', err);
-      setError('Erro ao processar o formulário: ' + (err.message || 'Erro desconhecido'));
+      console.error("Error in form submission:", err);
+      setError(
+        "Erro ao processar o formulário: " +
+          (err.message || "Erro desconhecido")
+      );
     }
   };
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setKit(prev => ({
+    setKit((prev) => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value
+      [name]: type === "checkbox" ? checked : value,
     }));
   };
 
   const handleItemInputChange = (e) => {
     const { name, value } = e.target;
-    setNewItem(prev => ({
+    setNewItem((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
@@ -532,36 +533,36 @@ const EditKit = () => {
     const itemToAdd = {
       id: `item-${Date.now()}`,
       name: newItem.name.trim(),
-      description: newItem.description.trim()
+      description: newItem.description.trim(),
     };
 
-    console.log('Adding new item:', itemToAdd);
+    console.log("Adding new item:", itemToAdd);
 
-    setKit(prev => {
+    setKit((prev) => {
       const updatedKit = {
         ...prev,
-        recommendedItems: [...(prev.recommendedItems || []), itemToAdd]
+        recommendedItems: [...(prev.recommendedItems || []), itemToAdd],
       };
-      console.log('Updated kit after adding:', updatedKit);
+      console.log("Updated kit after adding:", updatedKit);
       return updatedKit;
     });
 
     setNewItem({
-      name: '',
-      description: ''
+      name: "",
+      description: "",
     });
     setShowItemModal(false);
   };
 
   const editItem = (item) => {
     if (!item.id) {
-      console.warn('Attempting to edit item without ID:', item);
+      console.warn("Attempting to edit item without ID:", item);
       return;
     }
     setEditingItem(item);
     setNewItem({
       name: item.name,
-      description: item.description || ''
+      description: item.description || "",
     });
     setShowItemModal(true);
   };
@@ -569,29 +570,31 @@ const EditKit = () => {
   const updateItem = () => {
     if (!newItem.name.trim() || !editingItem?.id) return;
 
-    setKit(prev => ({
+    setKit((prev) => ({
       ...prev,
-      recommendedItems: prev.recommendedItems.map(item =>
-        item.id === editingItem.id ? {
-          ...item,
-          name: newItem.name.trim(),
-          description: newItem.description.trim()
-        } : item
-      )
+      recommendedItems: prev.recommendedItems.map((item) =>
+        item.id === editingItem.id
+          ? {
+              ...item,
+              name: newItem.name.trim(),
+              description: newItem.description.trim(),
+            }
+          : item
+      ),
     }));
 
     setNewItem({
-      name: '',
-      description: ''
+      name: "",
+      description: "",
     });
     setEditingItem(null);
     setShowItemModal(false);
   };
 
   const handleDeleteClick = (item) => {
-    console.log('Clicked delete for item:', item);
+    console.log("Clicked delete for item:", item);
     if (!item.id) {
-      console.warn('Item without ID:', item);
+      console.warn("Item without ID:", item);
       return;
     }
     setItemToDelete(item);
@@ -600,34 +603,34 @@ const EditKit = () => {
 
   const confirmDelete = () => {
     if (!itemToDelete?.id || !kit?.recommendedItems) {
-      console.log('No item ID to delete or no recommendedItems');
+      console.log("No item ID to delete or no recommendedItems");
       return;
     }
 
-    console.log('Current items before delete:', kit.recommendedItems);
-    console.log('Attempting to delete item:', itemToDelete);
+    console.log("Current items before delete:", kit.recommendedItems);
+    console.log("Attempting to delete item:", itemToDelete);
 
-    const updatedItems = kit.recommendedItems.filter(item => {
+    const updatedItems = kit.recommendedItems.filter((item) => {
       const shouldKeep = item.id !== itemToDelete.id;
       console.log(
-        'Comparing item:', 
-        {id: item.id, name: item.name}, 
-        'with item to delete:', 
-        {id: itemToDelete.id, name: itemToDelete.name},
-        'keeping?', 
+        "Comparing item:",
+        { id: item.id, name: item.name },
+        "with item to delete:",
+        { id: itemToDelete.id, name: itemToDelete.name },
+        "keeping?",
         shouldKeep
       );
       return shouldKeep;
     });
 
-    console.log('Items after filter:', updatedItems);
+    console.log("Items after filter:", updatedItems);
 
-    setKit(prev => {
+    setKit((prev) => {
       const updatedKit = {
         ...prev,
-        recommendedItems: updatedItems
+        recommendedItems: updatedItems,
       };
-      console.log('Final kit state:', updatedKit);
+      console.log("Final kit state:", updatedKit);
       return updatedKit;
     });
 
@@ -636,32 +639,30 @@ const EditKit = () => {
   };
 
   const getItemIcon = (category, name) => {
-    // Primeiro tenta encontrar um ícone específico pelo nome
     const specificIcon = name ? getItemIconByName(name) : null;
     if (specificIcon) return specificIcon;
 
-    // Se não encontrar, usa o ícone da categoria
     switch (category) {
-      case 'AGUA':
-        return '💧';
-      case 'ALIMENTO':
-        return '🍽️';
-      case 'MEDICAMENTO':
-        return '💊';
-      case 'HIGIENE':
-        return '🧼';
-      case 'DOCUMENTO':
-        return '📄';
-      case 'FERRAMENTA':
-        return '🔧';
-      case 'ROUPA':
-        return '👕';
-      case 'COMUNICACAO':
-        return '📱';
-      case 'PRIMEIROS_SOCORROS':
-        return '🏥';
+      case "AGUA":
+        return "💧";
+      case "ALIMENTO":
+        return "🍽️";
+      case "MEDICAMENTO":
+        return "💊";
+      case "HIGIENE":
+        return "🧼";
+      case "DOCUMENTO":
+        return "📄";
+      case "FERRAMENTA":
+        return "🔧";
+      case "ROUPA":
+        return "👕";
+      case "COMUNICACAO":
+        return "📱";
+      case "PRIMEIROS_SOCORROS":
+        return "🏥";
       default:
-        return '📦';
+        return "📦";
     }
   };
 
@@ -683,10 +684,11 @@ const EditKit = () => {
     return (
       <PageContainer>
         <Container>
-          <StyledAlert variant="danger">
-            {error}
-          </StyledAlert>
-          <BackButton variant="outline-light" onClick={() => navigate('/emergency-kits')}>
+          <StyledAlert variant="danger">{error}</StyledAlert>
+          <BackButton
+            variant="outline-light"
+            onClick={() => navigate("/emergency-kits")}
+          >
             ← Voltar para Kits
           </BackButton>
         </Container>
@@ -714,7 +716,7 @@ const EditKit = () => {
                   {error}
                 </StyledAlert>
               )}
-              
+
               {success && (
                 <StyledAlert variant="success" className="mb-4">
                   Kit atualizado com sucesso! Redirecionando...
@@ -725,7 +727,7 @@ const EditKit = () => {
                 <Form.Label>Tipo de Residência</Form.Label>
                 <Form.Select
                   name="houseType"
-                  value={kit?.houseType || ''}
+                  value={kit?.houseType || ""}
                   onChange={handleInputChange}
                   required
                 >
@@ -740,7 +742,7 @@ const EditKit = () => {
                 <Form.Label>Região</Form.Label>
                 <Form.Select
                   name="region"
-                  value={kit?.region || ''}
+                  value={kit?.region || ""}
                   onChange={handleInputChange}
                   required
                 >
@@ -757,7 +759,7 @@ const EditKit = () => {
                 <Form.Control
                   type="number"
                   name="numResidents"
-                  value={kit?.numResidents || ''}
+                  value={kit?.numResidents || ""}
                   onChange={handleInputChange}
                   min="1"
                   required
@@ -802,7 +804,7 @@ const EditKit = () => {
 
                 <ItemsList>
                   {kit?.recommendedItems?.map((item, index) => {
-                    console.log('Rendering item:', item);
+                    console.log("Rendering item:", item);
                     return (
                       <motion.div
                         key={item.id || `item-${index}`}
@@ -811,11 +813,15 @@ const EditKit = () => {
                         transition={{ delay: index * 0.1 }}
                       >
                         <ItemCard>
-                          <ItemIcon>{getItemIcon(item.category, item.name)}</ItemIcon>
+                          <ItemIcon>
+                            {getItemIcon(item.category, item.name)}
+                          </ItemIcon>
                           <ItemInfo>
                             <ItemName>{item.name}</ItemName>
                             {item.description && (
-                              <ItemDescription>{item.description}</ItemDescription>
+                              <ItemDescription>
+                                {item.description}
+                              </ItemDescription>
                             )}
                           </ItemInfo>
                           <ItemActions>
@@ -872,8 +878,8 @@ const EditKit = () => {
           onHide={() => {
             setShowItemModal(false);
             setNewItem({
-              name: '',
-              description: ''
+              name: "",
+              description: "",
             });
             setEditingItem(null);
           }}
@@ -881,7 +887,7 @@ const EditKit = () => {
         >
           <Modal.Header closeButton>
             <Modal.Title>
-              {editingItem ? 'Editar Item' : 'Adicionar Novo Item'}
+              {editingItem ? "Editar Item" : "Adicionar Novo Item"}
             </Modal.Title>
           </Modal.Header>
           <Modal.Body>
@@ -918,7 +924,7 @@ const EditKit = () => {
               onClick={editingItem ? updateItem : addItem}
               disabled={!newItem.name.trim()}
             >
-              {editingItem ? 'Salvar Alterações' : 'Adicionar Item'}
+              {editingItem ? "Salvar Alterações" : "Adicionar Item"}
             </Button>
           </Modal.Footer>
         </ItemModal>
@@ -939,8 +945,8 @@ const EditKit = () => {
             Tem certeza que deseja remover o item "{itemToDelete?.name}"?
           </Modal.Body>
           <Modal.Footer>
-            <Button 
-              variant="secondary" 
+            <Button
+              variant="secondary"
               onClick={() => {
                 setShowDeleteConfirm(false);
                 setItemToDelete(null);
@@ -948,10 +954,7 @@ const EditKit = () => {
             >
               Cancelar
             </Button>
-            <Button 
-              variant="danger" 
-              onClick={confirmDelete}
-            >
+            <Button variant="danger" onClick={confirmDelete}>
               Remover
             </Button>
           </Modal.Footer>
@@ -961,4 +964,4 @@ const EditKit = () => {
   );
 };
 
-export default EditKit; 
+export default EditKit;

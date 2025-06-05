@@ -1,6 +1,6 @@
-import React from 'react';
-import { Container, Card, Button } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
+import React from "react";
+import { Container, Card, Button } from "react-bootstrap";
+import { Link } from "react-router-dom";
 
 const UnauthorizedContent = ({ title, message }) => {
   return (
@@ -8,9 +8,7 @@ const UnauthorizedContent = ({ title, message }) => {
       <Card className="text-center">
         <Card.Body>
           <Card.Title className="mb-4">{title}</Card.Title>
-          <Card.Text className="mb-4">
-            {message}
-          </Card.Text>
+          <Card.Text className="mb-4">{message}</Card.Text>
           <div className="d-flex justify-content-center gap-3">
             <Button as={Link} to="/login" variant="primary">
               Fazer Login
@@ -25,4 +23,4 @@ const UnauthorizedContent = ({ title, message }) => {
   );
 };
 
-export default UnauthorizedContent; 
+export default UnauthorizedContent;

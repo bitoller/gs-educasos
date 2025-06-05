@@ -24,10 +24,8 @@ const Login = () => {
       console.log("Raw login response:", response.data);
 
       if (response.data && response.data.token) {
-        // Store the token
         localStorage.setItem("token", response.data.token);
 
-        // Make sure we have all required user data
         const userData = {
           ...response.data.user,
           id: response.data.user.id,
@@ -38,18 +36,14 @@ const Login = () => {
           completedQuizzes: response.data.user.completedQuizzes || 0,
         };
 
-        // Store user data in localStorage
         localStorage.setItem("user", JSON.stringify(userData));
         console.log("Processed and stored user data:", userData);
 
-        // Update auth context with user data
         login(userData);
 
-        // Reset form
         setEmail("");
         setPassword("");
 
-        // Redirect based on role
         if (userData.role === "admin") {
           navigate("/admin");
         } else {

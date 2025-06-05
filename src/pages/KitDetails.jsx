@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import { Container, Card, Row, Col, Alert } from 'react-bootstrap';
-import { useParams, useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import styled from 'styled-components';
-import { kits } from '../services/api';
+import React, { useEffect, useState } from "react";
+import { Container, Card, Row, Col, Alert } from "react-bootstrap";
+import { useParams, useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
+import styled from "styled-components";
+import { kits } from "../services/api";
 
 const PageContainer = styled.div`
   min-height: 100vh;
@@ -248,112 +248,129 @@ const StyledAlert = styled(Alert)`
 
 const getItemIconByName = (name) => {
   const normalizedName = name.toLowerCase().trim();
-  
-  // Água e Bebidas
-  if (normalizedName.includes('água') || normalizedName.includes('agua')) return '💧';
-  if (normalizedName.includes('garrafa')) return '🫗';
-  if (normalizedName.includes('suco')) return '🧃';
-  
-  // Alimentos
-  if (normalizedName.includes('comida') || normalizedName.includes('alimento')) return '🍱';
-  if (normalizedName.includes('biscoito') || normalizedName.includes('bolacha')) return '🍪';
-  if (normalizedName.includes('pão') || normalizedName.includes('pao')) return '🍞';
-  if (normalizedName.includes('fruta')) return '🍎';
-  if (normalizedName.includes('lata') || normalizedName.includes('enlatado')) return '🥫';
-  if (normalizedName.includes('cereal')) return '🥣';
-  
-  // Medicamentos e Primeiros Socorros
-  if (normalizedName.includes('remédio') || normalizedName.includes('remedio')) return '💊';
-  if (normalizedName.includes('band') || normalizedName.includes('curativo')) return '🩹';
-  if (normalizedName.includes('termômetro') || normalizedName.includes('termometro')) return '🌡️';
-  if (normalizedName.includes('kit') && normalizedName.includes('socorros')) return '🏥';
-  
-  // Higiene
-  if (normalizedName.includes('sabonete') || normalizedName.includes('sabão')) return '🧼';
-  if (normalizedName.includes('papel') && normalizedName.includes('higiênico')) return '🧻';
-  if (normalizedName.includes('escova') && normalizedName.includes('dente')) return '🪥';
-  if (normalizedName.includes('pasta') && normalizedName.includes('dente')) return '🪥';
-  if (normalizedName.includes('toalha')) return '🧴';
-  if (normalizedName.includes('shampoo')) return '🧴';
-  
-  // Roupas e Proteção
-  if (normalizedName.includes('roupa')) return '👕';
-  if (normalizedName.includes('casaco') || normalizedName.includes('blusa')) return '🧥';
-  if (normalizedName.includes('calça') || normalizedName.includes('calca')) return '👖';
-  if (normalizedName.includes('sapato') || normalizedName.includes('tênis')) return '👟';
-  if (normalizedName.includes('máscara') || normalizedName.includes('mascara')) return '😷';
-  if (normalizedName.includes('luva')) return '🧤';
-  if (normalizedName.includes('guarda') && normalizedName.includes('chuva')) return '☔';
-  
-  // Documentos e Comunicação
-  if (normalizedName.includes('documento')) return '📄';
-  if (normalizedName.includes('celular')) return '📱';
-  if (normalizedName.includes('rádio') || normalizedName.includes('radio')) return '📻';
-  if (normalizedName.includes('carregador')) return '🔌';
-  if (normalizedName.includes('bateria')) return '🔋';
-  if (normalizedName.includes('lanterna')) return '🔦';
-  
-  // Ferramentas e Equipamentos
-  if (normalizedName.includes('faca') || normalizedName.includes('canivete')) return '🔪';
-  if (normalizedName.includes('ferramenta')) return '🔧';
-  if (normalizedName.includes('corda')) return '➰';
-  if (normalizedName.includes('fósforo') || normalizedName.includes('fosforo')) return '🔥';
-  if (normalizedName.includes('isqueiro')) return '🔥';
-  if (normalizedName.includes('pilha')) return '🔋';
-  
-  // Itens de Sobrevivência
-  if (normalizedName.includes('mapa')) return '🗺️';
-  if (normalizedName.includes('bússola') || normalizedName.includes('bussola')) return '🧭';
-  if (normalizedName.includes('apito')) return '🎯';
-  if (normalizedName.includes('cobertor')) return '🛏️';
-  if (normalizedName.includes('saco') && normalizedName.includes('dormir')) return '🛏️';
-  
-  // Itens para Pets
-  if (normalizedName.includes('ração') || normalizedName.includes('racao')) return '🐾';
-  if (normalizedName.includes('pet') || normalizedName.includes('animal')) return '🐾';
-  
-  // Itens de Limpeza
-  if (normalizedName.includes('álcool') || normalizedName.includes('alcool')) return '🧴';
-  if (normalizedName.includes('desinfetante')) return '🧴';
-  if (normalizedName.includes('cloro')) return '🧴';
-  
-  // Outros
-  if (normalizedName.includes('dinheiro')) return '💵';
-  if (normalizedName.includes('caderno') || normalizedName.includes('bloco')) return '📓';
-  if (normalizedName.includes('caneta')) return '✏️';
-  if (normalizedName.includes('óculos') || normalizedName.includes('oculos')) return '👓';
-  
-  // Fallback para o ícone da categoria ou padrão
+
+  if (normalizedName.includes("água") || normalizedName.includes("agua"))
+    return "💧";
+  if (normalizedName.includes("garrafa")) return "🫗";
+  if (normalizedName.includes("suco")) return "🧃";
+
+  if (normalizedName.includes("comida") || normalizedName.includes("alimento"))
+    return "🍱";
+  if (normalizedName.includes("biscoito") || normalizedName.includes("bolacha"))
+    return "🍪";
+  if (normalizedName.includes("pão") || normalizedName.includes("pao"))
+    return "🍞";
+  if (normalizedName.includes("fruta")) return "🍎";
+  if (normalizedName.includes("lata") || normalizedName.includes("enlatado"))
+    return "🥫";
+  if (normalizedName.includes("cereal")) return "🥣";
+
+  if (normalizedName.includes("remédio") || normalizedName.includes("remedio"))
+    return "💊";
+  if (normalizedName.includes("band") || normalizedName.includes("curativo"))
+    return "🩹";
+  if (
+    normalizedName.includes("termômetro") ||
+    normalizedName.includes("termometro")
+  )
+    return "🌡️";
+  if (normalizedName.includes("kit") && normalizedName.includes("socorros"))
+    return "🏥";
+
+  if (normalizedName.includes("sabonete") || normalizedName.includes("sabão"))
+    return "🧼";
+  if (normalizedName.includes("papel") && normalizedName.includes("higiênico"))
+    return "🧻";
+  if (normalizedName.includes("escova") && normalizedName.includes("dente"))
+    return "🪥";
+  if (normalizedName.includes("pasta") && normalizedName.includes("dente"))
+    return "🪥";
+  if (normalizedName.includes("toalha")) return "🧴";
+  if (normalizedName.includes("shampoo")) return "🧴";
+
+  if (normalizedName.includes("roupa")) return "👕";
+  if (normalizedName.includes("casaco") || normalizedName.includes("blusa"))
+    return "🧥";
+  if (normalizedName.includes("calça") || normalizedName.includes("calca"))
+    return "👖";
+  if (normalizedName.includes("sapato") || normalizedName.includes("tênis"))
+    return "👟";
+  if (normalizedName.includes("máscara") || normalizedName.includes("mascara"))
+    return "😷";
+  if (normalizedName.includes("luva")) return "🧤";
+  if (normalizedName.includes("guarda") && normalizedName.includes("chuva"))
+    return "☔";
+
+  if (normalizedName.includes("documento")) return "📄";
+  if (normalizedName.includes("celular")) return "📱";
+  if (normalizedName.includes("rádio") || normalizedName.includes("radio"))
+    return "📻";
+  if (normalizedName.includes("carregador")) return "🔌";
+  if (normalizedName.includes("bateria")) return "🔋";
+  if (normalizedName.includes("lanterna")) return "🔦";
+
+  if (normalizedName.includes("faca") || normalizedName.includes("canivete"))
+    return "🔪";
+  if (normalizedName.includes("ferramenta")) return "🔧";
+  if (normalizedName.includes("corda")) return "➰";
+  if (normalizedName.includes("fósforo") || normalizedName.includes("fosforo"))
+    return "🔥";
+  if (normalizedName.includes("isqueiro")) return "🔥";
+  if (normalizedName.includes("pilha")) return "🔋";
+
+  if (normalizedName.includes("mapa")) return "🗺️";
+  if (normalizedName.includes("bússola") || normalizedName.includes("bussola"))
+    return "🧭";
+  if (normalizedName.includes("apito")) return "🎯";
+  if (normalizedName.includes("cobertor")) return "🛏️";
+  if (normalizedName.includes("saco") && normalizedName.includes("dormir"))
+    return "🛏️";
+
+  if (normalizedName.includes("ração") || normalizedName.includes("racao"))
+    return "🐾";
+  if (normalizedName.includes("pet") || normalizedName.includes("animal"))
+    return "🐾";
+
+  if (normalizedName.includes("álcool") || normalizedName.includes("alcool"))
+    return "🧴";
+  if (normalizedName.includes("desinfetante")) return "🧴";
+  if (normalizedName.includes("cloro")) return "🧴";
+
+  if (normalizedName.includes("dinheiro")) return "💵";
+  if (normalizedName.includes("caderno") || normalizedName.includes("bloco"))
+    return "📓";
+  if (normalizedName.includes("caneta")) return "✏️";
+  if (normalizedName.includes("óculos") || normalizedName.includes("oculos"))
+    return "👓";
+
   return null;
 };
 
 const getItemIcon = (category, name) => {
-  // Primeiro tenta encontrar um ícone específico pelo nome
   const specificIcon = name ? getItemIconByName(name) : null;
   if (specificIcon) return specificIcon;
 
-  // Se não encontrar, usa o ícone da categoria
   switch (category) {
-    case 'AGUA':
-      return '💧';
-    case 'ALIMENTO':
-      return '🍽️';
-    case 'MEDICAMENTO':
-      return '💊';
-    case 'HIGIENE':
-      return '🧼';
-    case 'DOCUMENTO':
-      return '📄';
-    case 'FERRAMENTA':
-      return '🔧';
-    case 'ROUPA':
-      return '👕';
-    case 'COMUNICACAO':
-      return '📱';
-    case 'PRIMEIROS_SOCORROS':
-      return '🏥';
+    case "AGUA":
+      return "💧";
+    case "ALIMENTO":
+      return "🍽️";
+    case "MEDICAMENTO":
+      return "💊";
+    case "HIGIENE":
+      return "🧼";
+    case "DOCUMENTO":
+      return "📄";
+    case "FERRAMENTA":
+      return "🔧";
+    case "ROUPA":
+      return "👕";
+    case "COMUNICACAO":
+      return "📱";
+    case "PRIMEIROS_SOCORROS":
+      return "🏥";
     default:
-      return '📦';
+      return "📦";
   }
 };
 
@@ -368,21 +385,19 @@ const KitDetails = () => {
     const fetchKit = async () => {
       try {
         if (!id) {
-          throw new Error('ID do kit não fornecido');
+          throw new Error("ID do kit não fornecido");
         }
 
-        console.log('Fetching kit with ID:', id);
+        console.log("Fetching kit with ID:", id);
         const response = await kits.getById(id);
-        
+
         if (!response || !response.data) {
-          throw new Error('Kit não encontrado');
+          throw new Error("Kit não encontrado");
         }
-        
-        // Garante que temos os dados corretos mesmo se estiverem aninhados
+
         const kitData = response.data.kit || response.data;
-        console.log('Dados brutos do kit:', kitData);
-        
-        // Processa os dados para garantir os tipos corretos
+        console.log("Dados brutos do kit:", kitData);
+
         const processedKit = {
           ...kitData,
           id: kitData.id || kitData.kitId || id,
@@ -390,28 +405,29 @@ const KitDetails = () => {
           hasChildren: Boolean(kitData.hasChildren),
           hasElderly: Boolean(kitData.hasElderly),
           hasPets: Boolean(kitData.hasPets),
-          isCustom: Boolean(kitData.isCustom)
+          isCustom: Boolean(kitData.isCustom),
         };
 
-        // Se recommendedItems for uma string, tenta fazer o parse
-        if (typeof processedKit.recommendedItems === 'string') {
+        if (typeof processedKit.recommendedItems === "string") {
           try {
-            processedKit.recommendedItems = JSON.parse(processedKit.recommendedItems);
+            processedKit.recommendedItems = JSON.parse(
+              processedKit.recommendedItems
+            );
           } catch (err) {
-            console.warn('Erro ao fazer parse dos itens recomendados:', err);
+            console.warn("Erro ao fazer parse dos itens recomendados:", err);
             processedKit.recommendedItems = [];
           }
         } else if (!Array.isArray(processedKit.recommendedItems)) {
           processedKit.recommendedItems = [];
         }
-        
-        console.log('Dados do kit processados:', processedKit);
+
+        console.log("Dados do kit processados:", processedKit);
         setKit(processedKit);
       } catch (err) {
-        console.error('Error fetching kit:', err);
-        setError(err.message || 'Erro ao carregar o kit');
+        console.error("Error fetching kit:", err);
+        setError(err.message || "Erro ao carregar o kit");
         if (err.response?.status === 400) {
-          navigate('/emergency-kits');
+          navigate("/emergency-kits");
         }
       } finally {
         setLoading(false);
@@ -421,16 +437,15 @@ const KitDetails = () => {
     fetchKit();
   }, [id, navigate]);
 
-  // Debug log para verificar os dados do kit após serem definidos
   useEffect(() => {
     if (kit) {
-      console.log('Estado atual do kit:', {
+      console.log("Estado atual do kit:", {
         id: kit.id,
         region: kit.region,
         numResidents: kit.numResidents,
         houseType: kit.houseType,
         isCustom: kit.isCustom,
-        allData: kit
+        allData: kit,
       });
     }
   }, [kit]);
@@ -454,9 +469,9 @@ const KitDetails = () => {
       <PageContainer>
         <Container>
           <StyledAlert variant="danger">
-            {error || 'Kit não encontrado'}
+            {error || "Kit não encontrado"}
           </StyledAlert>
-          <BackButton onClick={() => navigate('/emergency-kits')}>
+          <BackButton onClick={() => navigate("/emergency-kits")}>
             ← Voltar para Kits
           </BackButton>
         </Container>
@@ -464,25 +479,23 @@ const KitDetails = () => {
     );
   }
 
-  // Função auxiliar para traduzir a região
   const getRegionText = (region) => {
     const regions = {
-      'SUDESTE': 'Sudeste',
-      'NORDESTE': 'Nordeste',
-      'CENTRO_OESTE': 'Centro-Oeste',
-      'SUL': 'Sul',
-      'NORTE': 'Norte'
+      SUDESTE: "Sudeste",
+      NORDESTE: "Nordeste",
+      CENTRO_OESTE: "Centro-Oeste",
+      SUL: "Sul",
+      NORTE: "Norte",
     };
     return regions[region] || region;
   };
 
-  // Função auxiliar para traduzir o tipo de residência
   const getHouseTypeText = (type) => {
     const types = {
-      'CASA': 'Casa',
-      'APARTAMENTO': 'Apartamento',
-      'SITIO': 'Sítio',
-      'OUTRO': 'Outro'
+      CASA: "Casa",
+      APARTAMENTO: "Apartamento",
+      SITIO: "Sítio",
+      OUTRO: "Outro",
     };
     return types[type] || type;
   };
@@ -496,7 +509,7 @@ const KitDetails = () => {
           transition={{ duration: 0.5 }}
         >
           <ButtonsContainer>
-            <BackButton onClick={() => navigate('/emergency-kits')}>
+            <BackButton onClick={() => navigate("/emergency-kits")}>
               ← Voltar para Kits
             </BackButton>
             <EditButton
@@ -508,10 +521,10 @@ const KitDetails = () => {
               Editar Kit
             </EditButton>
           </ButtonsContainer>
-          
+
           <PageTitle>
             <span>📦</span>
-            Kit de Emergência {kit.id ? `#${kit.id}` : ''}
+            Kit de Emergência {kit.id ? `#${kit.id}` : ""}
           </PageTitle>
 
           <KitInfo>
@@ -521,7 +534,7 @@ const KitDetails = () => {
                   <span>🎯</span>
                   <div>
                     <strong>Tipo de Kit:</strong>
-                    {kit.isCustom ? 'Personalizado' : 'Automático'}
+                    {kit.isCustom ? "Personalizado" : "Automático"}
                   </div>
                 </InfoItem>
                 <InfoItem>
@@ -542,28 +555,30 @@ const KitDetails = () => {
                   <span>👥</span>
                   <div>
                     <strong>Número de Moradores:</strong>
-                    {typeof kit.numResidents === 'number' ? kit.numResidents : 0}
+                    {typeof kit.numResidents === "number"
+                      ? kit.numResidents
+                      : 0}
                   </div>
                 </InfoItem>
                 <InfoItem>
-                  <span>{kit.hasChildren ? '👶' : '❌'}</span>
+                  <span>{kit.hasChildren ? "👶" : "❌"}</span>
                   <div>
                     <strong>Crianças:</strong>
-                    {kit.hasChildren ? 'Sim' : 'Não'}
+                    {kit.hasChildren ? "Sim" : "Não"}
                   </div>
                 </InfoItem>
                 <InfoItem>
-                  <span>{kit.hasElderly ? '👴' : '❌'}</span>
+                  <span>{kit.hasElderly ? "👴" : "❌"}</span>
                   <div>
                     <strong>Idosos:</strong>
-                    {kit.hasElderly ? 'Sim' : 'Não'}
+                    {kit.hasElderly ? "Sim" : "Não"}
                   </div>
                 </InfoItem>
                 <InfoItem>
-                  <span>{kit.hasPets ? '🐾' : '❌'}</span>
+                  <span>{kit.hasPets ? "🐾" : "❌"}</span>
                   <div>
                     <strong>Animais de Estimação:</strong>
-                    {kit.hasPets ? 'Sim' : 'Não'}
+                    {kit.hasPets ? "Sim" : "Não"}
                   </div>
                 </InfoItem>
                 {kit.createdAt && (
@@ -571,12 +586,12 @@ const KitDetails = () => {
                     <span>📅</span>
                     <div>
                       <strong>Criado em:</strong>
-                      {new Date(kit.createdAt).toLocaleDateString('pt-BR', {
-                        day: '2-digit',
-                        month: '2-digit',
-                        year: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit'
+                      {new Date(kit.createdAt).toLocaleDateString("pt-BR", {
+                        day: "2-digit",
+                        month: "2-digit",
+                        year: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
                       })}
                     </div>
                   </InfoItem>
@@ -586,12 +601,12 @@ const KitDetails = () => {
                     <span>🔄</span>
                     <div>
                       <strong>Última Atualização:</strong>
-                      {new Date(kit.updatedAt).toLocaleDateString('pt-BR', {
-                        day: '2-digit',
-                        month: '2-digit',
-                        year: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit'
+                      {new Date(kit.updatedAt).toLocaleDateString("pt-BR", {
+                        day: "2-digit",
+                        month: "2-digit",
+                        year: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
                       })}
                     </div>
                   </InfoItem>
@@ -600,15 +615,19 @@ const KitDetails = () => {
             </KitInfoBody>
           </KitInfo>
 
-          {kit.recommendedItems && Array.isArray(kit.recommendedItems) && kit.recommendedItems.length > 0 ? (
+          {kit.recommendedItems &&
+          Array.isArray(kit.recommendedItems) &&
+          kit.recommendedItems.length > 0 ? (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
             >
               <SectionTitle>
-                <span>{kit.isCustom ? '📝' : '🤖'}</span>
-                {kit.isCustom ? 'Itens Personalizados' : 'Itens Recomendados pelo Sistema'}
+                <span>{kit.isCustom ? "📝" : "🤖"}</span>
+                {kit.isCustom
+                  ? "Itens Personalizados"
+                  : "Itens Recomendados pelo Sistema"}
               </SectionTitle>
               <ItemsList>
                 {kit.recommendedItems.map((item, index) => (
@@ -623,15 +642,16 @@ const KitDetails = () => {
                       <ItemName>{item.name}</ItemName>
                       {item.category && (
                         <ItemCategory>
-                          {item.category === 'AGUA' && 'Água'}
-                          {item.category === 'ALIMENTO' && 'Alimento'}
-                          {item.category === 'MEDICAMENTO' && 'Medicamento'}
-                          {item.category === 'HIGIENE' && 'Higiene'}
-                          {item.category === 'DOCUMENTO' && 'Documento'}
-                          {item.category === 'FERRAMENTA' && 'Ferramenta'}
-                          {item.category === 'ROUPA' && 'Roupa'}
-                          {item.category === 'COMUNICACAO' && 'Comunicação'}
-                          {item.category === 'PRIMEIROS_SOCORROS' && 'Primeiros Socorros'}
+                          {item.category === "AGUA" && "Água"}
+                          {item.category === "ALIMENTO" && "Alimento"}
+                          {item.category === "MEDICAMENTO" && "Medicamento"}
+                          {item.category === "HIGIENE" && "Higiene"}
+                          {item.category === "DOCUMENTO" && "Documento"}
+                          {item.category === "FERRAMENTA" && "Ferramenta"}
+                          {item.category === "ROUPA" && "Roupa"}
+                          {item.category === "COMUNICACAO" && "Comunicação"}
+                          {item.category === "PRIMEIROS_SOCORROS" &&
+                            "Primeiros Socorros"}
                         </ItemCategory>
                       )}
                       <ItemDetails>
@@ -644,13 +664,15 @@ const KitDetails = () => {
                         {item.expirationDate && (
                           <div>
                             <span>📅</span>
-                            {new Date(item.expirationDate).toLocaleDateString('pt-BR')}
+                            {new Date(item.expirationDate).toLocaleDateString(
+                              "pt-BR"
+                            )}
                           </div>
                         )}
                       </ItemDetails>
                       {item.description && (
                         <ItemDescription>
-                          {item.description.replace(/\\/g, '')}
+                          {item.description.replace(/\\/g, "")}
                         </ItemDescription>
                       )}
                     </ItemInfo>
@@ -683,15 +705,16 @@ const KitDetails = () => {
                       <ItemName>{item.name}</ItemName>
                       {item.category && (
                         <ItemCategory>
-                          {item.category === 'AGUA' && 'Água'}
-                          {item.category === 'ALIMENTO' && 'Alimento'}
-                          {item.category === 'MEDICAMENTO' && 'Medicamento'}
-                          {item.category === 'HIGIENE' && 'Higiene'}
-                          {item.category === 'DOCUMENTO' && 'Documento'}
-                          {item.category === 'FERRAMENTA' && 'Ferramenta'}
-                          {item.category === 'ROUPA' && 'Roupa'}
-                          {item.category === 'COMUNICACAO' && 'Comunicação'}
-                          {item.category === 'PRIMEIROS_SOCORROS' && 'Primeiros Socorros'}
+                          {item.category === "AGUA" && "Água"}
+                          {item.category === "ALIMENTO" && "Alimento"}
+                          {item.category === "MEDICAMENTO" && "Medicamento"}
+                          {item.category === "HIGIENE" && "Higiene"}
+                          {item.category === "DOCUMENTO" && "Documento"}
+                          {item.category === "FERRAMENTA" && "Ferramenta"}
+                          {item.category === "ROUPA" && "Roupa"}
+                          {item.category === "COMUNICACAO" && "Comunicação"}
+                          {item.category === "PRIMEIROS_SOCORROS" &&
+                            "Primeiros Socorros"}
                         </ItemCategory>
                       )}
                       <ItemDetails>
@@ -704,14 +727,14 @@ const KitDetails = () => {
                         {item.expirationDate && (
                           <div>
                             <span>📅</span>
-                            {new Date(item.expirationDate).toLocaleDateString('pt-BR')}
+                            {new Date(item.expirationDate).toLocaleDateString(
+                              "pt-BR"
+                            )}
                           </div>
                         )}
                       </ItemDetails>
                       {item.description && (
-                        <ItemDescription>
-                          {item.description}
-                        </ItemDescription>
+                        <ItemDescription>{item.description}</ItemDescription>
                       )}
                     </ItemInfo>
                   </ItemRow>
@@ -725,4 +748,4 @@ const KitDetails = () => {
   );
 };
 
-export default KitDetails; 
+export default KitDetails;

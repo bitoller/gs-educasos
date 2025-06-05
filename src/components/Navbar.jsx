@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { Navbar, Nav, Container, Button, NavDropdown } from 'react-bootstrap';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { 
+import React, { useState, useEffect } from "react";
+import { Navbar, Nav, Container, Button, NavDropdown } from "react-bootstrap";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
   faHome,
   faBook,
   faQuestionCircle,
@@ -15,10 +15,10 @@ import {
   faShieldAlt,
   faTrophy,
   faBoxes,
-  faHeartbeat
-} from '@fortawesome/free-solid-svg-icons';
-import { motion } from 'framer-motion';
-import '../styles/Navbar.css';
+  faHeartbeat,
+} from "@fortawesome/free-solid-svg-icons";
+import { motion } from "framer-motion";
+import "../styles/Navbar.css";
 
 const NavigationBar = () => {
   const { user, logout, isAdmin } = useAuth();
@@ -34,39 +34,39 @@ const NavigationBar = () => {
       }
     };
 
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, [scrolled]);
 
   const handleLogout = () => {
     logout();
-    navigate('/');
+    navigate("/");
   };
 
   const navItems = [
-    { path: '/', text: 'Início', icon: faHome },
-    { path: '/learn', text: 'Aprenda', icon: faBook },
-    { path: '/quizzes', text: 'Quizzes', icon: faQuestionCircle },
-    { path: '/emergency-kits', text: 'Kits de Emergência', icon: faFirstAid },
-    { path: '/about', text: 'Sobre', icon: faInfoCircle },
-    { path: '/contact', text: 'Contato', icon: faEnvelope }
+    { path: "/", text: "Início", icon: faHome },
+    { path: "/learn", text: "Aprenda", icon: faBook },
+    { path: "/quizzes", text: "Quizzes", icon: faQuestionCircle },
+    { path: "/emergency-kits", text: "Kits de Emergência", icon: faFirstAid },
+    { path: "/about", text: "Sobre", icon: faInfoCircle },
+    { path: "/contact", text: "Contato", icon: faEnvelope },
   ];
 
   const userMenuItems = [
     {
-      path: isAdmin ? '/admin' : '/dashboard',
-      text: isAdmin ? 'Dashboard Admin' : 'Meu Dashboard',
-      icon: isAdmin ? faShieldAlt : faTrophy
+      path: isAdmin ? "/admin" : "/dashboard",
+      text: isAdmin ? "Dashboard Admin" : "Meu Dashboard",
+      icon: isAdmin ? faShieldAlt : faTrophy,
     },
-    { path: '/profile', text: 'Meu Perfil', icon: faUser },
-    { path: '/my-kits', text: 'Meus Kits', icon: faBoxes }
+    { path: "/profile", text: "Meu Perfil", icon: faUser },
+    { path: "/my-kits", text: "Meus Kits", icon: faBoxes },
   ];
 
   return (
-    <Navbar 
-      expand="lg" 
+    <Navbar
+      expand="lg"
       fixed="top"
-      className={`navbar ${scrolled ? 'scrolled' : ''}`}
+      className={`navbar ${scrolled ? "scrolled" : ""}`}
     >
       <Container>
         <motion.div
@@ -84,7 +84,7 @@ const NavigationBar = () => {
         </motion.div>
 
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
-        
+
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto">
             {navItems.map((item, index) => (
@@ -94,10 +94,10 @@ const NavigationBar = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
               >
-                <Nav.Link 
-                  as={Link} 
+                <Nav.Link
+                  as={Link}
                   to={item.path}
-                  className={location.pathname === item.path ? 'active' : ''}
+                  className={location.pathname === item.path ? "active" : ""}
                 >
                   <FontAwesomeIcon icon={item.icon} className="me-2" />
                   {item.text}
@@ -113,7 +113,7 @@ const NavigationBar = () => {
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.3 }}
               >
-                <NavDropdown 
+                <NavDropdown
                   title={
                     <span>
                       <FontAwesomeIcon icon={faUser} className="me-2" />
@@ -123,11 +123,7 @@ const NavigationBar = () => {
                   id="basic-nav-dropdown"
                 >
                   {userMenuItems.map((item) => (
-                    <NavDropdown.Item 
-                      key={item.path}
-                      as={Link} 
-                      to={item.path}
-                    >
+                    <NavDropdown.Item key={item.path} as={Link} to={item.path}>
                       <FontAwesomeIcon icon={item.icon} className="me-2" />
                       {item.text}
                     </NavDropdown.Item>
@@ -146,18 +142,10 @@ const NavigationBar = () => {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.5 }}
               >
-                <Button 
-                  as={Link} 
-                  to="/login" 
-                  variant="outline-light"
-                >
+                <Button as={Link} to="/login" variant="outline-light">
                   Entrar
                 </Button>
-                <Button 
-                  as={Link} 
-                  to="/register" 
-                  variant="light"
-                >
+                <Button as={Link} to="/register" variant="light">
                   Cadastrar
                 </Button>
               </motion.div>
@@ -169,4 +157,4 @@ const NavigationBar = () => {
   );
 };
 
-export default NavigationBar; 
+export default NavigationBar;
