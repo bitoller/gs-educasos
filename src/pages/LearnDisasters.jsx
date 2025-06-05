@@ -322,12 +322,12 @@ const LearnDisasters = () => {
               {(disaster.beforeTips?.length > 0 || 
                 disaster.duringTips?.length > 0 || 
                 disaster.afterTips?.length > 0) && (
-                <StatBadge>
-                  <TipIcon>📋</TipIcon>
-                  {(disaster.beforeTips?.length || 0) + 
-                   (disaster.duringTips?.length || 0) + 
-                   (disaster.afterTips?.length || 0)} dicas
-                </StatBadge>
+              <StatBadge>
+                <TipIcon>📋</TipIcon>
+                {(disaster.beforeTips?.length || 0) + 
+                 (disaster.duringTips?.length || 0) + 
+                 (disaster.afterTips?.length || 0)} dicas
+              </StatBadge>
               )}
               <LearnMoreButton
                 onClick={() => setSelectedType(disaster.disasterType)}
@@ -385,12 +385,12 @@ const LearnDisasters = () => {
                       <PhaseDescription color="#00f2fe">
                         {beforeText || "Medidas preventivas e de preparação que podem salvar vidas"}
                       </PhaseDescription>
-                      {disaster.beforeTips && disaster.beforeTips.length > 0 && (
+                {disaster.beforeTips && disaster.beforeTips.length > 0 && (
                         <TipListDetailed color="#00f2fe">
-                          {disaster.beforeTips.map((tip, i) => (
-                            <li key={i}>{tip}</li>
-                          ))}
-                        </TipListDetailed>
+                      {disaster.beforeTips.map((tip, i) => (
+                        <li key={i}>{tip}</li>
+                      ))}
+                    </TipListDetailed>
                       )}
                       <TipFooter>
                         <TipIcon>{getPhaseMessage('before', disaster.disasterType).icon}</TipIcon>
@@ -412,12 +412,12 @@ const LearnDisasters = () => {
                       <PhaseDescription color="#f59e0b">
                         {duringText || "Ações imediatas para garantir sua segurança"}
                       </PhaseDescription>
-                      {disaster.duringTips && disaster.duringTips.length > 0 && (
+                {disaster.duringTips && disaster.duringTips.length > 0 && (
                         <TipListDetailed color="#f59e0b">
-                          {disaster.duringTips.map((tip, i) => (
-                            <li key={i}>{tip}</li>
-                          ))}
-                        </TipListDetailed>
+                      {disaster.duringTips.map((tip, i) => (
+                        <li key={i}>{tip}</li>
+                      ))}
+                    </TipListDetailed>
                       )}
                       <TipFooter>
                         <TipIcon>{getPhaseMessage('during', disaster.disasterType).icon}</TipIcon>
@@ -439,12 +439,12 @@ const LearnDisasters = () => {
                       <PhaseDescription color="#10b981">
                         {afterText || "Como se recuperar e ajudar sua comunidade"}
                       </PhaseDescription>
-                      {disaster.afterTips && disaster.afterTips.length > 0 && (
+                {disaster.afterTips && disaster.afterTips.length > 0 && (
                         <TipListDetailed color="#10b981">
-                          {disaster.afterTips.map((tip, i) => (
-                            <li key={i}>{tip}</li>
-                          ))}
-                        </TipListDetailed>
+                      {disaster.afterTips.map((tip, i) => (
+                        <li key={i}>{tip}</li>
+                      ))}
+                    </TipListDetailed>
                       )}
                       <TipFooter>
                         <TipIcon>{getPhaseMessage('after', disaster.disasterType).icon}</TipIcon>
@@ -462,30 +462,30 @@ const LearnDisasters = () => {
                         Vídeo Informativo
                       </SectionTitle>
                     </SectionDivider>
-                    <VideoContainerDetailed>
-                      <div className="ratio ratio-16x9">
-                        <iframe
+                  <VideoContainerDetailed>
+                    <div className="ratio ratio-16x9">
+                      <iframe
                           src={embedUrl}
                           title={getDisasterDescription(disaster.disasterType)}
-                          allowFullScreen
+                        allowFullScreen
                           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                           frameBorder="0"
-                        ></iframe>
-                      </div>
-                    </VideoContainerDetailed>
+                      ></iframe>
+                    </div>
+                  </VideoContainerDetailed>
                   </>
                 )}
 
                 {isAuthenticated && (
                   <div className="text-center mt-4">
-                    <ActionButtonDetailed
-                      as={Link}
-                      to={`/quizzes?type=${disaster.disasterType}`}
-                      gradient={gradient}
-                    >
+                  <ActionButtonDetailed
+                    as={Link}
+                    to={`/quizzes?type=${disaster.disasterType}`}
+                    gradient={gradient}
+                  >
                       <span>🎯</span>
                       Testar seus conhecimentos sobre {getDisasterDescription(disaster.disasterType).toLowerCase()}
-                    </ActionButtonDetailed>
+                  </ActionButtonDetailed>
                     <div className="mt-3 text-muted">
                       <small>
                         Avalie sua preparação para situações de {getDisasterDescription(disaster.disasterType).toLowerCase()}
@@ -581,8 +581,8 @@ const LearnDisasters = () => {
             <Row>
               {getCurrentPageContent().common.map((disaster, index) => 
                 renderCompactCard(disaster, index)
-              )}
-            </Row>
+          )}
+        </Row>
 
             <SectionDivider>
               <SectionTitle>

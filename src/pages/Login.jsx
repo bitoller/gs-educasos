@@ -20,15 +20,25 @@ const Login = () => {
 
     try {
       const response = await auth.login({ email, password });
-      console.log('Login response:', response.data);
+      console.log('Raw login response:', response.data);
       
       if (response.data && response.data.token) {
         // Store the token
         localStorage.setItem('token', response.data.token);
         
-        // User data should now have the role set from the token
-        const userData = response.data.user;
-        console.log('Processed user data:', userData);
+        // Make sure we have all required user data
+        const userData = {
+          ...response.data.user,
+          id: response.data.user.id,
+          role: response.data.user.role || 'user',
+          score: response.data.user.score || response.data.user.totalScore || 0,
+          totalScore: response.data.user.totalScore || response.data.user.score || 0,
+          completedQuizzes: response.data.user.completedQuizzes || 0
+        };
+        
+        // Store user data in localStorage
+        localStorage.setItem('user', JSON.stringify(userData));
+        console.log('Processed and stored user data:', userData);
         
         // Update auth context with user data
         login(userData);
@@ -37,16 +47,10 @@ const Login = () => {
         setEmail('');
         setPassword('');
         
-        // Debug log before redirect
-        console.log('User role:', userData.role);
-        console.log('Is admin?', userData.role === 'admin');
-        
-        // Redirect based on role with exact comparison
+        // Redirect based on role
         if (userData.role === 'admin') {
-          console.log('Redirecting to admin dashboard');
           navigate('/admin');
         } else {
-          console.log('Redirecting to user dashboard');
           const from = location.state?.from?.pathname || '/dashboard';
           navigate(from);
         }

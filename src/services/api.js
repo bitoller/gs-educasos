@@ -13,12 +13,9 @@ const parseJwt = (token) => {
   }
 };
 
-// When using Vite's proxy, we use relative URLs
-const API_BASE_URL = '/api';
-
 // Create axios instance with default config
 const api = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: '/api',
   headers: {
     'Content-Type': 'application/json',
     'Accept': 'application/json'
@@ -28,9 +25,6 @@ const api = axios.create({
 // Add request interceptor to add auth token
 api.interceptors.request.use(
   (config) => {
-    // Log the request for debugging
-    console.log('Making request to:', config.url, 'with method:', config.method);
-    
     const token = localStorage.getItem('token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
@@ -44,42 +38,11 @@ api.interceptors.request.use(
 
 // Add response interceptor to handle errors
 api.interceptors.response.use(
-  (response) => {
-    // Log successful response
-    console.log('Received response:', {
-      url: response.config.url,
-      status: response.status,
-      data: response.data,
-      headers: response.headers,
-      contentType: response.headers['content-type']
-    });
-    
-    // Store user role if it's a login response
-    if (response.config.url === '/login' && response.data?.token) {
-      const tokenData = parseJwt(response.data.token);
-      const role = tokenData?.isAdmin ? 'admin' : 'user';
-      localStorage.setItem('userRole', role);
-      console.log('Stored user role from token:', role);
-    }
-    
-    return response;
-  },
+  (response) => response,
   (error) => {
-    // Log error response with more details
-    console.error('API Error:', {
-      status: error.response?.status,
-      data: error.response?.data,
-      config: error.config,
-      message: error.message,
-      url: error.config?.url,
-      method: error.config?.method,
-      headers: error.response?.headers
-    });
-
-    // Só redireciona para o login em caso de erro 401 se NÃO for uma rota pública
-    if (error.response?.status === 401 && !isPublicRoute(error.config.url)) {
+    if (error.response?.status === 401) {
       localStorage.removeItem('token');
-      localStorage.removeItem('userRole');
+      localStorage.removeItem('user');
       window.location.href = '/login';
     }
     return Promise.reject(error);
@@ -98,31 +61,55 @@ const isPublicRoute = (url) => {
 // Auth API
 export const auth = {
   login: async (credentials) => {
-    // Debug log before making the request
-    console.log('Attempting login with credentials:', { email: credentials.email });
-    
     try {
       const response = await api.post('/login', credentials);
-      console.log('Login response:', response.data);
       
-      // Parse the JWT token to get isAdmin flag
       if (response.data?.token) {
-        const tokenData = parseJwt(response.data.token);
-        if (tokenData?.isAdmin) {
-          response.data.user.role = 'admin';
-        } else {
-          response.data.user.role = 'user';
+        localStorage.setItem('token', response.data.token);
+        if (response.data.user) {
+          localStorage.setItem('user', JSON.stringify(response.data.user));
         }
-        console.log('User role set from token:', response.data.user.role);
       }
-      
       return response;
     } catch (error) {
-      console.error('Login error:', error);
       throw error;
     }
   },
   register: (userData) => api.post('/register', userData),
+  getUserData: async () => {
+    try {
+      const storedUser = localStorage.getItem('user');
+      if (!storedUser) {
+        throw new Error('User data not found in localStorage');
+      }
+      
+      const userData = JSON.parse(storedUser);
+      
+      // Buscar dados do leaderboard para obter pontuação atualizada
+      const leaderboardResponse = await api.get('/leaderboard');
+      const userScore = leaderboardResponse.data.find(item => item.userId === userData.id || item.userId === userData.userId);
+      
+      if (userScore) {
+        const updatedUserData = {
+          ...userData,
+          score: userScore.score,
+          totalScore: userScore.score,
+          completedQuizzes: userScore.completedQuizzes || userData.completedQuizzes || 0
+        };
+        localStorage.setItem('user', JSON.stringify(updatedUserData));
+        return { data: updatedUserData };
+      }
+      
+      return { data: userData };
+    } catch (error) {
+      // Use stored data as fallback
+      const storedData = JSON.parse(localStorage.getItem('user'));
+      if (storedData) {
+        return { data: storedData };
+      }
+      throw error;
+    }
+  }
 };
 
 // Content API
@@ -139,17 +126,11 @@ export const kits = {
   getAll: async () => {
     try {
       const response = await api.get('/kit');
-      console.log('API Raw Response:', response);
       
       if (response.data) {
-        // Log dos dados brutos antes do processamento
-        console.log('Raw Kits Data:', response.data);
-        
         // Processa os dados para garantir os tipos corretos
         const processedKits = Array.isArray(response.data) ? response.data.map(kit => {
-          console.log('Processing kit:', kit.id, 'numResidents before:', kit.numResidents, 'type:', typeof kit.numResidents);
-          
-          const processedKit = {
+          return {
             ...kit,
             numResidents: kit.numResidents ? Number(kit.numResidents) : 0,
             hasChildren: Boolean(kit.hasChildren),
@@ -157,29 +138,22 @@ export const kits = {
             hasPets: Boolean(kit.hasPets),
             isCustom: Boolean(kit.isCustom)
           };
-          
-          console.log('Kit after processing:', processedKit.id, 'numResidents after:', processedKit.numResidents, 'type:', typeof processedKit.numResidents);
-          return processedKit;
         }) : [];
         
-        console.log('Final processed kits:', processedKits);
         return { ...response, data: processedKits };
       }
       
       return response;
     } catch (error) {
-      console.error('API Error getAll:', error.response || error);
       throw error;
     }
   },
   getById: async (id) => {
     try {
       const response = await api.get(`/kit/${id}`);
-      console.log('GetById Raw Response:', response);
       
       if (response.data) {
         const kitData = response.data.kit || response.data;
-        console.log('Raw Kit Data:', kitData);
         
         // Processa os dados para garantir os tipos corretos
         const processedKit = {
@@ -191,13 +165,11 @@ export const kits = {
           isCustom: Boolean(kitData.isCustom)
         };
         
-        console.log('Processed Kit:', processedKit);
         return { ...response, data: processedKit };
       }
       
       return response;
     } catch (error) {
-      console.error('API Error getById:', error.response || error);
       throw error;
     }
   },
@@ -211,13 +183,10 @@ export const kits = {
         numResidents: Number(kitData.numResidents || 0)
       };
       
-      console.log('Creating kit with data:', processedData);
       const response = await api.post('/kit', processedData);
-      console.log('Create Response:', response);
       
       if (response.data) {
         const data = response.data.kit || response.data;
-        console.log('Raw Created Kit Data:', data);
         
         const processedKit = {
           ...data,
@@ -228,13 +197,11 @@ export const kits = {
           isCustom: Boolean(data.isCustom)
         };
         
-        console.log('Processed Created Kit:', processedKit);
         return { ...response, data: processedKit };
       }
       
       return response;
     } catch (error) {
-      console.error('API Error create:', error.response || error);
       throw error;
     }
   },
@@ -279,4 +246,4 @@ export const admin = {
     api.put('/admin/user/score', { userId, score }),
 };
 
-export default api; 
+export { api }; 

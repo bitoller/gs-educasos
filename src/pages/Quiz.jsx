@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Card, Button, Row, Col, ProgressBar, Badge, Alert, Spinner } from 'react-bootstrap';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { quiz } from '../services/api';
+import { quiz, auth } from '../services/api';
 import { motion } from 'framer-motion';
 import confetti from 'canvas-confetti';
 import { useAuth } from '../contexts/AuthContext';
@@ -242,22 +242,30 @@ const Quiz = () => {
       navigate('/login', { state: { from: `/quiz/${id}` } });
       return;
     }
+
     try {
       setSubmitting(true);
       setError('');
 
+      // Enviar respostas do quiz
       const response = await quiz.submitAnswers(quizData.quizId, selectedAnswers);
+      console.log('Quiz submission response:', response.data);
+      
+      // Aguardar um momento para garantir que o banco de dados foi atualizado
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      // Buscar dados atualizados do usuário
+      const userResponse = await auth.getUserData();
+      if (userResponse.data) {
+        console.log('Fresh user data after quiz:', userResponse.data);
+        login(userResponse.data);
+      }
+
+      // Atualizar estado local
       setScore(response.data.scoreEarned);
       setQuizCompleted(true);
 
-      const updatedUser = {
-        ...user,
-        score: response.data.totalScore,
-        completedQuizzes: (user.completedQuizzes || 0) + 1,
-        averageScore: response.data.averageScore
-      };
-      login(updatedUser);
-
+      // Animação de confete para pontuações altas
       if (response.data.scoreEarned >= 70) {
         confetti({
           particleCount: 100,
