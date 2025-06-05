@@ -14,8 +14,8 @@ import {
   faSignOutAlt,
   faShieldAlt,
   faTrophy,
-  faHeartbeat,
   faBoxes,
+  faHeartbeat,
 } from "@fortawesome/free-solid-svg-icons";
 import { motion } from "framer-motion";
 import "../styles/Navbar.css";
@@ -42,6 +42,7 @@ const NavigationBar = () => {
     logout();
     navigate("/");
   };
+
   const navItems = [
     { path: "/", text: "Início", icon: faHome },
     { path: "/learn", text: "Aprenda", icon: faBook },
@@ -50,13 +51,15 @@ const NavigationBar = () => {
     { path: "/about", text: "Sobre", icon: faInfoCircle },
     { path: "/contact", text: "Contato", icon: faEnvelope },
   ];
+
   const userMenuItems = [
     {
       path: isAdmin ? "/admin" : "/dashboard",
       text: isAdmin ? "Dashboard Admin" : "Meu Dashboard",
       icon: isAdmin ? faShieldAlt : faTrophy,
     },
-    { path: "/emergency-kits", text: "Meus Kits", icon: faBoxes },
+    { path: "/profile", text: "Meu Perfil", icon: faUser },
+    { path: "/my-kits", text: "Meus Kits", icon: faBoxes },
   ];
 
   return (
