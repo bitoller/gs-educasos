@@ -1,202 +1,55 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Card, Button, ButtonGroup, Alert, Spinner } from 'react-bootstrap';
+import { Container, Row, Col, Card, Button, Alert, Spinner, Tabs, Tab } from 'react-bootstrap';
 import { content } from '../services/api';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import styled from 'styled-components';
-
-// Styled Components
-const PageContainer = styled.div`
-  padding: 5rem 0 2rem 0;
-  min-height: 100vh;
-  background: linear-gradient(135deg, #1a1c2e 0%, #16213e 100%);
-  color: #fff;
-  width: 100%;
-`;
-
-const ContentWrapper = styled(Container)`
-  max-width: 100%;
-  padding: 0 2rem;
-`;
-
-const HeaderSection = styled(motion.div)`
-  margin-bottom: 3rem;
-  text-align: center;
-`;
-
-const Title = styled.h1`
-  font-size: 2.5rem;
-  font-weight: bold;
-  text-align: center;
-  margin-bottom: 1.5rem;
-  background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  text-shadow: 0 2px 10px rgba(0, 242, 254, 0.2);
-`;
-
-const Subtitle = styled.p`
-  color: rgba(255, 255, 255, 0.8);
-  font-size: 1.2rem;
-  margin-bottom: 2rem;
-  max-width: 800px;
-  margin-left: auto;
-  margin-right: auto;
-`;
-
-const FilterSection = styled(motion.div)`
-  margin-bottom: 3rem;
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-`;
-
-const FilterButton = styled(Button)`
-  background: ${props => props.active ? 
-    'linear-gradient(135deg, #00f2fe 0%, #4facfe 100%)' : 
-    'rgba(255, 255, 255, 0.1)'};
-  border: none;
-  margin: 0 0.25rem;
-  padding: 0.75rem 1.5rem;
-  border-radius: 25px;
-  transition: all 0.3s ease;
-  backdrop-filter: blur(5px);
-  
-  &:hover {
-    transform: translateY(-2px);
-    background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
-    box-shadow: 0 4px 15px rgba(0, 242, 254, 0.3);
-  }
-
-  &:active {
-    transform: translateY(0);
-  }
-`;
-
-const ContentCard = styled(Card)`
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 15px;
-  margin-bottom: 2rem;
-  transition: all 0.3s ease;
-  height: 100%;
-  
-  &:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-  }
-`;
-
-const ContentTitle = styled.h3`
-  color: #fff;
-  font-size: 1.5rem;
-  margin-bottom: 1rem;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-
-  span {
-    font-size: 1.8rem;
-  }
-`;
-
-const ContentDescription = styled.p`
-  color: rgba(255, 255, 255, 0.8);
-  font-size: 1rem;
-  line-height: 1.6;
-  margin-bottom: 1.5rem;
-`;
-
-const TipSection = styled.div`
-  background: rgba(255, 255, 255, 0.08);
-  border-radius: 12px;
-  padding: 1.25rem;
-  margin: 1rem 0;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  transition: all 0.3s ease;
-
-  &:hover {
-    background: rgba(255, 255, 255, 0.1);
-    transform: translateX(5px);
-  }
-`;
-
-const TipTitle = styled.h4`
-  color: #4facfe;
-  font-size: 1.2rem;
-  margin-bottom: 1rem;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-`;
-
-const TipList = styled.ul`
-  color: rgba(255, 255, 255, 0.8);
-  padding-left: 1.5rem;
-  margin-bottom: 0;
-
-  li {
-    margin-bottom: 0.5rem;
-    
-    &:last-child {
-      margin-bottom: 0;
-    }
-  }
-`;
-
-const VideoContainer = styled.div`
-  border-radius: 12px;
-  overflow: hidden;
-  margin: 1.5rem 0;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-`;
-
-const ActionButton = styled(Button)`
-  background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
-  border: none;
-  padding: 0.75rem 1.5rem;
-  border-radius: 25px;
-  transition: all 0.3s ease;
-  width: 100%;
-  margin-top: 1.5rem;
-  font-weight: 600;
-  letter-spacing: 0.5px;
-  
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(0, 242, 254, 0.4);
-    filter: brightness(110%);
-  }
-
-  &:active {
-    transform: translateY(0);
-  }
-`;
-
-const StyledAlert = styled(Alert)`
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(10px);
-  color: white;
-  margin-bottom: 2rem;
-
-  h5 {
-    color: #4facfe;
-    margin-bottom: 1rem;
-  }
-
-  .btn {
-    transition: all 0.3s ease;
-    
-    &:hover {
-      transform: translateY(-2px);
-    }
-  }
-`;
+import { translateDisasterType, getDisasterDescription } from '../utils/translations';
+import { getYouTubeEmbedUrl } from '../utils/videoUtils';
+import { parseDisasterDescription } from '../utils/descriptionUtils';
+import {
+  PageContainer,
+  ContentWrapper,
+  HeaderSection,
+  Title,
+  Subtitle,
+  FilterSection,
+  FilterButton,
+  SectionDivider,
+  SectionTitle,
+  InfoTooltip,
+  Pagination,
+  PageButton,
+  CompactCard,
+  CompactBody,
+  CompactTitle,
+  CompactDescription,
+  CompactFooter,
+  StatBadge,
+  TipIcon,
+  LearnMoreButton,
+  DetailedCard,
+  DetailedHeader,
+  DetailedHeaderContent,
+  DetailedTitle,
+  DetailedDescription,
+  DetailedBody,
+  DetailedContent,
+  TipSectionDetailed,
+  TipTitleDetailed,
+  TipListDetailed,
+  VideoContainerDetailed,
+  ActionButtonDetailed,
+  TipDescription,
+  TipFooter,
+  PhaseTabTitle,
+  PhaseIcon,
+  PhaseContent,
+  PhaseDescription,
+  DisasterPhasesTabs
+} from './LearnDisasters.styles';
 
 const getDisasterGradient = (type) => {
+  const translatedType = translateDisasterType(type);
   const gradients = {
     ENCHENTE: 'linear-gradient(135deg, #0EA5E9 0%, #0369A1 100%)',
     TERREMOTO: 'linear-gradient(135deg, #F59E0B 0%, #B45309 100%)',
@@ -206,308 +59,181 @@ const getDisasterGradient = (type) => {
     DESLIZAMENTO: 'linear-gradient(135deg, #84CC16 0%, #4D7C0F 100%)',
     SECA: 'linear-gradient(135deg, #F97316 0%, #C2410C 100%)',
     TSUNAMI: 'linear-gradient(135deg, #06B6D4 0%, #0E7490 100%)',
+    TEMPESTADE: 'linear-gradient(135deg, #475569 0%, #1E293B 100%)',
     default: 'linear-gradient(135deg, #6B7280 0%, #4B5563 100%)'
   };
-  return gradients[type] || gradients.default;
+  return gradients[translatedType] || gradients.default;
 };
 
-const CompactCard = styled(Card)`
-  background: ${props => props.gradient || 'rgba(255, 255, 255, 0.05)'};
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 15px;
-  margin-bottom: 1rem;
-  transition: all 0.3s ease;
-  height: 100%;
-  overflow: hidden;
-  position: relative;
-  
-  &:before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.3);
-    z-index: 1;
-  }
-  
-  &:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-    
-    &:before {
-      background: rgba(0, 0, 0, 0.2);
+const getPhaseMessage = (phase, disasterType) => {
+  const messages = {
+    FIRE: {
+      before: {
+        icon: '🔍',
+        message: 'Prevenção é a melhor forma de combater incêndios'
+      },
+      during: {
+        icon: '⚡',
+        message: 'Cada segundo conta em uma situação de incêndio'
+      },
+      after: {
+        icon: '🤝',
+        message: 'Unidos na reconstrução e prevenção'
+      }
+    },
+    FLOOD: {
+      before: {
+        icon: '📋',
+        message: 'Planejamento é essencial contra enchentes'
+      },
+      during: {
+        icon: '🚨',
+        message: 'Mantenha a calma e siga o plano de evacuação'
+      },
+      after: {
+        icon: '💪',
+        message: 'Juntos pela recuperação da comunidade'
+      }
+    },
+    EARTHQUAKE: {
+      before: {
+        icon: '🏠',
+        message: 'Prepare sua casa e sua família'
+      },
+      during: {
+        icon: '🛡️',
+        message: 'Proteja-se e mantenha a serenidade'
+      },
+      after: {
+        icon: '🤲',
+        message: 'Solidariedade faz a diferença na reconstrução'
+      }
+    },
+    HURRICANE: {
+      before: {
+        icon: '📱',
+        message: 'Fique atento aos alertas meteorológicos'
+      },
+      during: {
+        icon: '🏘️',
+        message: 'Permaneça em local seguro e protegido'
+      },
+      after: {
+        icon: '🌟',
+        message: 'Reconstruindo com esperança e união'
+      }
+    },
+    TORNADO: {
+      before: {
+        icon: '🎯',
+        message: 'Conhecimento salva vidas em tornados'
+      },
+      during: {
+        icon: '🏃',
+        message: 'Abrigue-se imediatamente em local seguro'
+      },
+      after: {
+        icon: '🌅',
+        message: 'Um novo começo com apoio mútuo'
+      }
+    },
+    LANDSLIDE: {
+      before: {
+        icon: '👀',
+        message: 'Observe os sinais de risco no terreno'
+      },
+      during: {
+        icon: '🏃‍♂️',
+        message: 'Evacue a área imediatamente se houver sinais'
+      },
+      after: {
+        icon: '🌱',
+        message: 'Recuperando e prevenindo juntos'
+      }
+    },
+    DROUGHT: {
+      before: {
+        icon: '💧',
+        message: 'Economize água, cada gota conta'
+      },
+      during: {
+        icon: '🌡️',
+        message: 'Use os recursos hídricos com consciência'
+      },
+      after: {
+        icon: '🤝',
+        message: 'Preservando água para o futuro'
+      }
+    },
+    TSUNAMI: {
+      before: {
+        icon: '📢',
+        message: 'Conheça as rotas de evacuação'
+      },
+      during: {
+        icon: '⚡',
+        message: 'Evacue para áreas elevadas rapidamente'
+      },
+      after: {
+        icon: '💫',
+        message: 'Reconstruindo com força e união'
+      }
+    },
+    STORM: {
+      before: {
+        icon: '🔋',
+        message: 'Prepare-se para possíveis interrupções'
+      },
+      during: {
+        icon: '🏠',
+        message: 'Mantenha-se em local seguro e protegido'
+      },
+      after: {
+        icon: '🌈',
+        message: 'Superando desafios em comunidade'
+      }
     }
-  }
-`;
+  };
 
-const CompactBody = styled(Card.Body)`
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  position: relative;
-  z-index: 2;
-  padding: 1.5rem;
-`;
-
-const CompactTitle = styled.h3`
-  color: #fff;
-  font-size: 1.3rem;
-  margin-bottom: 0.5rem;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-
-  span {
-    font-size: 1.8rem;
-    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
-  }
-`;
-
-const CompactDescription = styled.p`
-  color: rgba(255, 255, 255, 0.9);
-  font-size: 0.95rem;
-  line-height: 1.5;
-  margin-bottom: 1rem;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  flex-grow: 1;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-`;
-
-const CompactFooter = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: auto;
-  gap: 1rem;
-`;
-
-const LearnMoreButton = styled(Button)`
-  background: rgba(255, 255, 255, 0.15);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  padding: 0.5rem 1.2rem;
-  border-radius: 20px;
-  font-size: 0.9rem;
-  transition: all 0.3s ease;
-  color: white;
-  backdrop-filter: blur(5px);
-  
-  &:hover {
-    transform: translateY(-2px);
-    background: rgba(255, 255, 255, 0.25);
-    border-color: rgba(255, 255, 255, 0.4);
-    color: white;
-  }
-
-  &:active {
-    transform: translateY(0);
-  }
-`;
-
-const StatBadge = styled.div`
-  background: rgba(255, 255, 255, 0.15);
-  color: #fff;
-  padding: 0.4rem 1rem;
-  border-radius: 15px;
-  font-size: 0.85rem;
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  backdrop-filter: blur(5px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-`;
-
-const TipIcon = styled.span`
-  font-size: 1.2rem;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
-`;
-
-const DetailedCard = styled(Card)`
-  background: rgba(20, 24, 40, 0.95);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 20px;
-  margin-bottom: 2rem;
-  transition: all 0.3s ease;
-  overflow: hidden;
-  position: relative;
-  max-width: 900px;
-  margin-left: auto;
-  margin-right: auto;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-`;
-
-const DetailedHeader = styled.div`
-  text-align: center;
-  background: ${props => props.gradient || 'linear-gradient(135deg, #00f2fe 0%, #4facfe 100%)'};
-  padding: 3rem 2rem 3.5rem;
-  position: relative;
-  clip-path: polygon(0 0, 100% 0, 100% 85%, 0 100%);
-`;
-
-const DetailedHeaderContent = styled.div`
-  position: relative;
-  z-index: 2;
-  
-  &:before {
-    content: '';
-    position: absolute;
-    top: -3rem;
-    left: 0;
-    right: 0;
-    bottom: -3.5rem;
-    background: rgba(0, 0, 0, 0.2);
-    z-index: -1;
-  }
-`;
-
-const DetailedTitle = styled.h2`
-  color: #fff;
-  font-size: 2.4rem;
-  margin-bottom: 1.2rem;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 1rem;
-  font-weight: bold;
-
-  span {
-    font-size: 2.8rem;
-    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.4));
-  }
-`;
-
-const DetailedDescription = styled.p`
-  color: rgba(255, 255, 255, 0.95);
-  font-size: 1.15rem;
-  line-height: 1.7;
-  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
-  max-width: 700px;
-  margin: 0 auto;
-  letter-spacing: 0.2px;
-`;
-
-const DetailedBody = styled(Card.Body)`
-  padding: 2.5rem;
-  background: rgba(20, 24, 40, 0.95);
-`;
-
-const DetailedContent = styled.div`
-  background: rgba(30, 35, 50, 0.6);
-  border-radius: 15px;
-  padding: 2.5rem;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-`;
-
-const TipSectionDetailed = styled(TipSection)`
-  background: rgba(255, 255, 255, 0.08);
-  margin: 2rem 0;
-  padding: 2rem;
-  border-radius: 15px;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-
-  &:hover {
-    background: rgba(255, 255, 255, 0.12);
-    transform: translateX(5px);
-    border-color: rgba(255, 255, 255, 0.25);
-  }
-
-  &:first-child {
-    margin-top: 0;
-  }
-`;
-
-const TipTitleDetailed = styled(TipTitle)`
-  font-size: 1.4rem;
-  color: ${props => props.color || '#4facfe'};
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
-  font-weight: bold;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-
-  span {
-    font-size: 1.8rem;
-    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
-  }
-`;
-
-const TipListDetailed = styled(TipList)`
-  font-size: 1.05rem;
-  line-height: 1.7;
-  color: rgba(255, 255, 255, 0.9);
-  
-  li {
-    margin-bottom: 1rem;
-    padding-left: 0.8rem;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-    
-    &:last-child {
-      margin-bottom: 0;
-    }
-  }
-`;
-
-const VideoContainerDetailed = styled(VideoContainer)`
-  margin: 3rem 0;
-  border-radius: 15px;
-  overflow: hidden;
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-`;
-
-const ActionButtonDetailed = styled(ActionButton)`
-  max-width: 320px;
-  margin: 3rem auto 1rem;
-  padding: 1.2rem 2.5rem;
-  font-size: 1.15rem;
-  letter-spacing: 1px;
-  background: ${props => props.gradient || 'linear-gradient(135deg, #00f2fe 0%, #4facfe 100%)'};
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
-  font-weight: bold;
-  
-  &:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
-    filter: brightness(110%);
-  }
-`;
+  return messages[disasterType]?.[phase] || {
+    icon: '💡',
+    message: 'Conhecimento é a base da prevenção'
+  };
+};
 
 const LearnDisasters = () => {
-  const [disasterContent, setDisasterContent] = useState([]);
+  const [disasters, setDisasters] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [error, setError] = useState(null);
+  const [selectedDisaster, setSelectedDisaster] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+  const [activeDisasterIndex, setActiveDisasterIndex] = useState(0);
+  const [activeTab, setActiveTab] = useState('before');
+  const [disasterContent, setDisasterContent] = useState([]);
   const [uniqueTypes, setUniqueTypes] = useState([]);
   const [selectedType, setSelectedType] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 4;
   const isAuthenticated = localStorage.getItem('token');
 
-  // Mova a definição de filteredContent para dentro do componente
-  const filteredContent = selectedType 
-    ? disasterContent.filter(item => item.disasterType === selectedType)
-    : disasterContent;
-
-  const totalPages = Math.ceil(filteredContent.length / itemsPerPage);
+  const uncommonInBrazil = ['HURRICANE', 'TSUNAMI', 'EARTHQUAKE'];
+  
+  const filterDisastersByCommonality = (disasters) => {
+    const common = disasters.filter(d => !uncommonInBrazil.includes(d.disasterType));
+    const uncommon = disasters.filter(d => uncommonInBrazil.includes(d.disasterType));
+    return { common, uncommon };
+  };
 
   const getCurrentPageContent = () => {
+    let content = selectedType 
+      ? disasterContent.filter(item => item.disasterType === selectedType)
+      : disasterContent;
+
     if (!selectedType) {
-      return disasterContent; // Retorna todos os itens quando não há filtro
+      return filterDisastersByCommonality(content);
     }
-    // Mantém a paginação apenas para a visualização detalhada
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    const endIndex = startIndex + itemsPerPage;
-    return filteredContent.slice(startIndex, endIndex);
+    
+    return { common: content, uncommon: [] };
   };
 
   useEffect(() => {
@@ -539,6 +265,7 @@ const LearnDisasters = () => {
   };
 
   const getDisasterIcon = (type) => {
+    const translatedType = translateDisasterType(type);
     const icons = {
       ENCHENTE: '💧',
       TERREMOTO: '⚡',
@@ -548,44 +275,24 @@ const LearnDisasters = () => {
       DESLIZAMENTO: '⛰️',
       SECA: '☀️',
       TSUNAMI: '🌊',
+      TEMPESTADE: '⛈️',
       default: '⚠️'
     };
-    return icons[type] || icons.default;
+    return icons[translatedType] || icons.default;
   };
 
-  // Componente de paginação
-  const Pagination = styled.div`
-    display: flex;
-    justify-content: center;
-    gap: 0.5rem;
-    margin-top: 2rem;
-    margin-bottom: 2rem;
-  `;
-
-  const PageButton = styled(Button)`
-    background: ${props => props.active ? 
-      'linear-gradient(135deg, #00f2fe 0%, #4facfe 100%)' : 
-      'rgba(255, 255, 255, 0.1)'};
-    border: none;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s ease;
-
-    &:hover {
-      transform: translateY(-2px);
-      background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
+  const getActiveColor = (tab) => {
+    switch (tab) {
+      case 'before':
+        return 'linear-gradient(90deg, #00f2fe, #4facfe)';
+      case 'during':
+        return 'linear-gradient(90deg, #f59e0b, #d97706)';
+      case 'after':
+        return 'linear-gradient(90deg, #10b981, #059669)';
+      default:
+        return 'linear-gradient(90deg, #00f2fe, #4facfe)';
     }
-
-    &:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-      transform: none;
-    }
-  `;
+  };
 
   const renderCompactCard = (disaster, index) => (
     <Col key={index} lg={3} md={4} sm={6} className="mb-4">
@@ -598,16 +305,20 @@ const LearnDisasters = () => {
           <CompactBody>
             <CompactTitle>
               <span>{getDisasterIcon(disaster.disasterType)}</span>
-              {disaster.title}
+              {getDisasterDescription(disaster.disasterType)}
             </CompactTitle>
             <CompactDescription>{disaster.description}</CompactDescription>
             <CompactFooter>
-              <StatBadge>
-                <TipIcon>📋</TipIcon>
-                {(disaster.beforeTips?.length || 0) + 
-                 (disaster.duringTips?.length || 0) + 
-                 (disaster.afterTips?.length || 0)} dicas
-              </StatBadge>
+              {(disaster.beforeTips?.length > 0 || 
+                disaster.duringTips?.length > 0 || 
+                disaster.afterTips?.length > 0) && (
+                <StatBadge>
+                  <TipIcon>📋</TipIcon>
+                  {(disaster.beforeTips?.length || 0) + 
+                   (disaster.duringTips?.length || 0) + 
+                   (disaster.afterTips?.length || 0)} dicas
+                </StatBadge>
+              )}
               <LearnMoreButton
                 onClick={() => setSelectedType(disaster.disasterType)}
               >
@@ -622,6 +333,8 @@ const LearnDisasters = () => {
 
   const renderDetailedCard = (disaster, index) => {
     const gradient = getDisasterGradient(disaster.disasterType);
+    const embedUrl = getYouTubeEmbedUrl(disaster.videoUrl);
+    const { mainDescription, beforeText, duringText, afterText } = parseDisasterDescription(disaster.description);
     
     return (
       <Col key={index} xs={12} className="mb-4">
@@ -635,76 +348,140 @@ const LearnDisasters = () => {
               <DetailedHeaderContent>
                 <DetailedTitle>
                   <span>{getDisasterIcon(disaster.disasterType)}</span>
-                  {disaster.title}
+                  {getDisasterDescription(disaster.disasterType)}
                 </DetailedTitle>
-                <DetailedDescription>{disaster.description}</DetailedDescription>
+                <DetailedDescription>{mainDescription}</DetailedDescription>
               </DetailedHeaderContent>
             </DetailedHeader>
 
             <DetailedBody>
               <DetailedContent>
-                {disaster.beforeTips && disaster.beforeTips.length > 0 && (
-                  <TipSectionDetailed>
-                    <TipTitleDetailed color="#00f2fe">
-                      <span>🎯</span>
-                      Antes do Desastre
-                    </TipTitleDetailed>
-                    <TipListDetailed>
-                      {disaster.beforeTips.map((tip, i) => (
-                        <li key={i}>{tip}</li>
-                      ))}
-                    </TipListDetailed>
-                  </TipSectionDetailed>
-                )}
+                <DisasterPhasesTabs 
+                  defaultActiveKey="before"
+                  activeKey={activeTab}
+                  onSelect={(k) => setActiveTab(k)}
+                  activeColor={getActiveColor(activeTab)}
+                >
+                  <Tab 
+                    eventKey="before" 
+                    title={
+                      <PhaseTabTitle>
+                        <PhaseIcon>🎯</PhaseIcon>
+                        <span>Antes do Desastre</span>
+                      </PhaseTabTitle>
+                    }
+                  >
+                    <PhaseContent>
+                      <PhaseDescription color="#00f2fe">
+                        {beforeText || "Medidas preventivas e de preparação que podem salvar vidas"}
+                      </PhaseDescription>
+                      {disaster.beforeTips && disaster.beforeTips.length > 0 && (
+                        <TipListDetailed color="#00f2fe">
+                          {disaster.beforeTips.map((tip, i) => (
+                            <li key={i}>{tip}</li>
+                          ))}
+                        </TipListDetailed>
+                      )}
+                      <TipFooter>
+                        <TipIcon>{getPhaseMessage('before', disaster.disasterType).icon}</TipIcon>
+                        <small>{getPhaseMessage('before', disaster.disasterType).message}</small>
+                      </TipFooter>
+                    </PhaseContent>
+                  </Tab>
 
-                {disaster.duringTips && disaster.duringTips.length > 0 && (
-                  <TipSectionDetailed>
-                    <TipTitleDetailed color="#f59e0b">
-                      <span>⚡</span>
-                      Durante o Desastre
-                    </TipTitleDetailed>
-                    <TipListDetailed>
-                      {disaster.duringTips.map((tip, i) => (
-                        <li key={i}>{tip}</li>
-                      ))}
-                    </TipListDetailed>
-                  </TipSectionDetailed>
-                )}
+                  <Tab 
+                    eventKey="during" 
+                    title={
+                      <PhaseTabTitle>
+                        <PhaseIcon>⚡</PhaseIcon>
+                        <span>Durante o Desastre</span>
+                      </PhaseTabTitle>
+                    }
+                  >
+                    <PhaseContent>
+                      <PhaseDescription color="#f59e0b">
+                        {duringText || "Ações imediatas para garantir sua segurança"}
+                      </PhaseDescription>
+                      {disaster.duringTips && disaster.duringTips.length > 0 && (
+                        <TipListDetailed color="#f59e0b">
+                          {disaster.duringTips.map((tip, i) => (
+                            <li key={i}>{tip}</li>
+                          ))}
+                        </TipListDetailed>
+                      )}
+                      <TipFooter>
+                        <TipIcon>{getPhaseMessage('during', disaster.disasterType).icon}</TipIcon>
+                        <small>{getPhaseMessage('during', disaster.disasterType).message}</small>
+                      </TipFooter>
+                    </PhaseContent>
+                  </Tab>
 
-                {disaster.afterTips && disaster.afterTips.length > 0 && (
-                  <TipSectionDetailed>
-                    <TipTitleDetailed color="#10b981">
-                      <span>🔄</span>
-                      Após o Desastre
-                    </TipTitleDetailed>
-                    <TipListDetailed>
-                      {disaster.afterTips.map((tip, i) => (
-                        <li key={i}>{tip}</li>
-                      ))}
-                    </TipListDetailed>
-                  </TipSectionDetailed>
-                )}
+                  <Tab 
+                    eventKey="after" 
+                    title={
+                      <PhaseTabTitle>
+                        <PhaseIcon>🔄</PhaseIcon>
+                        <span>Após o Desastre</span>
+                      </PhaseTabTitle>
+                    }
+                  >
+                    <PhaseContent>
+                      <PhaseDescription color="#10b981">
+                        {afterText || "Como se recuperar e ajudar sua comunidade"}
+                      </PhaseDescription>
+                      {disaster.afterTips && disaster.afterTips.length > 0 && (
+                        <TipListDetailed color="#10b981">
+                          {disaster.afterTips.map((tip, i) => (
+                            <li key={i}>{tip}</li>
+                          ))}
+                        </TipListDetailed>
+                      )}
+                      <TipFooter>
+                        <TipIcon>{getPhaseMessage('after', disaster.disasterType).icon}</TipIcon>
+                        <small>{getPhaseMessage('after', disaster.disasterType).message}</small>
+                      </TipFooter>
+                    </PhaseContent>
+                  </Tab>
+                </DisasterPhasesTabs>
 
-                {disaster.videoUrl && (
-                  <VideoContainerDetailed>
-                    <div className="ratio ratio-16x9">
-                      <iframe
-                        src={disaster.videoUrl}
-                        title={disaster.title}
-                        allowFullScreen
-                      ></iframe>
-                    </div>
-                  </VideoContainerDetailed>
+                {embedUrl && (
+                  <>
+                    <SectionDivider>
+                      <SectionTitle>
+                        <span>📺</span>
+                        Vídeo Informativo
+                      </SectionTitle>
+                    </SectionDivider>
+                    <VideoContainerDetailed>
+                      <div className="ratio ratio-16x9">
+                        <iframe
+                          src={embedUrl}
+                          title={getDisasterDescription(disaster.disasterType)}
+                          allowFullScreen
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                          frameBorder="0"
+                        ></iframe>
+                      </div>
+                    </VideoContainerDetailed>
+                  </>
                 )}
 
                 {isAuthenticated && (
-                  <ActionButtonDetailed
-                    as={Link}
-                    to={`/quizzes?type=${disaster.disasterType}`}
-                    gradient={gradient}
-                  >
-                    📝 Testar Conhecimentos
-                  </ActionButtonDetailed>
+                  <div className="text-center mt-4">
+                    <ActionButtonDetailed
+                      as={Link}
+                      to={`/quizzes?type=${disaster.disasterType}`}
+                      gradient={gradient}
+                    >
+                      <span>🎯</span>
+                      Testar seus conhecimentos sobre {getDisasterDescription(disaster.disasterType).toLowerCase()}
+                    </ActionButtonDetailed>
+                    <div className="mt-3 text-muted">
+                      <small>
+                        Avalie sua preparação para situações de {getDisasterDescription(disaster.disasterType).toLowerCase()}
+                      </small>
+                    </div>
+                  </div>
                 )}
               </DetailedContent>
             </DetailedBody>
@@ -735,7 +512,7 @@ const LearnDisasters = () => {
           <Title>Aprenda Sobre Desastres Naturais</Title>
           <Subtitle>
             {selectedType 
-              ? `Informações detalhadas sobre ${selectedType.toLowerCase()}`
+              ? `Informações detalhadas sobre ${getDisasterDescription(selectedType).toLowerCase()}`
               : 'Explore informações essenciais sobre diferentes tipos de desastres naturais'}
           </Subtitle>
 
@@ -783,22 +560,43 @@ const LearnDisasters = () => {
                   setCurrentPage(1);
                 }}
               >
-                {getDisasterIcon(type)} {type}
+                {getDisasterIcon(translateDisasterType(type))} {getDisasterDescription(type)}
               </FilterButton>
             ))}
           </FilterSection>
         </HeaderSection>
 
-        <Row className={selectedType ? 'justify-content-center' : ''}>
-          {getCurrentPageContent().map((disaster, index) => 
-            selectedType
-              ? renderDetailedCard(disaster, index)
-              : renderCompactCard(disaster, index)
-          )}
-        </Row>
+        {!selectedType ? (
+          <>
+            <Row>
+              {getCurrentPageContent().common.map((disaster, index) => 
+                renderCompactCard(disaster, index)
+              )}
+            </Row>
 
-        {/* Mostra paginação apenas quando um tipo está selecionado */}
-        {selectedType && totalPages > 1 && (
+            <SectionDivider>
+              <SectionTitle>
+                <span>🌎</span>
+                Desastres Menos Comuns no Brasil
+                <InfoTooltip title="Estes desastres são raros ou inexistentes no Brasil, mas é importante conhecê-los">ℹ️</InfoTooltip>
+              </SectionTitle>
+            </SectionDivider>
+
+            <Row>
+              {getCurrentPageContent().uncommon.map((disaster, index) => 
+                renderCompactCard(disaster, index)
+              )}
+            </Row>
+          </>
+        ) : (
+          <Row className="justify-content-center">
+            {getCurrentPageContent().common.map((disaster, index) => 
+              renderDetailedCard(disaster, index)
+            )}
+          </Row>
+        )}
+
+        {selectedType && getCurrentPageContent().common.length > itemsPerPage && (
           <Pagination>
             <PageButton
               disabled={currentPage === 1}
@@ -806,7 +604,7 @@ const LearnDisasters = () => {
             >
               ←
             </PageButton>
-            {[...Array(totalPages)].map((_, i) => (
+            {[...Array(Math.ceil(getCurrentPageContent().common.length / itemsPerPage))].map((_, i) => (
               <PageButton
                 key={i + 1}
                 active={currentPage === i + 1}
@@ -816,8 +614,8 @@ const LearnDisasters = () => {
               </PageButton>
             ))}
             <PageButton
-              disabled={currentPage === totalPages}
-              onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+              disabled={currentPage === Math.ceil(getCurrentPageContent().common.length / itemsPerPage)}
+              onClick={() => setCurrentPage(prev => Math.min(Math.ceil(getCurrentPageContent().common.length / itemsPerPage), prev + 1))}
             >
               →
             </PageButton>
