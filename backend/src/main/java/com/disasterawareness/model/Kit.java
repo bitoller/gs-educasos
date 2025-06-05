@@ -10,6 +10,7 @@ public class Kit {
     private String region;
     private String recommendedItems;
     private boolean isCustom;
+    private Long userId;
 
     public Kit() {
     }
@@ -24,6 +25,19 @@ public class Kit {
         this.region = region;
         this.recommendedItems = recommendedItems;
         this.isCustom = isCustom;
+    }
+
+    public Kit(String houseType, int residents, boolean hasChildren, boolean hasElderly,
+            boolean hasPets, String region, String recommendedItems, boolean isCustom, Long userId) {
+        this.houseType = houseType;
+        this.residents = residents;
+        this.hasChildren = hasChildren;
+        this.hasElderly = hasElderly;
+        this.hasPets = hasPets;
+        this.region = region;
+        this.recommendedItems = recommendedItems;
+        this.isCustom = isCustom;
+        this.userId = userId;
     }
 
     public Long getKitId() {
@@ -96,5 +110,13 @@ public class Kit {
 
     public void setIsCustom(boolean isCustom) {
         this.isCustom = isCustom;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 }

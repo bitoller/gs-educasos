@@ -17,10 +17,10 @@ public class KitService {
     }
 
     public Kit createKit(String houseType, int residents, boolean hasChildren,
-            boolean hasElderly, boolean hasPets, String region, boolean isCustom, String customRecommendedItems)
-            throws SQLException {
+            boolean hasElderly, boolean hasPets, String region, boolean isCustom, String customRecommendedItems,
+            Long userId) throws SQLException {
 
-        Kit kit = new Kit(houseType, residents, hasChildren, hasElderly, hasPets, region, "", isCustom);
+        Kit kit = new Kit(houseType, residents, hasChildren, hasElderly, hasPets, region, "", isCustom, userId);
 
         validateKit(kit);
 
@@ -56,6 +56,14 @@ public class KitService {
         return kitDAO.findAll();
     }
 
+    public List<Kit> getKitsForUser(Long userId) throws SQLException {
+        return kitDAO.findByUserId(userId);
+    }
+
+    public List<Kit> getAllKitsForAdmin() throws SQLException {
+        return kitDAO.findAll();
+    }
+
     public Kit updateKit(Kit kit) throws SQLException {
         Kit existingKit = kitDAO.findById(kit.getKitId());
         if (existingKit == null) {
@@ -64,11 +72,9 @@ public class KitService {
 
         validateKit(kit);
 
-        if (kit.getIsCustom()) {
-            if (kit.getRecommendedItems() == null || kit.getRecommendedItems().trim().isEmpty()) {
-                throw new IllegalArgumentException("Item de recomendação é obrigatório para kits personalizados.");
-            }
-        } else {
+        if (kit.getRecommendedItems() != null && !kit.getRecommendedItems().trim().isEmpty()) {
+            kit.setIsCustom(true);
+        } else if (!kit.getIsCustom()) {
             kit.setRecommendedItems(recommendedItemsService.generateRecommendedItems(kit));
         }
 

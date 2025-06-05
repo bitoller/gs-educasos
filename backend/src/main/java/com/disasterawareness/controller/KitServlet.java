@@ -32,36 +32,46 @@ public class KitServlet extends HttpServlet {
         response.setCharacterEncoding("UTF-8");
 
         String pathInfo = request.getPathInfo();
+        Long userId = (Long) request.getAttribute("userId");
+        Boolean isAdmin = (Boolean) request.getAttribute("isAdmin");
 
         try {
             if (pathInfo == null || pathInfo.equals("/")) {
-                List<Kit> kits = kitService.getAllKits();
-                response.getWriter().write(gson.toJson(kits));
-            } else if (pathInfo.startsWith("/house/")) {
-                String houseType = pathInfo.substring("/house/".length());
-                List<Kit> kits = kitService.getKitsByHouseType(houseType);
-                response.getWriter().write(gson.toJson(kits));
-            } else if (pathInfo.startsWith("/region/")) {
-                String region = pathInfo.substring("/region/".length());
-                List<Kit> kits = kitService.getKitsByRegion(region);
+                List<Kit> kits;
+                if (isAdmin != null && isAdmin) {
+                    kits = kitService.getAllKitsForAdmin();
+                } else {
+                    kits = kitService.getKitsForUser(userId);
+                }
+                response.setStatus(HttpServletResponse.SC_OK);
                 response.getWriter().write(gson.toJson(kits));
             } else {
                 Long kitId = Long.parseLong(pathInfo.substring(1));
                 Kit kit = kitService.getKitById(kitId);
-                response.getWriter().write(gson.toJson(kit));
+
+                if (kit == null) {
+                    response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                    response.getWriter().write(gson.toJson(new ErrorResponse("Kit não encontrado.")));
+                } else {
+                    if (kit.getUserId().equals(userId) || (isAdmin != null && isAdmin)) {
+                        response.setStatus(HttpServletResponse.SC_OK);
+                        response.getWriter().write(gson.toJson(kit));
+                    } else {
+                        response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                        response.getWriter().write(
+                                gson.toJson(new ErrorResponse("Você não tem permissão para visualizar este kit.")));
+                    }
+                }
             }
-
-            response.setStatus(HttpServletResponse.SC_OK);
-
         } catch (NumberFormatException e) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.getWriter().write(gson.toJson(new ErrorResponse("ID inválido.")));
+            response.getWriter().write(gson.toJson(new ErrorResponse("ID do kit inválido.")));
         } catch (IllegalArgumentException e) {
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
             response.getWriter().write(gson.toJson(new ErrorResponse(e.getMessage())));
         } catch (SQLException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            response.getWriter().write(gson.toJson(new ErrorResponse("Erro ao buscar kit.")));
+            response.getWriter().write(gson.toJson(new ErrorResponse("Erro ao buscar kit(s).")));
         }
     }
 
@@ -70,6 +80,8 @@ public class KitServlet extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
+
+        Long userId = (Long) request.getAttribute("userId");
 
         try {
             JsonObject jsonRequest = gson.fromJson(request.getReader(), JsonObject.class);
@@ -80,12 +92,15 @@ public class KitServlet extends HttpServlet {
             boolean hasElderly = jsonRequest.get("hasElderly").getAsBoolean();
             boolean hasPets = jsonRequest.get("hasPets").getAsBoolean();
             String region = jsonRequest.get("region").getAsString();
-            
+
             // Extract isCustom and recommendedItems for custom kits
             boolean isCustom = jsonRequest.has("isCustom") ? jsonRequest.get("isCustom").getAsBoolean() : false;
-            String recommendedItems = jsonRequest.has("recommendedItems") ? jsonRequest.get("recommendedItems").getAsString() : null;
+            String recommendedItems = jsonRequest.has("recommendedItems")
+                    ? jsonRequest.get("recommendedItems").getAsString()
+                    : null;
 
-            Kit kit = kitService.createKit(houseType, numResidents, hasChildren, hasElderly, hasPets, region, isCustom, recommendedItems);
+            Kit kit = kitService.createKit(houseType, numResidents, hasChildren, hasElderly, hasPets, region, isCustom,
+                    recommendedItems, userId);
 
             response.setStatus(HttpServletResponse.SC_CREATED);
             response.getWriter().write(gson.toJson(new SuccessResponse("Kit criado com sucesso.", kit)));
@@ -124,10 +139,11 @@ public class KitServlet extends HttpServlet {
             boolean hasElderly = jsonRequest.get("hasElderly").getAsBoolean();
             boolean hasPets = jsonRequest.get("hasPets").getAsBoolean();
             String region = jsonRequest.get("region").getAsString();
-            
-            // Extract isCustom and recommendedItems for custom kits during update
+
             boolean isCustom = jsonRequest.has("isCustom") ? jsonRequest.get("isCustom").getAsBoolean() : false;
-            String recommendedItems = jsonRequest.has("recommendedItems") ? jsonRequest.get("recommendedItems").getAsString() : null;
+            String recommendedItems = jsonRequest.has("recommendedItems")
+                    ? jsonRequest.get("recommendedItems").getAsString()
+                    : null;
 
             Kit kit = new Kit();
             kit.setKitId(kitId);
@@ -137,19 +153,15 @@ public class KitServlet extends HttpServlet {
             kit.setHasElderly(hasElderly);
             kit.setHasPets(hasPets);
             kit.setRegion(region);
-            kit.setIsCustom(isCustom); // Set isCustom
-            kit.setRecommendedItems(recommendedItems); // Set recommendedItems
+            kit.setIsCustom(isCustom);
+            kit.setRecommendedItems(recommendedItems);
 
             Kit updatedKit = kitService.updateKit(kit);
-
             response.setStatus(HttpServletResponse.SC_OK);
             response.getWriter().write(gson.toJson(new SuccessResponse("Kit atualizado com sucesso.", updatedKit)));
 
-        } catch (NumberFormatException e) {
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.getWriter().write(gson.toJson(new ErrorResponse("ID inválido.")));
         } catch (IllegalArgumentException e) {
-            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             response.getWriter().write(gson.toJson(new ErrorResponse(e.getMessage())));
         } catch (SQLException e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);

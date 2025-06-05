@@ -16,6 +16,8 @@ public interface KitDAO {
 
     List<Kit> findAll() throws SQLException;
 
+    List<Kit> findByUserId(Long userId) throws SQLException;
+
     Kit update(Kit kit) throws SQLException;
 
     boolean delete(Long kitId) throws SQLException;

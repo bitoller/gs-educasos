@@ -29,8 +29,10 @@ CREATE TABLE kits (
     region VARCHAR2(50) NOT NULL,
     recommended_items CLOB,
     is_custom NUMBER(1) DEFAULT 0,
+    user_id NUMBER,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_kits_user FOREIGN KEY (user_id) REFERENCES users (user_id)
 );
 
 CREATE TABLE quizzes (

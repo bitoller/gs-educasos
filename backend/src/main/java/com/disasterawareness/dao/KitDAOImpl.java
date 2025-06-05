@@ -14,9 +14,9 @@ public class KitDAOImpl implements KitDAO {
 
     @Override
     public Kit create(Kit kit) throws SQLException {
-        String sql = "INSERT INTO kits (house_type, num_residents, has_children, has_elderly, has_pets, region, recommended_items, is_custom) "
+        String sql = "INSERT INTO kits (house_type, num_residents, has_children, has_elderly, has_pets, region, recommended_items, is_custom, user_id) "
                 +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = ConnectionFactory.getConnection();
                 PreparedStatement stmt = conn.prepareStatement(sql, new String[] { "kit_id" })) {
@@ -29,6 +29,7 @@ public class KitDAOImpl implements KitDAO {
             stmt.setString(6, kit.getRegion());
             stmt.setString(7, kit.getRecommendedItems());
             stmt.setBoolean(8, kit.getIsCustom());
+            stmt.setLong(9, kit.getUserId());
 
             int affectedRows = stmt.executeUpdate();
 
@@ -106,8 +107,8 @@ public class KitDAOImpl implements KitDAO {
 
     @Override
     public List<Kit> findAll() throws SQLException {
-        String sql = "SELECT * FROM kits";
         List<Kit> kits = new ArrayList<>();
+        String sql = "SELECT * FROM kits";
 
         try (Connection conn = ConnectionFactory.getConnection();
                 PreparedStatement stmt = conn.prepareStatement(sql);
@@ -162,6 +163,24 @@ public class KitDAOImpl implements KitDAO {
         }
     }
 
+    public List<Kit> findByUserId(Long userId) throws SQLException {
+        List<Kit> kits = new ArrayList<>();
+        String sql = "SELECT * FROM kits WHERE user_id = ?";
+
+        try (Connection conn = ConnectionFactory.getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setLong(1, userId);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    kits.add(mapResultSetToKit(rs));
+                }
+            }
+        }
+        return kits;
+    }
+
     private Kit mapResultSetToKit(ResultSet rs) throws SQLException {
         Kit kit = new Kit();
         kit.setKitId(rs.getLong("kit_id"));
@@ -173,6 +192,7 @@ public class KitDAOImpl implements KitDAO {
         kit.setRegion(rs.getString("region"));
         kit.setRecommendedItems(rs.getString("recommended_items"));
         kit.setIsCustom(rs.getBoolean("is_custom"));
+        kit.setUserId(rs.getLong("user_id"));
         return kit;
     }
 }

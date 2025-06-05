@@ -107,8 +107,8 @@ These endpoints require **admin privileges** and a valid **JWT token** (`Authori
 
 ### Kit Management
 These endpoints require a valid **JWT token** (`Authorization: Bearer <token>` header):
--   `GET /api/kit`: Retrieve all emergency kits. Each kit object now includes a `recommendedItems` field containing a JSON string of recommended items based on the kit's attributes.
--   `POST /api/kit`: Create a new emergency kit.
+-   `GET /api/kit`: Retrieve all emergency kits. For regular users, this returns kits **created by the authenticated user**. **Administrators can retrieve all kits.** Each kit object includes a `recommendedItems` field containing a JSON string of recommended items based on the kit's attributes.
+-   `POST /api/kit`: Create a new emergency kit. The created kit will be associated with the **authenticated user**.
     -   If creating an **automatically generated** kit, provide `houseType`, `numResidents`, `hasChildren`, `hasElderly`, `hasPets`, and `region`. Recommended items will be automatically generated.
         ```json
         {
@@ -133,12 +133,12 @@ These endpoints require a valid **JWT token** (`Authorization: Bearer <token>` h
           "recommendedItems": "[{\"name\":\"Minha Bateria Portátil\",\"description\":\"Para carregar meu celular em emergências.\"}, {\"name\":\"Meu Livro Favorito\",\"description\":\"Para me manter entretido.\"}]"
         }
         ```
--   `GET /api/kit/{id}`: Retrieve a specific emergency kit by its ID. The kit object includes the `recommendedItems` field and the `isCustom` flag.
+-   `GET /api/kit/{id}`: Retrieve a specific emergency kit by its ID. **Requires the authenticated user to be the kit owner or an administrator.** The kit object includes the `recommendedItems` field and the `isCustom` flag.
     -   `{id}`: The ID of the kit (path parameter).
--   `PUT /api/kit/{id}`: Update an existing emergency kit.
+-   `PUT /api/kit/{id}`: Update an existing emergency kit. **Requires the authenticated user to be the kit owner or an administrator.**
     -   `{id}`: The ID of the kit (path parameter).
-    -   Request Body: Can include updated standard kit attributes. If updating a custom kit, you can also provide an updated `recommendedItems` JSON string. If updating an automatically generated kit, changing attributes like residents or region will regenerate the recommended items unless `isCustom` is set to `true` in the update request.
--   `DELETE /api/kit/{id}`: Delete an emergency kit by its ID.
+    -   Request Body: Can include updated standard kit attributes. If `recommendedItems` is provided in the request body, the kit will be marked as custom and the provided items will be saved. Otherwise, if the kit is not custom, recommended items will be regenerated based on the provided attributes.
+-   `DELETE /api/kit/{id}`: Delete an emergency kit by its ID. **Requires the authenticated user to be the kit owner or an administrator.**
     -   `{id}`: The ID of the kit (path parameter).
 -   `GET /api/kit/house/{houseType}`: Retrieve kits filtered by house type.
     -   `{houseType}`: The type of house (e.g., APARTMENT, HOUSE, CONDO) (path parameter).
