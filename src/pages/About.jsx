@@ -10,7 +10,7 @@ import {
   SectionDivider,
   HeaderSection,
   Title,
-} from "./LearnDisasters.styles";
+} from "../styles/About.styles";
 import styled from "styled-components";
 
 const TeamCard = styled(Card)`

@@ -21,7 +21,7 @@ import {
   StyledBadge,
   QuizButton,
   LoadingContainer,
-} from "./QuizList.styles";
+} from "../styles/QuizList.styles";
 
 const getDisasterGradient = (type) => {
   const translatedType = translateDisasterType(type);

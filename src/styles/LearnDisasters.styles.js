@@ -6,13 +6,14 @@ const MotionDiv = styled(motion.div)``;
 
 export const PageContainer = styled.div`
   min-height: 100vh;
+  width: 100vw;
   background: linear-gradient(135deg, #1a1c2e 0%, #16213e 100%);
-  padding: 5rem 0 2rem;
+  padding: 5rem 0 1rem;
 `;
 
 export const ContentWrapper = styled.div`
-  max-width: 100%;
   padding: 0 2rem;
+  margin: 0 auto;
 `;
 
 export const HeaderSection = styled(MotionDiv)`
