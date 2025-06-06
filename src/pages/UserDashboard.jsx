@@ -4,24 +4,14 @@ import {
   Row,
   Col,
   Card,
-  Table,
   Button,
   Nav,
   Alert,
   Badge,
-  ProgressBar,
 } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import { kits, auth } from "../services/api";
-import {
-  FaUser,
-  FaMedkit,
-  FaBook,
-  FaQuestionCircle,
-  FaEdit,
-  FaEye,
-  FaRedo,
-} from "react-icons/fa";
+import { FaUser, FaMedkit, FaQuestionCircle, FaEye } from "react-icons/fa";
 import "../styles/dashboard.css";
 
 const UserDashboard = () => {
@@ -38,13 +28,11 @@ const UserDashboard = () => {
     try {
       if (activeTab === "kits") {
         const kitsResponse = await kits.getAll();
-        // Não filtrar por userId, pois a API já retorna só os kits do usuário autenticado
-        // Mapear campos para garantir consistência visual
         const processedKits = Array.isArray(kitsResponse.data)
           ? kitsResponse.data.map((kit) => ({
               ...kit,
               id: kit.id || kit.kitId,
-              kitId: kit.kitId || kit.id, // garantir que kitId sempre exista
+              kitId: kit.kitId || kit.id,
               numResidents: kit.numResidents || kit.residents || 0,
               houseType: kit.houseType || "OUTRO",
               region: kit.region || "SUDESTE",
@@ -112,7 +100,9 @@ const UserDashboard = () => {
           </Col>
           <Col md={8}>
             <h3 className="mb-3">{userData.name}</h3>
-            <p className="mb-4" style={{ color: "#f1f1f1" }}>{userData.email}</p>
+            <p className="mb-4" style={{ color: "#f1f1f1" }}>
+              {userData.email}
+            </p>
             <div className="mb-4">
               <strong>Último acesso:</strong> {new Date().toLocaleDateString()}
             </div>
