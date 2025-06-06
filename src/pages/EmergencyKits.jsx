@@ -47,6 +47,7 @@ const CreateKitButton = styled(Button)`
   text-transform: uppercase;
   letter-spacing: 0.5px;
   box-shadow: 0 4px 15px rgba(0, 242, 254, 0.3);
+  text-decoration: none;
 
   &:hover {
     transform: translateY(-2px);
