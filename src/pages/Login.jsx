@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import { Container, Form, Button, Alert } from "react-bootstrap";
 import { useNavigate, Link, useLocation } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
@@ -14,64 +14,94 @@ const Login = () => {
   const location = useLocation();
   const { login } = useAuth();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const clearForm = () => {
+    setEmail("");
+    setPassword("");
     setError("");
-    setLoading(true);
+  };
 
-    try {
-      const response = await auth.login({ email, password });
-
-      if (response.data && response.data.token) {
-        localStorage.setItem("token", response.data.token);
-
-        const userData = {
-          ...response.data.user,
-          id: response.data.user.id,
-          role: response.data.user.role || "user",
-          score: response.data.user.score || response.data.user.totalScore || 0,
-          totalScore:
-            response.data.user.totalScore || response.data.user.score || 0,
-          completedQuizzes: response.data.user.completedQuizzes || 0,
-        };
-
-        localStorage.setItem("user", JSON.stringify(userData));
-
-        login(userData);
-
-        setEmail("");
-        setPassword("");
-
-        if (userData.role === "admin") {
-          navigate("/admin");
-        } else {
-          const from = location.state?.from?.pathname || "/dashboard";
-          navigate(from);
-        }
-      } else {
-        setError("Resposta inválida do servidor. Token não encontrado.");
-      }
-    } catch (err) {
-      console.error("Login error details:", err);
-      console.error("Full error object:", {
-        message: err.message,
-        response: err.response,
-        data: err.response?.data,
-      });
-      setError(
-        err.response?.data?.error ||
-          "Erro ao fazer login. Por favor, verifique suas credenciais e tente novamente."
-      );
-    } finally {
-      setLoading(false);
+  const handleInputChange = (e, setter) => {
+    setter(e.target.value);
+    if (error) {
+      clearForm();
     }
   };
+
+  const handleSubmit = useCallback(
+    async (e) => {
+      e.preventDefault();
+      if (loading) return;
+
+      setError("");
+      setLoading(true);
+
+      try {
+        const response = await auth.login({ email, password });
+
+        if (response.data && response.data.token) {
+          localStorage.setItem("token", response.data.token);
+
+          const userData = {
+            ...response.data.user,
+            id: response.data.user.id,
+            role: response.data.user.role || "user",
+            score:
+              response.data.user.score || response.data.user.totalScore || 0,
+            totalScore:
+              response.data.user.totalScore || response.data.user.score || 0,
+            completedQuizzes: response.data.user.completedQuizzes || 0,
+          };
+
+          localStorage.setItem("user", JSON.stringify(userData));
+
+          login(userData);
+
+          clearForm();
+
+          if (userData.role === "admin") {
+            navigate("/admin");
+          } else {
+            const from = location.state?.from?.pathname || "/dashboard";
+            navigate(from);
+          }
+        } else {
+          setError("Resposta inválida do servidor. Token não encontrado.");
+        }
+      } catch (err) {
+        console.error("Login error details:", err);
+        console.error("Full error object:", {
+          message: err.message,
+          response: err.response,
+          data: err.response?.data,
+        });
+        setError(
+          err.response?.data?.error ||
+            "Erro ao fazer login. Por favor, verifique suas credenciais e tente novamente."
+        );
+      } finally {
+        setLoading(false);
+      }
+    },
+    [email, password, loading, login, navigate, location]
+  );
+
   return (
     <div className="login-container">
       <div className="login-card">
         <h1 className="login-title">Bem-vindo</h1>
         {error && (
-          <Alert variant="danger" className="login-alert">
+          <Alert
+            variant="danger"
+            className="login-alert"
+            onClose={clearForm}
+            dismissible
+            style={{
+              position: "relative",
+              zIndex: 1000,
+              marginBottom: "1rem",
+              animation: "none",
+            }}
+          >
             {error}
           </Alert>
         )}
@@ -81,7 +111,7 @@ const Login = () => {
             <Form.Control
               type="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => handleInputChange(e, setEmail)}
               required
               placeholder="Seu email"
               autoComplete="email"
@@ -93,7 +123,7 @@ const Login = () => {
             <Form.Control
               type="password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e) => handleInputChange(e, setPassword)}
               required
               placeholder="Sua senha"
               autoComplete="current-password"
