@@ -148,7 +148,8 @@ export const PageButton = styled(Button)`
 `;
 
 export const CompactCard = styled(Card)`
-  background: ${(props) => props.gradient || "rgba(255, 255, 255, 0.05)"};
+  background: ${(props) =>
+    props.gradient || "rgba(255, 255, 255, 0.05)"} !important;
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 15px;
@@ -158,24 +159,14 @@ export const CompactCard = styled(Card)`
   overflow: hidden;
   position: relative;
 
-  &:before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.3);
-    z-index: 1;
+  // Força o background do Card.Body também
+  .card-body {
+    background: transparent !important;
   }
 
   &:hover {
     transform: translateY(-5px);
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-
-    &:before {
-      background: rgba(0, 0, 0, 0.2);
-    }
   }
 `;
 
