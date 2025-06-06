@@ -25,6 +25,7 @@ import "./styles/Home.css";
 import "./styles/Navbar.css";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Alerts from "./pages/Alerts";
 
 const AdminRoute = ({ children }) => {
   const { isAdmin, loading } = useAuth();
@@ -126,6 +127,14 @@ function App() {
                 <AdminRoute>
                   <AdminDashboard />
                 </AdminRoute>
+              }
+            />
+            <Route
+              path="/alerts"
+              element={
+                <PrivateRoute>
+                  <Alerts />
+                </PrivateRoute>
               }
             />
           </Routes>

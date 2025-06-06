@@ -9,15 +9,14 @@ import {
   faQuestionCircle,
   faFirstAid,
   faInfoCircle,
-  faEnvelope,
   faUser,
   faSignOutAlt,
   faShieldAlt,
   faTrophy,
   faHeartbeat,
   faBoxes,
+  faExclamationTriangle, // Para alertas
 } from "@fortawesome/free-solid-svg-icons";
-import { motion } from "framer-motion";
 import { toast } from "react-toastify";
 import "../styles/Navbar.css";
 
@@ -68,7 +67,7 @@ const NavigationBar = () => {
     { path: "/quizzes", text: "Quizzes", icon: faQuestionCircle },
     { path: "/emergency-kits", text: "Kits de Emergência", icon: faFirstAid },
     { path: "/about", text: "Sobre", icon: faInfoCircle },
-    { path: "/contact", text: "Contato", icon: faEnvelope },
+    { path: "/alerts", text: "Alertas", icon: faExclamationTriangle }, // Nova página de alertas
   ];
 
   const userMenuItems = [
@@ -87,31 +86,20 @@ const NavigationBar = () => {
       className={`navbar ${scrolled ? "scrolled" : ""}`}
     >
       <Container>
-        <motion.div
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.5 }}
-        >
-          <Navbar.Brand as={Link} to="/">
-            <FontAwesomeIcon icon={faHeartbeat} className="brand-icon" />
-            <span className="brand-text">
-              <span className="brand-educa">Educa</span>
-              <span className="brand-sos">SOS</span>
-            </span>
-          </Navbar.Brand>
-        </motion.div>
+        <Navbar.Brand as={Link} to="/">
+          <FontAwesomeIcon icon={faHeartbeat} className="brand-icon" />
+          <span className="brand-text">
+            <span className="brand-educa">Educa</span>
+            <span className="brand-sos">SOS</span>
+          </span>
+        </Navbar.Brand>
 
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
 
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto">
-            {navItems.map((item, index) => (
-              <motion.div
-                key={item.path}
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
-              >
+            {navItems.map((item) => (
+              <div key={item.path}>
                 <Nav.Link
                   as={Link}
                   to={item.path}
@@ -120,39 +108,33 @@ const NavigationBar = () => {
                   <FontAwesomeIcon icon={item.icon} className="me-2" />
                   {item.text}
                 </Nav.Link>
-              </motion.div>
+              </div>
             ))}
           </Nav>
 
           <Nav className="ms-auto">
             {user ? (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.3 }}
+              <NavDropdown
+                title={
+                  <span>
+                    <FontAwesomeIcon icon={faUser} className="me-2" />
+                    {`Olá, ${user.name}`}
+                  </span>
+                }
+                id="basic-nav-dropdown"
               >
-                <NavDropdown
-                  title={
-                    <span>
-                      <FontAwesomeIcon icon={faUser} className="me-2" />
-                      {`Olá, ${user.name}`}
-                    </span>
-                  }
-                  id="basic-nav-dropdown"
-                >
-                  {userMenuItems.map((item) => (
-                    <NavDropdown.Item key={item.path} as={Link} to={item.path}>
-                      <FontAwesomeIcon icon={item.icon} className="me-2" />
-                      {item.text}
-                    </NavDropdown.Item>
-                  ))}
-                  <NavDropdown.Divider />
-                  <NavDropdown.Item onClick={handleLogout}>
-                    <FontAwesomeIcon icon={faSignOutAlt} className="me-2" />
-                    Sair
+                {userMenuItems.map((item) => (
+                  <NavDropdown.Item key={item.path} as={Link} to={item.path}>
+                    <FontAwesomeIcon icon={item.icon} className="me-2" />
+                    {item.text}
                   </NavDropdown.Item>
-                </NavDropdown>
-              </motion.div>
+                ))}
+                <NavDropdown.Divider />
+                <NavDropdown.Item onClick={handleLogout}>
+                  <FontAwesomeIcon icon={faSignOutAlt} className="me-2" />
+                  Sair
+                </NavDropdown.Item>
+              </NavDropdown>
             ) : (
               <motion.div
                 className="d-flex gap-2"
