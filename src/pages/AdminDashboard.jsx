@@ -38,7 +38,6 @@ const DISASTER_TYPES = {
 };
 
 const getDisasterIcon = (type) => {
-  // Padroniza o ícone conforme LearnDisasters
   const translatedType = translateDisasterType(type);
   const icons = {
     ENCHENTE: "💧",
@@ -1057,7 +1056,6 @@ const AdminDashboard = () => {
         </Card>
         {renderEditModal()}
         {renderAddContentModal()}
-        {/* Cards de estatísticas no final do dashboard */}
         <Row className="mt-4">
           <Col md={3}>
             <Card
