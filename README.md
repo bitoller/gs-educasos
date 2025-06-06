@@ -8,6 +8,7 @@ Esta é a aplicação frontend da Plataforma Educa SOS, construída com React e 
 *   Gerenciamento de Kit de Emergência (Visualizar, Criar, Editar, Deletar Kits Automáticos e Personalizados)
 *   Conteúdo de Conscientização sobre Desastres (Visualizar Conteúdo)
 *   Quizzes interativos e Pontuação
+*   Alertas de Desastres Naturais
 
 ## Começando
 
