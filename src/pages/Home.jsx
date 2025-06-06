@@ -257,7 +257,9 @@ const Home = () => {
                     <tr>
                       <th style={{ color: "var(--accent-color)" }}>#</th>
                       <th style={{ color: "var(--accent-color)" }}>Usuário</th>
-                      <th style={{ color: "var(--accent-color)" }}>Pontuação</th>
+                      <th style={{ color: "var(--accent-color)" }}>
+                        Pontuação
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
