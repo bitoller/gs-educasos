@@ -15,7 +15,7 @@ import {
   faTrophy,
   faHeartbeat,
   faBoxes,
-  faExclamationTriangle, // Para alertas
+  faExclamationTriangle,
 } from "@fortawesome/free-solid-svg-icons";
 import { toast } from "react-toastify";
 import "../styles/Navbar.css";
@@ -67,7 +67,7 @@ const NavigationBar = () => {
     { path: "/quizzes", text: "Quizzes", icon: faQuestionCircle },
     { path: "/emergency-kits", text: "Kits de Emergência", icon: faFirstAid },
     { path: "/about", text: "Sobre", icon: faInfoCircle },
-    { path: "/alerts", text: "Alertas", icon: faExclamationTriangle }, // Nova página de alertas
+    { path: "/alerts", text: "Alertas", icon: faExclamationTriangle },
   ];
 
   const userMenuItems = [

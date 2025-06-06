@@ -93,7 +93,6 @@ public class KitServlet extends HttpServlet {
             boolean hasPets = jsonRequest.get("hasPets").getAsBoolean();
             String region = jsonRequest.get("region").getAsString();
 
-            // Extract isCustom and recommendedItems for custom kits
             boolean isCustom = jsonRequest.has("isCustom") ? jsonRequest.get("isCustom").getAsBoolean() : false;
             String recommendedItems = jsonRequest.has("recommendedItems")
                     ? jsonRequest.get("recommendedItems").getAsString()
