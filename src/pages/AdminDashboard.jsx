@@ -24,6 +24,10 @@ import {
   FaCheck,
 } from "react-icons/fa";
 import "../styles/dashboard.css";
+import {
+  translateDisasterType,
+  getDisasterDescription,
+} from "../utils/translations";
 
 const DISASTER_TYPES = {
   FLOOD: { name: "Enchente", color: "info", icon: "🌊" },
@@ -31,6 +35,24 @@ const DISASTER_TYPES = {
   WILDFIRE: { name: "Queimada", color: "danger", icon: "🔥" },
   DROUGHT: { name: "Seca", color: "warning", icon: "☀️" },
   STORM: { name: "Tempestade", color: "primary", icon: "⛈️" },
+};
+
+const getDisasterIcon = (type) => {
+  // Padroniza o ícone conforme LearnDisasters
+  const translatedType = translateDisasterType(type);
+  const icons = {
+    ENCHENTE: "💧",
+    TERREMOTO: "⚡",
+    INCENDIO: "🔥",
+    FURACAO: "🌀",
+    TORNADO: "🌪️",
+    DESLIZAMENTO: "⛰️",
+    SECA: "☀️",
+    TSUNAMI: "🌊",
+    TEMPESTADE: "⛈️",
+    default: "⚠️",
+  };
+  return icons[translatedType] || icons.default;
 };
 
 const AdminDashboard = () => {
@@ -463,59 +485,52 @@ const AdminDashboard = () => {
               </tr>
             </thead>
             <tbody>
-              {filteredContents.map((content) => (
-                <tr key={content.contentId}>
-                  <td>{content.title}</td>
-                  <td>
-                    <Badge
-                      bg={
-                        DISASTER_TYPES[content.disasterType]?.color ||
-                        "secondary"
-                      }
-                      className="d-flex align-items-center gap-1"
-                      aria-label={`Tipo: ${
-                        DISASTER_TYPES[content.disasterType]?.name ||
-                        DISASTER_TYPES[content.disasterType?.toUpperCase()]
-                          ?.name ||
-                        content.disasterType
-                      }`}
-                    >
-                      {DISASTER_TYPES[content.disasterType]?.icon ||
-                        DISASTER_TYPES[content.disasterType?.toUpperCase()]
-                          ?.icon}{" "}
-                      {DISASTER_TYPES[content.disasterType]?.name ||
-                        DISASTER_TYPES[content.disasterType?.toUpperCase()]
-                          ?.name ||
-                        content.disasterType}
-                    </Badge>
-                  </td>
-                  <td className="text-truncate" style={{ maxWidth: "300px" }}>
-                    {content.description}
-                  </td>
-                  <td>
-                    <div className="d-flex justify-content-end gap-2">
-                      <Button
-                        variant="outline-primary"
-                        size="sm"
-                        onClick={() => handleEditContent(content.contentId)}
+              {filteredContents.map((content) => {
+                const translatedType = translateDisasterType(
+                  content.disasterType?.toUpperCase?.() || content.disasterType
+                );
+                const icon = getDisasterIcon(content.disasterType);
+                const name = getDisasterDescription(translatedType);
+                return (
+                  <tr key={content.contentId}>
+                    <td>{content.title}</td>
+                    <td>
+                      <Badge
+                        bg="secondary"
                         className="d-flex align-items-center gap-1"
-                        aria-label={`Editar conteúdo ${content.title}`}
+                        aria-label={`Tipo: ${name}`}
                       >
-                        <FaEdit /> Editar
-                      </Button>
-                      <Button
-                        variant="outline-danger"
-                        size="sm"
-                        onClick={() => handleDeleteContent(content.contentId)}
-                        className="d-flex align-items-center gap-1"
-                        aria-label={`Excluir conteúdo ${content.title}`}
-                      >
-                        <FaTrash /> Excluir
-                      </Button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
+                        <span style={{ fontSize: 20 }}>{icon}</span> {name}
+                      </Badge>
+                    </td>
+                    <td className="text-truncate" style={{ maxWidth: "300px" }}>
+                      {content.description}
+                    </td>
+                    <td>
+                      <div className="d-flex justify-content-end gap-2">
+                        <Button
+                          variant="outline-primary"
+                          size="sm"
+                          onClick={() => handleEditContent(content.contentId)}
+                          className="d-flex align-items-center gap-1"
+                          aria-label={`Editar conteúdo ${content.title}`}
+                        >
+                          <FaEdit /> Editar
+                        </Button>
+                        <Button
+                          variant="outline-danger"
+                          size="sm"
+                          onClick={() => handleDeleteContent(content.contentId)}
+                          className="d-flex align-items-center gap-1"
+                          aria-label={`Excluir conteúdo ${content.title}`}
+                        >
+                          <FaTrash /> Excluir
+                        </Button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </Table>
         </div>
