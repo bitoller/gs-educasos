@@ -136,19 +136,14 @@ const NavigationBar = () => {
                 </NavDropdown.Item>
               </NavDropdown>
             ) : (
-              <motion.div
-                className="d-flex gap-2"
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.5 }}
-              >
+              <div className="d-flex gap-2">
                 <Button as={Link} to="/login" variant="outline-light">
                   Entrar
                 </Button>
                 <Button as={Link} to="/register" variant="light">
                   Cadastrar
                 </Button>
-              </motion.div>
+              </div>
             )}
           </Nav>
         </Navbar.Collapse>

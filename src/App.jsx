@@ -129,14 +129,7 @@ function App() {
                 </AdminRoute>
               }
             />
-            <Route
-              path="/alerts"
-              element={
-                <PrivateRoute>
-                  <Alerts />
-                </PrivateRoute>
-              }
-            />
+            <Route path="/alerts" element={<Alerts />} />
           </Routes>
         </div>
       </Router>
