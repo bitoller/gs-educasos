@@ -14,7 +14,6 @@ import {
   Modal,
 } from "react-bootstrap";
 import { admin, content, kits } from "../services/api";
-import { useAuth } from "../contexts/AuthContext";
 import {
   FaUsers,
   FaBook,
@@ -37,7 +36,6 @@ const DISASTER_TYPES = {
 };
 
 const AdminDashboard = () => {
-  const { user } = useAuth();
   const [activeTab, setActiveTab] = useState("users");
   const [users, setUsers] = useState([]);
   const [contents, setContents] = useState([]);
@@ -59,37 +57,115 @@ const AdminDashboard = () => {
     afterTips: [""],
   });
   const [searchTerm, setSearchTerm] = useState("");
+  const [usersLoaded, setUsersLoaded] = useState(false);
+  const [contentsLoaded, setContentsLoaded] = useState(false);
+  const [kitsLoaded, setKitsLoaded] = useState(false);
 
   useEffect(() => {
     document.title = "Dashboard Administrativo - Disaster Awareness";
     loadData();
+    // eslint-disable-next-line
   }, [activeTab]);
 
   const loadData = async () => {
-    setLoading(true);
     setError("");
-    try {
-      switch (activeTab) {
-        case "users":
+    switch (activeTab) {
+      case "users":
+        if (!usersLoaded) {
+          setLoading(true);
+          try {
+            const usersResponse = await admin.getAllUsers();
+            setUsers(usersResponse.data);
+            setUsersLoaded(true);
+          } catch {
+            setError(
+              "Erro ao carregar dados do dashboard. Por favor, tente novamente mais tarde."
+            );
+          } finally {
+            setLoading(false);
+          }
+        }
+        break;
+      case "content":
+        if (!contentsLoaded) {
+          setLoading(true);
+          try {
+            const contentResponse = await content.getAll();
+            setContents(contentResponse.data);
+            setContentsLoaded(true);
+          } catch {
+            setError(
+              "Erro ao carregar dados do dashboard. Por favor, tente novamente mais tarde."
+            );
+          } finally {
+            setLoading(false);
+          }
+        }
+        break;
+      case "kits":
+        if (!kitsLoaded) {
+          setLoading(true);
+          try {
+            const kitsResponse = await kits.getAll();
+            setEmergencyKits(kitsResponse.data);
+            setKitsLoaded(true);
+          } catch {
+            setError(
+              "Erro ao carregar dados do dashboard. Por favor, tente novamente mais tarde."
+            );
+          } finally {
+            setLoading(false);
+          }
+        }
+        break;
+      default:
+        break;
+    }
+  };
+
+  const forceReloadTab = async (tab) => {
+    switch (tab) {
+      case "users":
+        setUsersLoaded(false);
+        setLoading(true);
+        try {
           const usersResponse = await admin.getAllUsers();
           setUsers(usersResponse.data);
-          break;
-        case "content":
+          setUsersLoaded(true);
+        } catch {
+          setError("Erro ao recarregar usuários.");
+        } finally {
+          setLoading(false);
+        }
+        break;
+      case "content":
+        setContentsLoaded(false);
+        setLoading(true);
+        try {
           const contentResponse = await content.getAll();
           setContents(contentResponse.data);
-          break;
-        case "kits":
+          setContentsLoaded(true);
+        } catch {
+          setError("Erro ao recarregar conteúdos.");
+        } finally {
+          setLoading(false);
+        }
+        break;
+      case "kits":
+        setKitsLoaded(false);
+        setLoading(true);
+        try {
           const kitsResponse = await kits.getAll();
           setEmergencyKits(kitsResponse.data);
-          break;
-      }
-    } catch (err) {
-      console.error("Error loading dashboard data:", err);
-      setError(
-        "Erro ao carregar dados do dashboard. Por favor, tente novamente mais tarde."
-      );
-    } finally {
-      setLoading(false);
+          setKitsLoaded(true);
+        } catch {
+          setError("Erro ao recarregar kits.");
+        } finally {
+          setLoading(false);
+        }
+        break;
+      default:
+        break;
     }
   };
 
@@ -107,13 +183,9 @@ const AdminDashboard = () => {
   const handleSaveUserEdit = async () => {
     try {
       await admin.updateUser(editingItem.userId, editForm);
-      setUsers(
-        users.map((user) =>
-          user.userId === editingItem.userId ? { ...user, ...editForm } : user
-        )
-      );
+      await forceReloadTab("users");
       setShowEditModal(false);
-    } catch (err) {
+    } catch {
       setError("Erro ao atualizar usuário. Por favor, tente novamente.");
     }
   };
@@ -126,8 +198,8 @@ const AdminDashboard = () => {
     ) {
       try {
         await admin.deleteUser(userId);
-        setUsers(users.filter((user) => user.userId !== userId));
-      } catch (err) {
+        await forceReloadTab("users");
+      } catch {
         setError("Erro ao excluir usuário. Por favor, tente novamente.");
       }
     }
@@ -136,8 +208,7 @@ const AdminDashboard = () => {
   const handleAddContent = async () => {
     try {
       await content.create(contentForm);
-      const contentResponse = await content.getAll();
-      setContents(contentResponse.data);
+      await forceReloadTab("content");
       setShowContentModal(false);
       setContentForm({
         title: "",
@@ -149,7 +220,7 @@ const AdminDashboard = () => {
         duringTips: [""],
         afterTips: [""],
       });
-    } catch (err) {
+    } catch {
       setError("Erro ao adicionar conteúdo. Por favor, tente novamente.");
     }
   };
@@ -169,7 +240,7 @@ const AdminDashboard = () => {
         afterTips: contentToEdit.afterTips || [""],
       });
       setShowEditModal(true);
-    } catch (err) {
+    } catch {
       setError("Erro ao editar conteúdo. Por favor, tente novamente.");
     }
   };
@@ -177,13 +248,9 @@ const AdminDashboard = () => {
   const handleSaveContentEdit = async () => {
     try {
       await content.update(editingItem.contentId, editForm);
-      setContents(
-        contents.map((c) =>
-          c.contentId === editingItem.contentId ? { ...c, ...editForm } : c
-        )
-      );
+      await forceReloadTab("content");
       setShowEditModal(false);
-    } catch (err) {
+    } catch {
       setError("Erro ao atualizar conteúdo. Por favor, tente novamente.");
     }
   };
@@ -196,23 +263,10 @@ const AdminDashboard = () => {
     ) {
       try {
         await content.delete(contentId);
-        setContents(contents.filter((c) => c.contentId !== contentId));
-      } catch (err) {
+        await forceReloadTab("content");
+      } catch {
         setError("Erro ao excluir conteúdo. Por favor, tente novamente.");
       }
-    }
-  };
-
-  const handleUpdateKitStatus = async (kitId, status) => {
-    try {
-      await kits.update(kitId, { status });
-      setEmergencyKits(
-        emergencyKits.map((kit) =>
-          kit.kitId === kitId ? { ...kit, status } : kit
-        )
-      );
-    } catch (err) {
-      setError("Erro ao atualizar status do kit. Por favor, tente novamente.");
     }
   };
 
@@ -246,6 +300,38 @@ const AdminDashboard = () => {
 
     return (
       <>
+        <div className="d-flex justify-content-between align-items-center mb-3">
+          <h4 className="mb-0">Usuários</h4>
+          <Form
+            className="w-auto"
+            style={{
+              background: "rgba(30,41,59,0.7)",
+              borderRadius: 12,
+              boxShadow: "0 2px 8px rgba(0,0,0,0.12)",
+              padding: 4,
+            }}
+          >
+            <Form.Control
+              type="search"
+              placeholder="Pesquisar usuário"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              style={{
+                minWidth: 220,
+                background: "rgba(255,255,255,0.08)",
+                color: "#fff",
+                border: "1px solid rgba(255,255,255,0.15)",
+                borderRadius: 8,
+                fontSize: 15,
+                fontWeight: 500,
+                boxShadow: "0 1px 4px rgba(0,0,0,0.10)",
+                transition: "border-color 0.2s",
+                "::placeholder": { color: "#fff", opacity: 1 },
+              }}
+              className="shadow-sm white-placeholder"
+            />
+          </Form>
+        </div>
         <div className="table-responsive">
           <Table hover className="align-middle">
             <thead>
@@ -254,8 +340,6 @@ const AdminDashboard = () => {
                 <th scope="col">Nome</th>
                 <th scope="col">Email</th>
                 <th scope="col">Papel</th>
-                <th scope="col">Status</th>
-                <th scope="col">Último Acesso</th>
                 <th scope="col" className="text-end">
                   Ações
                 </th>
@@ -269,28 +353,21 @@ const AdminDashboard = () => {
                   <td>{user.email}</td>
                   <td>
                     <Badge
-                      bg={user.role === "admin" ? "danger" : "info"}
+                      bg={
+                        user.role === "admin" || user.isAdmin
+                          ? "danger"
+                          : "info"
+                      }
                       aria-label={`Papel: ${
-                        user.role === "admin" ? "Administrador" : "Usuário"
+                        user.role === "admin" || user.isAdmin
+                          ? "Administrador"
+                          : "Usuário"
                       }`}
                     >
-                      {user.role === "admin" ? "Admin" : "Usuário"}
+                      {user.role === "admin" || user.isAdmin
+                        ? "Administrador"
+                        : "Usuário"}
                     </Badge>
-                  </td>
-                  <td>
-                    <Badge
-                      bg={user.isActive ? "success" : "danger"}
-                      aria-label={`Status: ${
-                        user.isActive ? "Ativo" : "Inativo"
-                      }`}
-                    >
-                      {user.isActive ? "Ativo" : "Inativo"}
-                    </Badge>
-                  </td>
-                  <td>
-                    {new Date(
-                      user.lastLogin || user.createdAt
-                    ).toLocaleDateString()}
                   </td>
                   <td>
                     <div className="d-flex justify-content-end gap-2">
@@ -328,37 +405,6 @@ const AdminDashboard = () => {
     );
   };
 
-  const renderTipsSection = (title, type) => (
-    <div className="mb-4">
-      <h5>{title}</h5>
-      {contentForm[type].map((tip, index) => (
-        <div key={index} className="d-flex mb-2">
-          <Form.Control
-            type="text"
-            value={tip}
-            onChange={(e) => handleTipChange(type, index, e.target.value)}
-            placeholder={`Digite a dica ${index + 1}`}
-          />
-          <Button
-            variant="danger"
-            className="ms-2"
-            onClick={() => handleRemoveTip(type, index)}
-          >
-            <i className="bi bi-trash"></i>
-          </Button>
-        </div>
-      ))}
-      <Button
-        variant="secondary"
-        size="sm"
-        onClick={() => handleAddTip(type)}
-        className="mt-2"
-      >
-        + Adicionar Dica
-      </Button>
-    </div>
-  );
-
   const renderContentTable = () => {
     const filteredContents = contents.filter(
       (content) =>
@@ -386,7 +432,6 @@ const AdminDashboard = () => {
                 <th scope="col">Título</th>
                 <th scope="col">Tipo</th>
                 <th scope="col">Descrição</th>
-                <th scope="col">Status</th>
                 <th scope="col" className="text-end">
                   Ações
                 </th>
@@ -405,26 +450,22 @@ const AdminDashboard = () => {
                       className="d-flex align-items-center gap-1"
                       aria-label={`Tipo: ${
                         DISASTER_TYPES[content.disasterType]?.name ||
+                        DISASTER_TYPES[content.disasterType?.toUpperCase()]
+                          ?.name ||
                         content.disasterType
                       }`}
                     >
-                      {DISASTER_TYPES[content.disasterType]?.icon}{" "}
+                      {DISASTER_TYPES[content.disasterType]?.icon ||
+                        DISASTER_TYPES[content.disasterType?.toUpperCase()]
+                          ?.icon}{" "}
                       {DISASTER_TYPES[content.disasterType]?.name ||
+                        DISASTER_TYPES[content.disasterType?.toUpperCase()]
+                          ?.name ||
                         content.disasterType}
                     </Badge>
                   </td>
                   <td className="text-truncate" style={{ maxWidth: "300px" }}>
                     {content.description}
-                  </td>
-                  <td>
-                    <Badge
-                      bg={content.isPublished ? "success" : "warning"}
-                      aria-label={`Status: ${
-                        content.isPublished ? "Publicado" : "Rascunho"
-                      }`}
-                    >
-                      {content.isPublished ? "Publicado" : "Rascunho"}
-                    </Badge>
                   </td>
                   <td>
                     <div className="d-flex justify-content-end gap-2">
@@ -479,10 +520,6 @@ const AdminDashboard = () => {
                 <th scope="col">Tipo de Casa</th>
                 <th scope="col">Região</th>
                 <th scope="col">Moradores</th>
-                <th scope="col">Status</th>
-                <th scope="col" className="text-end">
-                  Ações
-                </th>
               </tr>
             </thead>
             <tbody>
@@ -491,59 +528,7 @@ const AdminDashboard = () => {
                   <td>{kit.kitId}</td>
                   <td>{kit.houseType}</td>
                   <td>{kit.region}</td>
-                  <td>{kit.numResidents}</td>
-                  <td>
-                    <Badge
-                      bg={
-                        kit.status === "APPROVED"
-                          ? "success"
-                          : kit.status === "PENDING"
-                          ? "warning"
-                          : "danger"
-                      }
-                      aria-label={`Status: ${
-                        kit.status === "APPROVED"
-                          ? "Aprovado"
-                          : kit.status === "PENDING"
-                          ? "Pendente"
-                          : "Rejeitado"
-                      }`}
-                    >
-                      {kit.status === "APPROVED"
-                        ? "Aprovado"
-                        : kit.status === "PENDING"
-                        ? "Pendente"
-                        : "Rejeitado"}
-                    </Badge>
-                  </td>
-                  <td>
-                    <div className="d-flex justify-content-end gap-2">
-                      <Button
-                        variant="outline-success"
-                        size="sm"
-                        onClick={() =>
-                          handleUpdateKitStatus(kit.kitId, "APPROVED")
-                        }
-                        disabled={kit.status === "APPROVED"}
-                        className="d-flex align-items-center gap-1"
-                        aria-label="Aprovar kit"
-                      >
-                        <FaCheck /> Aprovar
-                      </Button>
-                      <Button
-                        variant="outline-danger"
-                        size="sm"
-                        onClick={() =>
-                          handleUpdateKitStatus(kit.kitId, "REJECTED")
-                        }
-                        disabled={kit.status === "REJECTED"}
-                        className="d-flex align-items-center gap-1"
-                        aria-label="Rejeitar kit"
-                      >
-                        <FaTimes /> Rejeitar
-                      </Button>
-                    </div>
-                  </td>
+                  <td>{kit.numResidents || kit.residents}</td>
                 </tr>
               ))}
             </tbody>
@@ -857,7 +842,7 @@ const AdminDashboard = () => {
             </Form.Text>
           </Form.Group>
 
-          {["beforeTips", "duringTips", "afterTips"].map((tipType, index) => (
+          {["beforeTips", "duringTips", "afterTips"].map((tipType) => (
             <Form.Group key={tipType} className="mb-4">
               <Form.Label>
                 {tipType === "beforeTips"
@@ -925,141 +910,172 @@ const AdminDashboard = () => {
   }
 
   return (
-    <Container fluid className="mt-5 pt-5">
-      <h2 className="mb-4 visually-hidden">Dashboard Administrativo</h2>
-
-      {error && (
-        <Alert
-          variant="danger"
-          role="alert"
-          dismissible
-          onClose={() => setError("")}
+    <div
+      style={{
+        background: "var(--dark-bg, #0a1120)",
+        minHeight: "100vh",
+        paddingTop: 40,
+      }}
+    >
+      <Container className="py-5">
+        <Card
+          className="shadow mb-4"
+          style={{
+            background: "var(--card-bg, #1e293b)",
+            color: "var(--text-primary)",
+            border: "none",
+            borderRadius: 16,
+          }}
         >
-          {error}
-        </Alert>
-      )}
-
-      <Card className="shadow">
-        <Card.Body>
-          <div className="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+          <Card.Body>
             <Nav
               variant="tabs"
               activeKey={activeTab}
-              onSelect={setActiveTab}
-              role="tablist"
-              className="border-0"
+              onSelect={(tab) => {
+                setActiveTab(tab);
+                setError("");
+              }}
+              className="mb-4 border-0"
+              style={{ background: "transparent" }}
             >
-              <Nav.Item role="presentation">
+              <Nav.Item>
                 <Nav.Link
                   eventKey="users"
-                  className="d-flex align-items-center gap-2"
-                  role="tab"
-                  aria-selected={activeTab === "users"}
+                  style={{
+                    color:
+                      activeTab === "users"
+                        ? "var(--accent-color)"
+                        : "var(--text-secondary)",
+                    fontWeight: 600,
+                  }}
                 >
-                  <FaUsers /> Usuários
+                  <FaUsers className="me-2" /> Usuários
                 </Nav.Link>
               </Nav.Item>
-              <Nav.Item role="presentation">
+              <Nav.Item>
                 <Nav.Link
                   eventKey="content"
-                  className="d-flex align-items-center gap-2"
-                  role="tab"
-                  aria-selected={activeTab === "content"}
+                  style={{
+                    color:
+                      activeTab === "content"
+                        ? "var(--accent-color)"
+                        : "var(--text-secondary)",
+                    fontWeight: 600,
+                  }}
                 >
-                  <FaBook /> Conteúdo
+                  <FaBook className="me-2" /> Conteúdo
                 </Nav.Link>
               </Nav.Item>
-              <Nav.Item role="presentation">
+              <Nav.Item>
                 <Nav.Link
                   eventKey="kits"
-                  className="d-flex align-items-center gap-2"
-                  role="tab"
-                  aria-selected={activeTab === "kits"}
+                  style={{
+                    color:
+                      activeTab === "kits"
+                        ? "var(--accent-color)"
+                        : "var(--text-secondary)",
+                    fontWeight: 600,
+                  }}
                 >
-                  <FaMedkit /> Kits
+                  <FaMedkit className="me-2" /> Kits
                 </Nav.Link>
               </Nav.Item>
             </Nav>
-
-            <Form className="d-flex align-items-center gap-2">
-              <Form.Control
-                type="search"
-                placeholder="Buscar..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                aria-label="Campo de busca"
-                className="shadow-sm"
-              />
-              <Button variant="outline-primary" aria-label="Buscar">
-                <FaSearch />
-              </Button>
-            </Form>
-          </div>
-
-          {loading ? (
-            <div className="text-center p-5">
-              <Spinner
-                animation="border"
-                role="status"
-                variant="primary"
-                style={{ width: "3rem", height: "3rem" }}
+            {error && (
+              <Alert
+                variant="danger"
+                className="mb-4"
+                style={{ fontWeight: 500 }}
               >
-                <span className="visually-hidden">Carregando...</span>
-              </Spinner>
-            </div>
-          ) : (
-            <div role="tabpanel">
-              {activeTab === "users" && renderUsersTable()}
-              {activeTab === "content" && renderContentTable()}
-              {activeTab === "kits" && renderKitsTable()}
-            </div>
-          )}
-        </Card.Body>
-      </Card>
-
-      {renderEditModal()}
-      {renderAddContentModal()}
-
-      <Row className="mt-4">
-        <Col md={3}>
-          <Card className="text-center">
-            <Card.Body>
-              <h3>{users.length}</h3>
-              <Card.Text>Usuários Registrados</Card.Text>
-            </Card.Body>
-          </Card>
-        </Col>
-        <Col md={3}>
-          <Card className="text-center">
-            <Card.Body>
-              <h3>{contents.length}</h3>
-              <Card.Text>Conteúdos Publicados</Card.Text>
-            </Card.Body>
-          </Card>
-        </Col>
-        <Col md={3}>
-          <Card className="text-center">
-            <Card.Body>
-              <h3>{emergencyKits.length}</h3>
-              <Card.Text>Kits Criados</Card.Text>
-            </Card.Body>
-          </Card>
-        </Col>
-        <Col md={3}>
-          <Card className="text-center">
-            <Card.Body>
-              <h3>
-                {users.reduce(
-                  (total, user) => total + (user.completedQuizzes || 0),
-                  0
-                )}
-              </h3>
-              <Card.Text>Total de Quizzes Realizados</Card.Text>
-            </Card.Body>
-          </Card>
-        </Col>
-      </Row>
-    </Container>
+                {error}
+              </Alert>
+            )}
+            {loading &&
+            !(
+              (activeTab === "users" && usersLoaded) ||
+              (activeTab === "content" && contentsLoaded) ||
+              (activeTab === "kits" && kitsLoaded)
+            ) ? (
+              <div className="text-center py-5">
+                <Spinner
+                  animation="border"
+                  role="status"
+                  variant="primary"
+                  style={{ width: "3rem", height: "3rem" }}
+                >
+                  <span className="visually-hidden">Carregando...</span>
+                </Spinner>
+              </div>
+            ) : (
+              <div role="tabpanel">
+                {activeTab === "users" && renderUsersTable()}
+                {activeTab === "content" && renderContentTable()}
+                {activeTab === "kits" && renderKitsTable()}
+              </div>
+            )}
+          </Card.Body>
+        </Card>
+        {renderEditModal()}
+        {renderAddContentModal()}
+        {/* Cards de estatísticas no final do dashboard */}
+        <Row className="mt-4">
+          <Col md={3}>
+            <Card
+              className="text-center shadow-sm mb-3"
+              style={{
+                background: "linear-gradient(135deg, #2563eb 0%, #1e293b 100%)",
+                color: "var(--text-primary)",
+                border: "none",
+                borderRadius: 16,
+              }}
+            >
+              <Card.Body>
+                <h3 style={{ fontWeight: 700 }}>{users.length}</h3>
+                <Card.Text style={{ color: "var(--text-secondary)" }}>
+                  Usuários Registrados
+                </Card.Text>
+              </Card.Body>
+            </Card>
+          </Col>
+          <Col md={3}>
+            <Card
+              className="text-center shadow-sm mb-3"
+              style={{
+                background: "linear-gradient(135deg, #7c3aed 0%, #1e293b 100%)",
+                color: "var(--text-primary)",
+                border: "none",
+                borderRadius: 16,
+              }}
+            >
+              <Card.Body>
+                <h3 style={{ fontWeight: 700 }}>{contents.length}</h3>
+                <Card.Text style={{ color: "var(--text-secondary)" }}>
+                  Conteúdos Publicados
+                </Card.Text>
+              </Card.Body>
+            </Card>
+          </Col>
+          <Col md={3}>
+            <Card
+              className="text-center shadow-sm mb-3"
+              style={{
+                background: "linear-gradient(135deg, #0891b2 0%, #1e293b 100%)",
+                color: "var(--text-primary)",
+                border: "none",
+                borderRadius: 16,
+              }}
+            >
+              <Card.Body>
+                <h3 style={{ fontWeight: 700 }}>{emergencyKits.length}</h3>
+                <Card.Text style={{ color: "var(--text-secondary)" }}>
+                  Kits Criados
+                </Card.Text>
+              </Card.Body>
+            </Card>
+          </Col>
+        </Row>
+      </Container>
+    </div>
   );
 };
 

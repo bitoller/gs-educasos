@@ -42,10 +42,11 @@ const Login = () => {
         if (response.data && response.data.token) {
           localStorage.setItem("token", response.data.token);
 
+          const isAdmin = response.data.user.isAdmin === true;
           const userData = {
             ...response.data.user,
             id: response.data.user.id,
-            role: response.data.user.role || "user",
+            role: isAdmin ? "admin" : response.data.user.role || "user",
             score:
               response.data.user.score || response.data.user.totalScore || 0,
             totalScore:

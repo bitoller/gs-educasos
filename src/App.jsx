@@ -20,7 +20,7 @@ import Quiz from "./pages/Quiz";
 import QuizList from "./pages/QuizList";
 import About from "./pages/About";
 import PrivateRoute from "./components/PrivateRoute";
-import { AuthProvider } from "./contexts/AuthContext";
+import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./styles/Home.css";
 import "./styles/Navbar.css";
@@ -28,12 +28,14 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const AdminRoute = ({ children }) => {
-  const isAdmin = localStorage.getItem("userRole") === "admin";
+  const { isAdmin, loading } = useAuth();
+  if (loading) return null;
   return isAdmin ? children : <Navigate to="/dashboard" replace />;
 };
 
 const DashboardRoute = ({ children }) => {
-  const isAdmin = localStorage.getItem("userRole") === "admin";
+  const { isAdmin, loading } = useAuth();
+  if (loading) return null;
   return isAdmin ? <Navigate to="/admin" replace /> : children;
 };
 
