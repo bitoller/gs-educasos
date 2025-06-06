@@ -62,7 +62,6 @@ const AdminDashboard = () => {
   useEffect(() => {
     document.title = "Dashboard Administrativo - Disaster Awareness";
     loadData();
-    // eslint-disable-next-line
   }, [activeTab]);
 
   const loadData = async () => {
@@ -194,11 +193,39 @@ const AdminDashboard = () => {
         "Tem certeza que deseja excluir este usuário? Esta ação não pode ser desfeita."
       )
     ) {
+      setError(null);
       try {
-        await admin.deleteUser(userId);
+        const response = await admin.deleteUser(userId);
+        if (response.status === 200) {
+          setUsers(users.filter((user) => user.userId !== userId));
+          setError(null);
+        }
         await forceReloadTab("users");
-      } catch {
-        setError("Erro ao excluir usuário. Por favor, tente novamente.");
+      } catch (err) {
+        console.error("Error deleting user:", err);
+
+        if (
+          err.response?.data?.message &&
+          err.response.data.message.includes("ORA-02292")
+        ) {
+          setError(
+            "Não foi possível excluir o usuário. Este usuário possui kits de emergência associados. Por favor, exclua os kits primeiro."
+          );
+        } else if (err.message && err.message.includes("ORA-02292")) {
+          setError(
+            "Não foi possível excluir o usuário. Este usuário possui kits de emergência associados. Por favor, exclua os kits primeiro."
+          );
+        } else if (
+          err.response?.data?.error &&
+          typeof err.response.data.error === "string" &&
+          err.response.data.error.includes("integrity constraint")
+        ) {
+          setError(
+            "Não foi possível excluir o usuário. Este usuário possui dados associados (como kits de emergência). Por favor, remova os dados associados antes."
+          );
+        } else {
+          setError("Erro ao excluir usuário. Por favor, tente novamente.");
+        }
       }
     }
   };
