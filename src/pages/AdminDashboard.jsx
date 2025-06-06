@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   Container,
   Row,
@@ -22,8 +22,6 @@ import {
   FaTrash,
   FaPlus,
   FaCheck,
-  FaTimes,
-  FaSearch,
 } from "react-icons/fa";
 import "../styles/dashboard.css";
 

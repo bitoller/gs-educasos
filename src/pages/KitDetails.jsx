@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Container, Card, Row, Col, Alert } from "react-bootstrap";
 import { useParams, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";

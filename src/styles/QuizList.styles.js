@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { motion } from "framer-motion";
-import { Card, Button } from "react-bootstrap";
+import { Button } from "react-bootstrap";
 
 export const PageContainer = styled.div`
   min-height: 100vh;

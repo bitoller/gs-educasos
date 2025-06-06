@@ -1,15 +1,5 @@
-import React, { useState, useEffect } from "react";
-import {
-  Container,
-  Row,
-  Col,
-  Card,
-  Button,
-  Alert,
-  Spinner,
-  Tabs,
-  Tab,
-} from "react-bootstrap";
+import { useState, useEffect } from "react";
+import { Row, Col, Button, Alert, Spinner, Tab } from "react-bootstrap";
 import { content } from "../services/api";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -48,12 +38,9 @@ import {
   DetailedDescription,
   DetailedBody,
   DetailedContent,
-  TipSectionDetailed,
-  TipTitleDetailed,
   TipListDetailed,
   VideoContainerDetailed,
   ActionButtonDetailed,
-  TipDescription,
   TipFooter,
   PhaseTabTitle,
   PhaseIcon,
