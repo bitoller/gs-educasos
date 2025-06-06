@@ -5,6 +5,7 @@ CREATE TABLE users (
     email VARCHAR2(100) NOT NULL UNIQUE,
     password VARCHAR2(100) NOT NULL,
     score NUMBER DEFAULT 0,
+    is_admin NUMBER(1) DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -70,7 +71,6 @@ CREATE TABLE user_earned_question_points (
 );
 
 -- Criação de índices
-CREATE INDEX idx_users_email ON users(email);
 CREATE INDEX idx_content_disaster_type ON content(disaster_type);
 CREATE INDEX idx_kits_house_type ON kits(house_type);
 CREATE INDEX idx_kits_region ON kits(region);
@@ -104,19 +104,35 @@ END;
 /
 
 -- Inserção de dados iniciais para conteúdo
-INSERT INTO content (disaster_type, title, description, video_url) VALUES
-('TERREMOTO', 'Como se Preparar para um Terremoto', 'Guia completo sobre preparação para terremotos, incluindo medidas preventivas e o que fazer durante e após o evento.', 'https://example.com/earthquake-prep'),
-('ENCHENTE', 'Prevenção de Enchentes', 'Informações importantes sobre como prevenir e lidar com enchentes em sua região.', 'https://example.com/flood-prevention'),
-('INCENDIO', 'Segurança contra Incêndios', 'Dicas essenciais de segurança contra incêndios para residências e locais de trabalho.', 'https://example.com/fire-safety'),
-('FURACAO', 'Preparação para Furacões', 'Guia detalhado sobre como se preparar para a temporada de furacões.', 'https://example.com/hurricane-prep'),
+INSERT INTO content (disaster_type, title, description, video_url) VALUES 
+('TERREMOTO', 'Como se Preparar para um Terremoto', 'Guia completo sobre preparação para terremotos, incluindo medidas preventivas e o que fazer durante e após o evento.', 'https://example.com/earthquake-prep');
+
+INSERT INTO content (disaster_type, title, description, video_url) VALUES 
+('ENCHENTE', 'Prevenção de Enchentes', 'Informações importantes sobre como prevenir e lidar com enchentes em sua região.', 'https://example.com/flood-prevention');
+
+INSERT INTO content (disaster_type, title, description, video_url) VALUES 
+('INCENDIO', 'Segurança contra Incêndios', 'Dicas essenciais de segurança contra incêndios para residências e locais de trabalho.', 'https://example.com/fire-safety');
+
+INSERT INTO content (disaster_type, title, description, video_url) VALUES 
+('FURACAO', 'Preparação para Furacões', 'Guia detalhado sobre como se preparar para a temporada de furacões.', 'https://example.com/hurricane-prep');
+
+INSERT INTO content (disaster_type, title, description, video_url) VALUES 
 ('TORNADO', 'Segurança em Caso de Tornados', 'Procedimentos de segurança e abrigos adequados para tornados.', 'https://example.com/tornado-safety');
 
 -- Inserção de dados iniciais para kits
 INSERT INTO kits (house_type, num_residents, has_children, has_elderly, has_pets, region, recommended_items) VALUES
-('APARTAMENTO', 2, 0, 0, 0, 'SUDESTE', '{"items": ["Água (4L por pessoa)", "Alimentos não perecíveis", "Lanterna", "Rádio portátil", "Kit de primeiros socorros"]}'),
-('CASA', 4, 1, 1, 1, 'NORDESTE', '{"items": ["Água (4L por pessoa)", "Alimentos não perecíveis", "Lanterna", "Rádio portátil", "Kit de primeiros socorros", "Medicamentos específicos", "Ração para pets", "Fraldas e itens para bebê"]}'),
-('DUPLEX', 3, 0, 0, 0, 'LESTE', '{"items": ["Água (4L por pessoa)", "Alimentos não perecíveis", "Lanterna", "Rádio portátil", "Kit de primeiros socorros"]}'),
-('CASA', 5, 2, 0, 1, 'SUDOESTE', '{"items": ["Água (4L por pessoa)", "Alimentos não perecíveis", "Lanterna", "Rádio portátil", "Kit de primeiros socorros", "Ração para pets", "Fraldas e itens para crianças"]}'),
+('APARTAMENTO', 2, 0, 0, 0, 'SUDESTE', '{"items": ["Água (4L por pessoa)", "Alimentos não perecíveis", "Lanterna", "Rádio portátil", "Kit de primeiros socorros"]}');
+
+INSERT INTO kits (house_type, num_residents, has_children, has_elderly, has_pets, region, recommended_items) VALUES
+('CASA', 4, 1, 1, 1, 'NORDESTE', '{"items": ["Água (4L por pessoa)", "Alimentos não perecíveis", "Lanterna", "Rádio portátil", "Kit de primeiros socorros", "Medicamentos específicos", "Ração para pets", "Fraldas e itens para bebê"]}');
+
+INSERT INTO kits (house_type, num_residents, has_children, has_elderly, has_pets, region, recommended_items) VALUES
+('DUPLEX', 3, 0, 0, 0, 'LESTE', '{"items": ["Água (4L por pessoa)", "Alimentos não perecíveis", "Lanterna", "Rádio portátil", "Kit de primeiros socorros"]}');
+
+INSERT INTO kits (house_type, num_residents, has_children, has_elderly, has_pets, region, recommended_items) VALUES
+('CASA', 5, 2, 0, 1, 'SUDOESTE', '{"items": ["Água (4L por pessoa)", "Alimentos não perecíveis", "Lanterna", "Rádio portátil", "Kit de primeiros socorros", "Ração para pets", "Fraldas e itens para crianças"]}');
+
+INSERT INTO kits (house_type, num_residents, has_children, has_elderly, has_pets, region, recommended_items) VALUES
 ('APARTAMENTO', 1, 0, 1, 0, 'OESTE', '{"items": ["Água (4L por pessoa)", "Alimentos não perecíveis", "Lanterna", "Rádio portátil", "Kit de primeiros socorros", "Medicamentos específicos"]}');
 
 -- Inserção de dados iniciais para quizzes, questions e answer_choices
