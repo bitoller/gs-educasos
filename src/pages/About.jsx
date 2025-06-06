@@ -195,7 +195,7 @@ const About = () => {
 
             <VideoContainer>
               <iframe
-                src="https://www.youtube.com/embed/dQw4w9WgXcQ"
+                src="https://www.youtube.com/embed/TahbBNQZHMQ"
                 title="About EducaSOS"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
