@@ -1,44 +1,42 @@
 # Educa SOS - Frontend
 
-This is the frontend application for the Educa SOS Platform, built with React and Vite.
+Esta é a aplicação frontend da Plataforma Educa SOS, construída com React e Vite.
 
-## Features
+## Funcionalidades
 
-*   User Authentication (Login, Register)
-*   Emergency Kit Management (View, Create, Edit, Delete Auto and Custom Kits)
-*   Disaster Awareness Content (View Content)
-*   (Add any other key frontend features here)
+*   Autenticação de Usuário (Login, Cadastro)
+*   Gerenciamento de Kit de Emergência (Visualizar, Criar, Editar, Deletar Kits Automáticos e Personalizados)
+*   Conteúdo de Conscientização sobre Desastres (Visualizar Conteúdo)
+*   Quizzes interativos e Pontuação
 
-## Getting Started
+## Começando
 
-To set up and run the frontend application, follow these steps:
+Para configurar e executar a aplicação frontend, siga estes passos:
 
-1.  **Navigate to the frontend project root:**
+1.  **Navegue até a raiz do projeto frontend:**
 
     ```bash
-    cd /path/to/your/project/root
+    cd /caminho/para/o/seu/projeto/raiz
     ```
 
-2.  **Install Dependencies:**
+2.  **Instale as Dependências:**
 
     ```bash
     npm install
-    # or yarn install
     ```
 
-3.  **Start the Development Server:**
+3.  **Inicie o Servidor de Desenvolvimento:**
 
     ```bash
     npm run dev
-    # or yarn dev
     ```
 
-    The frontend application should now be running on `http://localhost:5173` (or another port if 5173 is in use).
+    A aplicação frontend deverá estar rodando em `http://localhost:5173` (ou em outra porta, caso a 5173 esteja em uso).
 
-## API Communication
+## Comunicação com a API
 
-This frontend application communicates with the backend API. Ensure the backend is running before starting the frontend development server.
+Esta aplicação frontend se comunica com a API do backend. Certifique-se de que o backend esteja em execução antes de iniciar o servidor de desenvolvimento do frontend.
 
-The frontend development server is configured to proxy API requests (starting with `/api`) to the backend, which is expected to be running on `http://localhost:8080/disaster-awareness`.
+O servidor de desenvolvimento do frontend está configurado para fazer proxy das requisições da API (que começam com `/api`) para o backend, que deve estar rodando em `http://localhost:8080/disaster-awareness`.
 
-For details on setting up and running the backend, please refer to the `README.md` file located in the `backend/` directory.
+Para mais detalhes sobre como configurar e executar o backend, consulte o arquivo `README.md` localizado no diretório `backend/` .

@@ -1,14 +1,14 @@
-# Disaster Awareness Platform - Backend
+# Educa SOS - Backend
 
-A Java web application backend for managing disaster awareness content and emergency kits.
+Uma aplicação web Java para gerenciamento de conteúdo de conscientização sobre desastres e kits de emergência.
 
-## Prerequisites
+## Pré-requisitos
 
-- Java JDK 11 or later
-- Maven 3.6 or later
-- Oracle Database (for JDBC connectivity)
+- Java JDK 11 ou superior
+- Maven 3.6 ou superior
+- Banco de Dados Oracle (para conectividade JDBC)
 
-## Project Structure
+## Estrutura do Projeto
 
 ```
 disaster-awareness/backend/
@@ -32,84 +32,76 @@ disaster-awareness/backend/
 └── pom.xml                          # Maven configuration (Dependencies, build, Tomcat plugin)
 ```
 
-## Setup Instructions
+## Instruções de Configuração
 
-1. **Database Setup**
-   - Install Oracle Database.
-   - Create a new database user.
-   - Execute the database initialization script located at `src/main/resources/db/init.sql`. This script creates the necessary tables and populates them with initial sample data for content, kits, and quizzes.
+1. **Configuração do Banco de Dados**
+   - Instale o Oracle Database.
+   - Crie um novo usuário de banco de dados.
+   - Execute o script de inicialização localizado em `src/main/resources/db/init.sql`. Esse script cria as tabelas necessárias e insere dados iniciais de exemplo para conteúdos, kits e quizzes.
 
-2. **Configuration**
-   - Update the database connection details in `src/main/java/com/disasterawareness/utils/ConnectionFactory.java` to match your Oracle database setup.
-   - The application uses the following default configuration (can be adjusted in `pom.xml` for the embedded Tomcat):
-     - Port: 8080
-     - Context Path: `/disaster-awareness`
-     - Character Encoding: UTF-8
+2. **Configuração**
+   - Atualize os dados de conexão no arquivo `src/main/java/com/disasterawareness/utils/ConnectionFactory.java` conforme sua configuração Oracle.
+   - A aplicação utiliza a seguinte configuração padrão (ajustável no `pom.xml` com Tomcat embutido):
+     - Porta: 8080
+     - Caminho de contexto: `/disaster-awareness`
+     - Codificação de caracteres: UTF-8
 
-## Running the Backend
+## Executando o Backend
 
-#### Prerequisites
-- **Java JDK 11+** installed.
-- **Maven** installed and in your PATH.
-- **Oracle Database** running and accessible with the schema and initial data set up (by running `src/main/resources/db/init.sql`).
+#### Pré-requisitos
+- **Java JDK 11+** instalado.
+- **Maven** instalado e configurado no PATH.
+- **Oracle Database** em execução, com schema e dados iniciais configurados (via `src/main/resources/db/init.sql`).
 
-#### Running with Maven Embedded Tomcat
-1.  **Open a terminal** in the backend project root.
+#### Executando com Tomcat Embutido via Maven
+1.  **Abra um terminal** na raiz do projeto backend.
     ```sh
     mvn clean tomcat7:run
     ```
-    - This will start the backend server. Note that accessing the root URL ([http://localhost:8080/disaster-awareness](http://localhost:8080/disaster-awareness)) directly in a browser might result in an error because there is no default servlet mapped to the root path. API endpoints are available under `/api/*`.
+    - Isso iniciará o servidor backend. Observe que acessar diretamente a URL raiz ([http://localhost:8080/disaster-awareness](http://localhost:8080/disaster-awareness)) pode resultar em erro, pois não há servlet mapeado para o caminho raiz. Os endpoints da API estão sob `/api/*`.
 
-#### Deploying to a Standalone Tomcat
-1.  **Open a terminal** in the backend project root.
-2.  **Build the WAR file:**
-    ```sh
-    mvn clean package
-    ```
-3.  Copy the generated `target/disaster-awareness.war` to your standalone Tomcat's `webapps` folder and start Tomcat.
+## Testando a API com Insomnia
 
-## API Testing with Insomnia
+Um arquivo de coleção do Insomnia estará disponível em `src/main/resources/` (`Insomnia_Collection.json`). Você pode importar esse arquivo no Insomnia para testar facilmente todos os endpoints do backend.
 
-A collection file for Insomnia will be provided in the `src/main/resources/` folder (`Insomnia_Collection.json`). You can import this file into Insomnia to easily test all the backend endpoints.
+**Para usar a coleção do Insomnia:**
+1.  Certifique-se de que o backend está rodando (com `mvn clean tomcat7:run` ou via Tomcat standalone).
+2.  Importe o arquivo `Insomnia_Collection.json` no Insomnia.
+3.  As requisições da coleção já vêm configuradas com as URLs e corpos de requisição corretos. Lembre-se de obter um token JWT no endpoint `/api/login` e incluí-lo no cabeçalho `Authorization: Bearer <token>` para acessar os endpoints protegidos.
 
-**To use the Insomnia collection:**
-1.  Ensure the backend is running (using `mvn clean tomcat7:run` or deployed to a standalone Tomcat).
-2.  Import the `Insomnia_Collection.json` file into Insomnia.
-3.  The requests in the collection are pre-configured with the correct URLs and request bodies. Remember to obtain a JWT token from the `/api/login` endpoint and include it in the `Authorization: Bearer <token>` header for protected endpoints.
+## Endpoints da API
 
-## API Endpoints
+O backend fornece os seguintes endpoints REST da API.
 
-The backend provides the following REST API endpoints.
+**Nota:** Esses endpoints só estão acessíveis enquanto o servidor backend estiver em execução.
 
-**Note:** These endpoints are accessible only when the backend server is running.
+### Autenticação
+-   `POST /api/register`: Registra um novo usuário.
+    -   Corpo da requisição: Objeto JSON com `name`, `email`, e `password`.
+-   `POST /api/login`: Autentica um usuário e retorna um token JWT.
+    -   Corpo da requisição: Objeto JSON com `email` e `password`.
+    -   Para fins de teste, você pode usar as seguintes credenciais de admin: `admin@mail.com` / `password123`  (Será necessário atualizar manualmente o campo `is_admin` do usuário no banco para 1 após o cadastro para torná-lo admin).
 
-### Authentication
--   `POST /api/register`: Register a new user.
-    -   Request Body: JSON object with `name`, `email`, and `password`.
--   `POST /api/login`: Authenticate a user and get a JWT token.
-    -   Request Body: JSON object with `email` and `password`.
-    -   For testing purposes, you can use the following admin credentials: `admin@mail.com` / `password123` (You will need to manually update a user's `is_admin` flag in the database to 1 for the first admin user after registration).
+### Endpoints de Admin
+Esses endpoints exigem **privilégios de administrador** e um **token JWT** válido (`Authorization: Bearer <token>` header):
+-   `GET /api/admin/users`: Retorna todos os usuários.
+-   `GET /api/admin/users/{id}`: Retorna um usuário específico por ID.
+-   `PUT /api/admin/users/{id}`: Atualiza informações de um usuário.
+    -   Corpo da requisição: Objeto JSON com campos opcionais `name`, `email`, e `isAdmin`.
+-   `DELETE /api/admin/users/{id}`: Deleta um usuário.
+-   `PUT /api/admin/user/score`: Atualiza a pontuação de um usuário.
+    -   Corpo da requisição: Objeto JSON com `userId` (Long) e `score` (Integer).
 
-### Admin Endpoints
-These endpoints require **admin privileges** and a valid **JWT token** (`Authorization: Bearer <token>` header):
--   `GET /api/admin/users`: Get all users.
--   `GET /api/admin/users/{id}`: Get a specific user by ID.
--   `PUT /api/admin/users/{id}`: Update a user's information.
-    -   Request Body: JSON object with optional `name`, `email`, and `isAdmin` fields.
--   `DELETE /api/admin/users/{id}`: Delete a user.
--   `PUT /api/admin/user/score`: Update a user's score.
-    -   Request Body: JSON object with `userId` (Long) and `score` (Integer).
+### Gerenciamento de Pontuação
+-   `GET /api/leaderboard`: Retorna o ranking de usuários ordenado por pontuação.
+    -   Retorno: Lista de usuários com suas pontuações em ordem decrescente.
+    -   **Nota:** Este endpoint é **público** e não requer autenticação.
 
-### Score Management
--   `GET /api/leaderboard`: Get the leaderboard of all users sorted by score.
-    -   Returns: List of users with their scores in descending order.
-    -   **Note:** This endpoint is **publicly accessible** and does not require authentication.
-
-### Kit Management
-These endpoints require a valid **JWT token** (`Authorization: Bearer <token>` header):
--   `GET /api/kit`: Retrieve all emergency kits. For regular users, this returns kits **created by the authenticated user**. **Administrators can retrieve all kits.** Each kit object includes a `recommendedItems` field containing a JSON string of recommended items based on the kit's attributes.
--   `POST /api/kit`: Create a new emergency kit. The created kit will be associated with the **authenticated user**.
-    -   If creating an **automatically generated** kit, provide `houseType`, `numResidents`, `hasChildren`, `hasElderly`, `hasPets`, and `region`. Recommended items will be automatically generated.
+### Gerenciamento de Kits
+Esses endpoints requerem um **token JWT** válido (`Authorization: Bearer <token>` header):
+-   `GET /api/kit`: Retorna todos os kits de emergência. Para usuários comuns, retorna kits **criados pelo usuário autenticado**. **Administradores podem ver todos os kits.** Cada kit inclui o campo `recommendedItems` com uma string JSON de itens recomendados com base nos atributos do kit.
+-   `POST /api/kit`: Cria um novo kit de emergência. O kit será associado ao **usuário autenticado**.
+    -   Para kits **gerados automaticamente** forneça `houseType`, `numResidents`, `hasChildren`, `hasElderly`, `hasPets`, e `region`. Itens recomendados serão gerados automaticamente.
         ```json
         {
           "houseType": "CASA",
@@ -120,7 +112,7 @@ These endpoints require a valid **JWT token** (`Authorization: Bearer <token>` h
           "region": "SUDOESTE"
         }
         ```
-    -   If creating a **custom** kit, include `isCustom: true` and provide your list of items in the `recommendedItems` field as a JSON array of objects, each with `name` and `description`. Other kit attributes can still be provided for context but are not used for item generation.
+    -   Para kits **customizados** inclua `isCustom: true` e forneça os itens desejados no campo `recommendedItems` como um array JSON com `name` e `description`. Outros atributos do kit ainda podem ser fornecidos como contexto, mas não serão usados na geração de itens.
         ```json
         {
           "houseType": "APARTAMENTO",
@@ -133,82 +125,75 @@ These endpoints require a valid **JWT token** (`Authorization: Bearer <token>` h
           "recommendedItems": "[{\"name\":\"Minha Bateria Portátil\",\"description\":\"Para carregar meu celular em emergências.\"}, {\"name\":\"Meu Livro Favorito\",\"description\":\"Para me manter entretido.\"}]"
         }
         ```
--   `GET /api/kit/{id}`: Retrieve a specific emergency kit by its ID. **Requires the authenticated user to be the kit owner or an administrator.** The kit object includes the `recommendedItems` field and the `isCustom` flag.
-    -   `{id}`: The ID of the kit (path parameter).
--   `PUT /api/kit/{id}`: Update an existing emergency kit. **Requires the authenticated user to be the kit owner or an administrator.**
-    -   `{id}`: The ID of the kit (path parameter).
-    -   Request Body: Can include updated standard kit attributes. If `recommendedItems` is provided in the request body, the kit will be marked as custom and the provided items will be saved. Otherwise, if the kit is not custom, recommended items will be regenerated based on the provided attributes.
--   `DELETE /api/kit/{id}`: Delete an emergency kit by its ID. **Requires the authenticated user to be the kit owner or an administrator.**
-    -   `{id}`: The ID of the kit (path parameter).
--   `GET /api/kit/house/{houseType}`: Retrieve kits filtered by house type.
-    -   `{houseType}`: The type of house (e.g., APARTMENT, HOUSE, CONDO) (path parameter).
--   `GET /api/kit/region/{region}`: Retrieve kits filtered by region.
-    -   `{region}`: The region (e.g., SOUTHEAST, NORTHEAST, MIDWEST, SOUTHWEST, WEST) (path parameter).
+-   `GET /api/kit/{id}`: Retorna um kit de emergência específico por ID. **Requer que o usuário autenticado seja o dono do kit ou um administrador.** O objeto do kit inclui o campo `recommendedItems` e a flag `isCustom`.
+    -   `{id}`: O ID do kit (parâmetro de rota).
+-   `PUT /api/kit/{id}`: Atualiza um kit de emergência existente. **Requer que o usuário autenticado seja o dono do kit ou um administrador.**
+    -   `{id}`: O ID do kit (parâmetro de rota).
+    -   Corpo da requisição: Pode incluir atributos padrão atualizados do kit. Se `recommendedItems` for fornecido no corpo da requisição, o kit será marcado como customizado e os itens fornecidos serão salvos. Caso contrário, se o kit não for customizado, os itens recomendados serão regenerados com base nos atributos fornecidos.
+-   `DELETE /api/kit/{id}`: Deleta um kit de emergência pelo seu ID. **Requer que o usuário autenticado seja o dono do kit ou um administrador.**
+    -   `{id}`: O ID do kit (parâmetro de rota).
+-   `GET /api/kit/house/{houseType}`: Retorna kits filtrados por tipo de moradia.
+    -   `{houseType}`: O tipo de moradia (ex.: APARTAMENTO, CASA, SITIO) (parâmetro de rota).
+-   `GET /api/kit/region/{region}`: Retorna kits filtrados por região.
+    -   `{region}`: A região (ex.: SUDESTE, NORDESTE, SUL, NORTE) (parâmetro de rota).
 
-### Content Management
-These endpoints require a valid **JWT token** (`Authorization: Bearer <token>` header):
--   `GET /api/content`: Retrieve all disaster awareness content.
-    -   **Note:** This endpoint is now **publicly accessible** and does not require authentication.
--   `POST /api/content`: Create new disaster awareness content.
--   `GET /api/content/{id}`: Retrieve a specific content item by its ID.
-    -   `{id}`: The ID of the content item (path parameter).
-    -   **Note:** This endpoint is now **publicly accessible** and does not require authentication.
--   `PUT /api/content/{id}`: Update an existing content item.
--   `DELETE /api/content/{id}`: Delete a content item by its ID.
--   `GET /api/content/disaster/{disasterType}`: Retrieve content filtered by disaster type.
-    -   `{disasterType}`: The type of disaster (path parameter).
-    -   **Note:** This endpoint is now **publicly accessible** and does not require authentication.
+### Gerenciamento de Conteúdo
+Estes endpoints requerem um **token JWT** válido (`Authorization: Bearer <token>` header):
+-   `GET /api/content`: Retorna todo o conteúdo de conscientização sobre desastres.
+    -   **Nota:** Este endpoint agora é **publicamente acessível** e não requer autenticação.
+-   `POST /api/content`: Cria novo conteúdo de conscientização sobre desastres.
+-   `GET /api/content/{id}`: Retorna um item de conteúdo específico pelo seu ID.
+    -   `{id}`: O ID do item de conteúdo (parâmetro de rota).
+    -   **Nota:** Este endpoint agora é **publicamente acessível** e não requer autenticação.
+-   `PUT /api/content/{id}`: Atualiza um item de conteúdo existente.
+-   `DELETE /api/content/{id}`: Deleta um item de conteúdo pelo seu ID.
+-   `GET /api/content/disaster/{disasterType}`: Retorna conteúdo filtrado por tipo de desastre.
+    -   `{disasterType}`: O tipo de desastre (parâmetro de rota).
+    -   **Nota:** Este endpoint agora é **publicamente acessível** e não requer autenticação.
 
-### Quiz Endpoints
+### Endpoints de Quiz
 
-These endpoints are for accessing quizzes and submitting answers.
+Esses endpoints são para acessar quizzes e enviar respostas.
 
--   `GET /api/quizzes`: Get a list of all available quizzes.
-    -   Returns: JSON array of Quiz objects (without questions/choices initially).
-    -   **Note:** This endpoint is **public** and does not require authentication.
--   `GET /api/quizzes/{id}`: Get a specific quiz by ID, including its questions and answer choices.
-    -   `{id}`: The ID of the quiz (path parameter).
-    -   Returns: JSON object of the Quiz with nested Question and AnswerChoice objects.
-    -   **Note:** This endpoint is **public** and does not require authentication.
--   `POST /api/quizzes/submit`: Submit answers for a quiz to calculate score and update user's total score.
-    -   Requires: **JWT Authentication Header** (`Authorization: Bearer <token>`).
-    -   Request Body: JSON object with `quizId` (Long) and `submittedAnswers` (JSON object where keys are question IDs (String) and values are submitted answer choice IDs (Long)).
+-   `GET /api/quizzes`: Retorna uma lista de todos os quizzes disponíveis.
+    -   Retorna: Array JSON de objetos Quiz (sem perguntas/opções inicialmente).
+    -   **Nota:** Este endpoint é **público** e não requer autenticação.
+-   `GET /api/quizzes/{id}`: Retorna um quiz específico por ID, incluindo suas perguntas e opções de resposta.
+    -   `{id}`: O ID do quiz (parâmetro de rota).
+    -   Retorna: Objeto JSON do Quiz com objetos aninhados de Question e AnswerChoice.
+    -   **Nota:** Este endpoint é **público** e não requer autenticação.
+-   `POST /api/quizzes/submit`: Envia respostas de um quiz para calcular a pontuação e atualizar a pontuação total do usuário.
+    -   Requer: **Cabeçalho de Autenticação JWT** (`Authorization: Bearer <token>`).
+    -   Corpo da requisição: Objeto JSON com `quizId` (Long) e `submittedAnswers` (objeto JSON onde as chaves são IDs de pergunta (String) e os valores são IDs das opções de resposta enviadas (Long)).
         ```json
         {
             "quizId": 1,
             "submittedAnswers": {
-                "1": 3,  // Question ID 1, Submitted Answer Choice ID 3
-                "2": 5   // Question ID 2, Submitted Answer Choice ID 5
-                // ... more answers
+                "1": 3,  // ID da Pergunta 1, ID da opção de resposta enviada 3
+                "2": 5   // ID da Pergunta 2, ID da opção de resposta enviada 5
+                // ... mais respostas
             }
         }
         ```
-    -   Returns: JSON object indicating success and the score earned.
+    -   Retorna: Objeto JSON indicando sucesso e a pontuação obtida.
         ```json
         {
-            "message": "Quiz submitted successfully",
+            "message": "Quiz enviado com sucesso",
             "scoreEarned": 20
         }
         ```
 
-## Security
+## Segurança
 
-The application uses JWT-based authentication for most `/api/*` endpoints. Public endpoints like `/api/leaderboard`, `GET /api/quizzes`, and `GET /api/quizzes/{id}` do not require authentication.
+A aplicação usa autenticação baseada em JWT para a maioria dos endpoints `/api/*`.
+Endpoints públicos como `/api/leaderboard`, `GET /api/quizzes`, e `GET /api/quizzes/{id}` não requerem autenticação.
 
-Admin endpoints (`/api/admin/*`) are protected by an additional filter that checks for the `isAdmin` flag on the authenticated user.
+Endpoints de administração (`/api/admin/*`) ão protegidos por um filtro adicional que verifica o campo `isAdmin` do usuário autenticado.
 
-## Troubleshooting
+## Solução de Problemas
 
--   **Database Connection Issues:** Verify database credentials and ensure the Oracle Database is running and accessible.
--   **500 Errors after Database Insert:** If you encounter a 500 error after confirming a database entry was created (especially for INSERT operations where the backend needs the generated ID), it might be an issue with retrieving the automatically generated ID from Oracle. Check the server logs for exceptions. The `ContentDAOImpl` and `KitDAOImpl` contain Oracle-specific handling for this. Ensure you have run the `init.sql` script completely and correctly.
--   **404 Errors:** Verify the context path (`/disaster-awareness`) in your request URLs and ensure the application is properly deployed and running in Tomcat. Remember that the root URL might show an error, but API endpoints are under `/api/*`.
--   **Port Already in Use:** If port 8080 is in use, you can change the port in the `pom.xml` for the `tomcat7-maven-plugin` configuration.
--   **Incorrect Quiz Scoring:** Ensure you have run the complete `init.sql` script to populate the quiz tables correctly, as the `is_correct` flags determine the right answers.
-
-## Contributing
-
-(Assuming standard contributing guidelines)
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details. 
+-   **Problemas de Conexão com o Banco de Dados:** Verifique as credenciais do banco de dados e certifique-se de que o Oracle Database está em execução e acessível.
+-   **Erros 500 após Inserção no Banco:** Se você encontrar um erro 500 após confirmar que uma entrada foi criada (especialmente para operações INSERT em que o backend precisa do ID gerado), pode haver um problema ao recuperar o ID automaticamente gerado pelo Oracle. Verifique os logs do servidor para exceções. Os arquivos `ContentDAOImpl` e `KitDAOImpl` contêm tratamento específico para Oracle. Certifique-se de que você executou o script `init.sql` completa e corretamente.
+-   **Erros 404:** Verifique o caminho de contexto (`/disaster-awareness`) nas URLs da sua requisição e certifique-se de que a aplicação foi implantada corretamente e está rodando no Tomcat. Lembre-se de que a URL raiz pode exibir erro, mas os endpoints da API estão sob `/api/*`.
+-   **Porta Já Está em Uso:** Se a porta 8080 estiver em uso, você pode alterá-la no `pom.xml` na configuração do `tomcat7-maven-plugin` .
+-   **Pontuação Incorreta no Quiz:** Certifique-se de ter executado completamente o script `init.sql` para popular corretamente as tabelas de quiz, já que os campos `is_correct` determinam as respostas corretas.
