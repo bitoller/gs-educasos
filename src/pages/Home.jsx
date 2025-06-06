@@ -255,24 +255,53 @@ const Home = () => {
                 <Table hover responsive className="leaderboard-table">
                   <thead>
                     <tr>
-                      <th>#</th>
-                      <th>Usuário</th>
-                      <th>Pontuação</th>
-                      <th>Conquistas</th>
+                      <th style={{ color: "var(--accent-color)" }}>#</th>
+                      <th style={{ color: "var(--accent-color)" }}>Usuário</th>
+                      <th style={{ color: "var(--accent-color)" }}>Pontuação</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {leaders.map((user, index) => (
+                    {leaders.slice(0, 5).map((user, index) => (
                       <motion.tr
                         key={user.userId}
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: index * 0.1 }}
+                        style={{
+                          background:
+                            index === 0
+                              ? "linear-gradient(90deg, #1e293b 60%, #2563eb 100%)"
+                              : index === 1
+                              ? "linear-gradient(90deg, #1e293b 60%, #7c3aed 100%)"
+                              : index === 2
+                              ? "linear-gradient(90deg, #1e293b 60%, #0891b2 100%)"
+                              : "rgba(30,41,59,0.7)",
+                        }}
                       >
-                        <td>{getMedalIcon(index)}</td>
-                        <td>{user.name}</td>
-                        <td>{user.score} pts</td>
-                        <td>{user.achievements || "-"}</td>
+                        <td
+                          style={{
+                            fontWeight: 700,
+                            color: "var(--primary-color)",
+                          }}
+                        >
+                          {getMedalIcon(index)}
+                        </td>
+                        <td
+                          style={{
+                            fontWeight: 500,
+                            color: "var(--text-primary)",
+                          }}
+                        >
+                          {user.name}
+                        </td>
+                        <td
+                          style={{
+                            fontWeight: 600,
+                            color: "var(--accent-color)",
+                          }}
+                        >
+                          {user.score} pts
+                        </td>
                       </motion.tr>
                     ))}
                   </tbody>
@@ -280,6 +309,50 @@ const Home = () => {
               )}
             </Col>
           </Row>
+          {leaders.length > 5 && (
+            <div style={{ maxHeight: 240, overflowY: "auto", marginTop: 0 }}>
+              <Table
+                hover
+                responsive
+                className="leaderboard-table"
+                style={{ marginBottom: 0 }}
+              >
+                <tbody>
+                  {leaders.slice(5).map((user, index) => (
+                    <tr
+                      key={user.userId}
+                      style={{ background: "rgba(30,41,59,0.5)" }}
+                    >
+                      <td
+                        style={{
+                          fontWeight: 700,
+                          color: "var(--primary-color)",
+                        }}
+                      >
+                        {index + 6}
+                      </td>
+                      <td
+                        style={{
+                          fontWeight: 500,
+                          color: "var(--text-primary)",
+                        }}
+                      >
+                        {user.name}
+                      </td>
+                      <td
+                        style={{
+                          fontWeight: 600,
+                          color: "var(--accent-color)",
+                        }}
+                      >
+                        {user.score} pts
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </Table>
+            </div>
+          )}
         </motion.div>
       </Container>
 
