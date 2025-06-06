@@ -3,6 +3,7 @@ import { Container, Form, Button, Alert } from "react-bootstrap";
 import { useNavigate, Link, useLocation } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { auth } from "../services/api";
+import { toast } from "react-toastify";
 import "../styles/Login.css";
 
 const Login = () => {
@@ -57,6 +58,23 @@ const Login = () => {
           login(userData);
 
           clearForm();
+
+          toast.success("Login realizado com sucesso!", {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            icon: "🎉",
+            style: {
+              background: "rgba(33, 37, 41, 0.95)",
+              color: "#fff",
+              borderRadius: "8px",
+              boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+              border: "1px solid rgba(255, 255, 255, 0.1)",
+            },
+          });
 
           if (userData.role === "admin") {
             navigate("/admin");

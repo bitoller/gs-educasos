@@ -18,6 +18,7 @@ import {
   faBoxes,
 } from "@fortawesome/free-solid-svg-icons";
 import { motion } from "framer-motion";
+import { toast } from "react-toastify";
 import "../styles/Navbar.css";
 
 const NavigationBar = () => {
@@ -40,8 +41,27 @@ const NavigationBar = () => {
 
   const handleLogout = () => {
     logout();
-    navigate("/");
+    toast.info("Logout realizado com sucesso!", {
+      position: "top-right",
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      icon: "👋",
+      style: {
+        background: "rgba(33, 37, 41, 0.95)",
+        color: "#fff",
+        borderRadius: "8px",
+        boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+        border: "1px solid rgba(255, 255, 255, 0.1)",
+      },
+      onClose: () => {
+        navigate("/");
+      },
+    });
   };
+
   const navItems = [
     { path: "/", text: "Início", icon: faHome },
     { path: "/learn", text: "Aprenda", icon: faBook },
@@ -50,6 +70,7 @@ const NavigationBar = () => {
     { path: "/about", text: "Sobre", icon: faInfoCircle },
     { path: "/contact", text: "Contato", icon: faEnvelope },
   ];
+
   const userMenuItems = [
     {
       path: isAdmin ? "/admin" : "/dashboard",

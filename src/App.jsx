@@ -24,6 +24,8 @@ import { AuthProvider } from "./contexts/AuthContext";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./styles/Home.css";
 import "./styles/Navbar.css";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const AdminRoute = ({ children }) => {
   const isAdmin = localStorage.getItem("userRole") === "admin";
@@ -39,6 +41,32 @@ function App() {
   return (
     <AuthProvider>
       <Router>
+        <ToastContainer
+          position="top-right"
+          autoClose={3000}
+          hideProgressBar={false}
+          newestOnTop
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="dark"
+          style={{
+            fontSize: "14px",
+            fontFamily: "'Poppins', sans-serif",
+          }}
+          toastStyle={{
+            background: "rgba(33, 37, 41, 0.95)",
+            color: "#fff",
+            borderRadius: "8px",
+            boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+            border: "1px solid rgba(255, 255, 255, 0.1)",
+          }}
+          progressStyle={{
+            background: "linear-gradient(135deg, #00f2fe 0%, #4facfe 100%)",
+          }}
+        />
         <div className="App">
           <NavigationBar />
           <Routes>

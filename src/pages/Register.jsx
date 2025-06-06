@@ -3,6 +3,7 @@ import { Form, Button } from "react-bootstrap";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { auth } from "../services/api";
+import { toast } from "react-toastify";
 import "../styles/Register.css";
 
 const Register = () => {
@@ -16,7 +17,6 @@ const Register = () => {
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const { login } = useAuth();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -24,12 +24,17 @@ const Register = () => {
       ...prev,
       [name]: value,
     }));
+
+    if (error) {
+      setError("");
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (loading) return;
+
     setError("");
-    setSuccess("");
 
     if (formData.password !== formData.confirmPassword) {
       setError("As senhas não coincidem");
@@ -44,54 +49,40 @@ const Register = () => {
     setLoading(true);
 
     try {
-      const registerResponse = await auth.register({
+      const response = await auth.register({
         name: formData.name,
         email: formData.email,
         password: formData.password,
+        confirmPassword: formData.confirmPassword,
       });
 
-      if (registerResponse.status === 201) {
-        setSuccess("Conta criada com sucesso! Fazendo login...");
-
-        try {
-          const loginResponse = await auth.login({
-            email: formData.email,
-            password: formData.password,
-          });
-
-          if (loginResponse.data && loginResponse.data.token) {
-            localStorage.setItem("token", loginResponse.data.token);
-
-            login(loginResponse.data.user);
-
-            setFormData({
-              name: "",
-              email: "",
-              password: "",
-              confirmPassword: "",
-            });
-
-            setTimeout(() => {
-              navigate("/");
-            }, 1500);
+      if (response.data) {
+        toast.success(
+          "Cadastro realizado com sucesso! Você já pode fazer login.",
+          {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            icon: "✨",
+            style: {
+              background: "rgba(33, 37, 41, 0.95)",
+              color: "#fff",
+              borderRadius: "8px",
+              boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+              border: "1px solid rgba(255, 255, 255, 0.1)",
+            },
           }
-        } catch (loginErr) {
-          console.error("Auto-login error:", loginErr);
-          setError(
-            "Conta criada, mas houve um erro ao fazer login automático. Por favor, faça login manualmente."
-          );
-          setTimeout(() => {
-            navigate("/login");
-          }, 2000);
-        }
-      } else {
-        setError("Erro no registro. Por favor, tente novamente.");
+        );
+        navigate("/login");
       }
     } catch (err) {
       console.error("Registration error:", err);
       setError(
         err.response?.data?.error ||
-          "Erro ao criar conta. Por favor, verifique os dados e tente novamente."
+          "Erro ao criar conta. Por favor, tente novamente."
       );
     } finally {
       setLoading(false);
