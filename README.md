@@ -1,6 +1,6 @@
-# Disaster Awareness Platform - Frontend
+# Educa SOS - Frontend
 
-This is the frontend application for the Disaster Awareness Platform, built with React and Vite.
+This is the frontend application for the Educa SOS Platform, built with React and Vite.
 
 ## Features
 
