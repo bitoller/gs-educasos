@@ -159,7 +159,6 @@ export const CompactCard = styled(Card)`
   overflow: hidden;
   position: relative;
 
-  // Força o background do Card.Body também
   .card-body {
     background: transparent !important;
   }
